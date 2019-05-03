@@ -1168,6 +1168,9 @@ message SoftmaxParameter {
   // from the end (e.g., -1 for the last axis).
   // Any other axes will be evaluated as independent softmaxes.
   optional int32 axis = 2 [default = 1];
+
+  optional bool label_smooth = 3 [default = false];
+  optional float label_smooth_factor = 4 [default = 0.00001];
 }
 
 // Message that stores parameters used by SwishLayer

@@ -19,7 +19,8 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp(
   softmax_top_vec_.clear();
   softmax_top_vec_.push_back(&prob_);
   softmax_layer_->SetUp(softmax_bottom_vec_, softmax_top_vec_);
-
+  use_label_smooth_ = this->layer_param().softmax_param().label_smooth();
+  label_smooth_factor_ = this->layer_param().softmax_param().label_smooth_factor();
   has_ignore_label_ =
     this->layer_param_.loss_param().has_ignore_label();
   if (has_ignore_label_) {
@@ -49,6 +50,7 @@ void SoftmaxWithLossLayer<Dtype>::Reshape(
       << "e.g., if softmax axis == 1 and prediction shape is (N, C, H, W), "
       << "label count (number of labels) must be N*H*W, "
       << "with integer values in {0, 1, ..., C-1}.";
+  num_classes_ = bottom[0]->shape(softmax_axis_);
   if (top.size() >= 2) {
     // softmax output
     top[1]->ReshapeLike(*bottom[0]);
@@ -103,8 +105,16 @@ void SoftmaxWithLossLayer<Dtype>::Forward_cpu(
       }
       DCHECK_GE(label_value, 0);
       DCHECK_LT(label_value, prob_.shape(softmax_axis_));
-      loss -= log(std::max(prob_data[i * dim + label_value * inner_num_ + j],
-                           Dtype(FLT_MIN)));
+      if (use_label_smooth_ && (label_smooth_factor_ > 0.0F)) {
+        for (int c = 0; c < num_classes_; c++) {
+          float coeff = (c == label_value) ? (1.0F - label_smooth_factor_)
+                                           : (label_smooth_factor_ / float(num_classes_));
+          loss -= coeff * log(std::max(prob_data[i * dim + c * inner_num_ + j], Dtype(FLT_MIN)));
+        }
+      } else {
+        loss -= log(std::max(prob_data[i * dim + label_value * inner_num_ + j],
+                             Dtype(FLT_MIN)));
+      }
       ++count;
     }
   }
@@ -136,7 +146,15 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
             bottom_diff[i * dim + c * inner_num_ + j] = 0;
           }
         } else {
-          bottom_diff[i * dim + label_value * inner_num_ + j] -= 1;
+          if (use_label_smooth_ && label_smooth_factor_ > 0.0F) {
+            for (int c = 0; c < num_classes_; c++) {
+              float coeff = (c == label_value) ? (1.0F - label_smooth_factor_)
+                                               : (label_smooth_factor_ / float(num_classes_));
+              bottom_diff[i * dim + c * inner_num_ + j] -= coeff;
+            }
+          } else {
+            bottom_diff[i * dim + label_value * inner_num_ + j] -= 1;
+          }
           ++count;
         }
       }
