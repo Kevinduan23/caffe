@@ -217,4 +217,8 @@ layer {
   bottom: "ip1"
   bottom: "label"
   top: "loss"
+  softmax_param: {
+    label_smooth: true
+    label_smooth_factor: 0.001
+  }
 }
