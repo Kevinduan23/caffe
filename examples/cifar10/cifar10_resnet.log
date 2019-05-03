@@ -1,0 +1,2949 @@
+I0503 14:53:15.289542 354735552 caffe.cpp:197] Use CPU.
+I0503 14:53:15.290637 354735552 solver.cpp:45] Initializing solver from parameters:
+base_lr: 0.001
+display: 200
+max_iter: 1
+lr_policy: "fixed"
+momentum: 0.9
+weight_decay: 0.004
+snapshot: 10000
+snapshot_prefix: "examples/cifar10/cifar10_resnet"
+solver_mode: CPU
+random_seed: 5
+debug_info: true
+net: "examples/cifar10/cifar10_resnet.prototxt"
+train_state {
+  level: 0
+  stage: ""
+}
+snapshot_format: HDF5
+I0503 14:53:15.291091 354735552 solver.cpp:102] Creating training net from net file: examples/cifar10/cifar10_resnet.prototxt
+I0503 14:53:15.291995 354735552 upgrade_proto.cpp:79] Attempting to upgrade batch norm layers using deprecated params: examples/cifar10/cifar10_resnet.prototxt
+I0503 14:53:15.292018 354735552 upgrade_proto.cpp:82] Successfully upgraded batch norm layers using deprecated params.
+I0503 14:53:15.292367 354735552 net.cpp:296] The NetState phase (0) differed from the phase (1) specified by a rule in layer cifar
+I0503 14:53:15.292459 354735552 net.cpp:296] The NetState phase (0) differed from the phase (1) specified by a rule in layer accuracy
+I0503 14:53:15.292472 354735552 net.cpp:53] Initializing net from parameters:
+name: "ResNet-cifar10"
+state {
+  phase: TRAIN
+  level: 0
+  stage: ""
+}
+layer {
+  name: "cifar"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mean_file: "examples/cifar10/mean.binaryproto"
+  }
+  data_param {
+    source: "examples/cifar10/cifar10_train_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+}
+layer {
+  name: "conv0"
+  type: "Convolution"
+  bottom: "data"
+  top: "conv0"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 8
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "bn0"
+  type: "BatchNorm"
+  bottom: "conv0"
+  top: "bn0"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "relu0"
+  type: "ReLU"
+  bottom: "bn0"
+  top: "relu0"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block1-conv1"
+  type: "Convolution"
+  bottom: "relu0"
+  top: "block1-conv1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block1-bn1"
+  type: "BatchNorm"
+  bottom: "block1-conv1"
+  top: "block1-bn1"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block1-relu1"
+  type: "ReLU"
+  bottom: "block1-bn1"
+  top: "block1-relu1"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block1-conv2"
+  type: "Convolution"
+  bottom: "block1-relu1"
+  top: "block1-conv2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block1-bn2"
+  type: "BatchNorm"
+  bottom: "block1-conv2"
+  top: "block1-bn2"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block1-relu2"
+  type: "ReLU"
+  bottom: "block1-bn2"
+  top: "block1-relu2"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block1-project"
+  type: "Convolution"
+  bottom: "relu0"
+  top: "block1-project"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block1-res1"
+  type: "Eltwise"
+  bottom: "block1-project"
+  bottom: "block1-relu2"
+  top: "block1-res1"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block1-conv3"
+  type: "Convolution"
+  bottom: "block1-res1"
+  top: "block1-conv3"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block1-bn3"
+  type: "BatchNorm"
+  bottom: "block1-conv3"
+  top: "block1-bn3"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block1-relu3"
+  type: "ReLU"
+  bottom: "block1-bn3"
+  top: "block1-relu3"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block1-conv4"
+  type: "Convolution"
+  bottom: "block1-relu3"
+  top: "block1-conv4"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block1-bn4"
+  type: "BatchNorm"
+  bottom: "block1-conv4"
+  top: "block1-bn4"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block1-relu4"
+  type: "ReLU"
+  bottom: "block1-bn4"
+  top: "block1-relu4"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block1-res2"
+  type: "Eltwise"
+  bottom: "block1-res1"
+  bottom: "block1-relu4"
+  top: "block1-res2"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block1-conv5"
+  type: "Convolution"
+  bottom: "block1-res2"
+  top: "block1-conv5"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block1-bn5"
+  type: "BatchNorm"
+  bottom: "block1-conv5"
+  top: "block1-bn5"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block1-relu5"
+  type: "ReLU"
+  bottom: "block1-bn5"
+  top: "block1-relu5"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block1-conv6"
+  type: "Convolution"
+  bottom: "block1-relu5"
+  top: "block1-conv6"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 16
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block1-bn6"
+  type: "BatchNorm"
+  bottom: "block1-conv6"
+  top: "block1-bn6"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block1-relu6"
+  type: "ReLU"
+  bottom: "block1-bn6"
+  top: "block1-relu6"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block1-res3"
+  type: "Eltwise"
+  bottom: "block1-res2"
+  bottom: "block1-relu6"
+  top: "block1-res3"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block2-conv1"
+  type: "Convolution"
+  bottom: "block1-res3"
+  top: "block2-conv1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block2-bn1"
+  type: "BatchNorm"
+  bottom: "block2-conv1"
+  top: "block2-bn1"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block2-relu1"
+  type: "ReLU"
+  bottom: "block2-bn1"
+  top: "block2-relu1"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block2-conv2"
+  type: "Convolution"
+  bottom: "block2-relu1"
+  top: "block2-conv2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block2-bn2"
+  type: "BatchNorm"
+  bottom: "block2-conv2"
+  top: "block2-bn2"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block2-relu2"
+  type: "ReLU"
+  bottom: "block2-bn2"
+  top: "block2-relu2"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block2-project"
+  type: "Convolution"
+  bottom: "block1-res3"
+  top: "block2-project"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block2-res1"
+  type: "Eltwise"
+  bottom: "block2-project"
+  bottom: "block2-relu2"
+  top: "block2-res1"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block2-conv3"
+  type: "Convolution"
+  bottom: "block2-res1"
+  top: "block2-conv3"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block2-bn3"
+  type: "BatchNorm"
+  bottom: "block2-conv3"
+  top: "block2-bn3"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block2-relu3"
+  type: "ReLU"
+  bottom: "block2-bn3"
+  top: "block2-relu3"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block2-conv4"
+  type: "Convolution"
+  bottom: "block2-relu3"
+  top: "block2-conv4"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block2-bn4"
+  type: "BatchNorm"
+  bottom: "block2-conv4"
+  top: "block2-bn4"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block2-relu4"
+  type: "ReLU"
+  bottom: "block2-bn4"
+  top: "block2-relu4"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block2-res2"
+  type: "Eltwise"
+  bottom: "block2-res1"
+  bottom: "block2-relu4"
+  top: "block2-res2"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block2-conv5"
+  type: "Convolution"
+  bottom: "block2-res2"
+  top: "block2-conv5"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block2-bn5"
+  type: "BatchNorm"
+  bottom: "block2-conv5"
+  top: "block2-bn5"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block2-relu5"
+  type: "ReLU"
+  bottom: "block2-bn5"
+  top: "block2-relu5"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block2-conv6"
+  type: "Convolution"
+  bottom: "block2-relu5"
+  top: "block2-conv6"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 32
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block2-bn6"
+  type: "BatchNorm"
+  bottom: "block2-conv6"
+  top: "block2-bn6"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block2-relu6"
+  type: "ReLU"
+  bottom: "block2-bn6"
+  top: "block2-relu6"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block2-res3"
+  type: "Eltwise"
+  bottom: "block2-res2"
+  bottom: "block2-relu6"
+  top: "block2-res3"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block3-conv1"
+  type: "Convolution"
+  bottom: "block2-res3"
+  top: "block3-conv1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block3-bn1"
+  type: "BatchNorm"
+  bottom: "block3-conv1"
+  top: "block3-bn1"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block3-relu1"
+  type: "ReLU"
+  bottom: "block3-bn1"
+  top: "block3-relu1"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block3-conv2"
+  type: "Convolution"
+  bottom: "block3-relu1"
+  top: "block3-conv2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block3-bn2"
+  type: "BatchNorm"
+  bottom: "block3-conv2"
+  top: "block3-bn2"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block3-relu2"
+  type: "ReLU"
+  bottom: "block3-bn2"
+  top: "block3-relu2"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block3-project"
+  type: "Convolution"
+  bottom: "block2-res3"
+  top: "block3-project"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block3-res1"
+  type: "Eltwise"
+  bottom: "block3-project"
+  bottom: "block3-relu2"
+  top: "block3-res1"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block3-conv3"
+  type: "Convolution"
+  bottom: "block3-res1"
+  top: "block3-conv3"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block3-bn3"
+  type: "BatchNorm"
+  bottom: "block3-conv3"
+  top: "block3-bn3"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block3-relu3"
+  type: "ReLU"
+  bottom: "block3-bn3"
+  top: "block3-relu3"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block3-conv4"
+  type: "Convolution"
+  bottom: "block3-relu3"
+  top: "block3-conv4"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block3-bn4"
+  type: "BatchNorm"
+  bottom: "block3-conv4"
+  top: "block3-bn4"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block3-relu4"
+  type: "ReLU"
+  bottom: "block3-bn4"
+  top: "block3-relu4"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block3-res2"
+  type: "Eltwise"
+  bottom: "block3-res1"
+  bottom: "block3-relu4"
+  top: "block3-res2"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block3-conv5"
+  type: "Convolution"
+  bottom: "block3-res2"
+  top: "block3-conv5"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block3-bn5"
+  type: "BatchNorm"
+  bottom: "block3-conv5"
+  top: "block3-bn5"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block3-relu5"
+  type: "ReLU"
+  bottom: "block3-bn5"
+  top: "block3-relu5"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block3-conv6"
+  type: "Convolution"
+  bottom: "block3-relu5"
+  top: "block3-conv6"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 64
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block3-bn6"
+  type: "BatchNorm"
+  bottom: "block3-conv6"
+  top: "block3-bn6"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block3-relu6"
+  type: "ReLU"
+  bottom: "block3-bn6"
+  top: "block3-relu6"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block3-res3"
+  type: "Eltwise"
+  bottom: "block3-res2"
+  bottom: "block3-relu6"
+  top: "block3-res3"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block4-conv1"
+  type: "Convolution"
+  bottom: "block3-res3"
+  top: "block4-conv1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block4-bn1"
+  type: "BatchNorm"
+  bottom: "block4-conv1"
+  top: "block4-bn1"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block4-relu1"
+  type: "ReLU"
+  bottom: "block4-bn1"
+  top: "block4-relu1"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block4-conv2"
+  type: "Convolution"
+  bottom: "block4-relu1"
+  top: "block4-conv2"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block4-bn2"
+  type: "BatchNorm"
+  bottom: "block4-conv2"
+  top: "block4-bn2"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block4-relu2"
+  type: "ReLU"
+  bottom: "block4-bn2"
+  top: "block4-relu2"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block4-project"
+  type: "Convolution"
+  bottom: "block3-res3"
+  top: "block4-project"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 4
+    stride: 2
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block4-res1"
+  type: "Eltwise"
+  bottom: "block4-project"
+  bottom: "block4-relu2"
+  top: "block4-res1"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block4-conv3"
+  type: "Convolution"
+  bottom: "block4-res1"
+  top: "block4-conv3"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block4-bn3"
+  type: "BatchNorm"
+  bottom: "block4-conv3"
+  top: "block4-bn3"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block4-relu3"
+  type: "ReLU"
+  bottom: "block4-bn3"
+  top: "block4-relu3"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block4-conv4"
+  type: "Convolution"
+  bottom: "block4-relu3"
+  top: "block4-conv4"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block4-bn4"
+  type: "BatchNorm"
+  bottom: "block4-conv4"
+  top: "block4-bn4"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block4-relu4"
+  type: "ReLU"
+  bottom: "block4-bn4"
+  top: "block4-relu4"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block4-res2"
+  type: "Eltwise"
+  bottom: "block4-res1"
+  bottom: "block4-relu4"
+  top: "block4-res2"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "block4-conv5"
+  type: "Convolution"
+  bottom: "block4-res2"
+  top: "block4-conv5"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block4-bn5"
+  type: "BatchNorm"
+  bottom: "block4-conv5"
+  top: "block4-bn5"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block4-relu5"
+  type: "ReLU"
+  bottom: "block4-bn5"
+  top: "block4-relu5"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block4-conv6"
+  type: "Convolution"
+  bottom: "block4-relu5"
+  top: "block4-conv6"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 128
+    pad: 1
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "block4-bn6"
+  type: "BatchNorm"
+  bottom: "block4-conv6"
+  top: "block4-bn6"
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+  param {
+    lr_mult: 0
+    decay_mult: 0
+  }
+}
+layer {
+  name: "block4-relu6"
+  type: "ReLU"
+  bottom: "block4-bn6"
+  top: "block4-relu6"
+  relu_param {
+    negative_slope: 0
+  }
+}
+layer {
+  name: "block4-res3"
+  type: "Eltwise"
+  bottom: "block4-res2"
+  bottom: "block4-relu6"
+  top: "block4-res3"
+  eltwise_param {
+    operation: SUM
+  }
+}
+layer {
+  name: "pool"
+  type: "Pooling"
+  bottom: "block4-res3"
+  top: "pool"
+  pooling_param {
+    pool: AVE
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "dropout1"
+  type: "Dropout"
+  bottom: "pool"
+  top: "dropout1"
+  dropout_param {
+    dropout_ratio: 0.4
+  }
+}
+layer {
+  name: "prob"
+  type: "InnerProduct"
+  bottom: "dropout1"
+  top: "prob"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 10
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "prob"
+  bottom: "label"
+  top: "loss"
+  softmax_param {
+    label_smooth: true
+    label_smooth_factor: 0.001
+  }
+}
+I0503 14:53:15.313740 354735552 layer_factory.hpp:77] Creating layer cifar
+I0503 14:53:15.314074 354735552 db_lmdb.cpp:35] Opened lmdb examples/cifar10/cifar10_train_lmdb
+I0503 14:53:15.314136 354735552 net.cpp:86] Creating Layer cifar
+I0503 14:53:15.314146 354735552 net.cpp:382] cifar -> data
+I0503 14:53:15.314172 354735552 net.cpp:382] cifar -> label
+I0503 14:53:15.314185 354735552 data_transformer.cpp:25] Loading mean file from: examples/cifar10/mean.binaryproto
+I0503 14:53:15.314299 354735552 data_layer.cpp:45] output data size: 100,3,32,32
+I0503 14:53:15.316854 354735552 net.cpp:124] Setting up cifar
+I0503 14:53:15.316866 354735552 net.cpp:131] Top shape: 100 3 32 32 (307200)
+I0503 14:53:15.316875 354735552 net.cpp:131] Top shape: 100 (100)
+I0503 14:53:15.316881 354735552 net.cpp:139] Memory required for data: 1229200
+I0503 14:53:15.316890 354735552 layer_factory.hpp:77] Creating layer conv0
+I0503 14:53:15.316902 354735552 net.cpp:86] Creating Layer conv0
+I0503 14:53:15.316907 354735552 net.cpp:408] conv0 <- data
+I0503 14:53:15.316915 354735552 net.cpp:382] conv0 -> conv0
+I0503 14:53:15.316979 354735552 net.cpp:124] Setting up conv0
+I0503 14:53:15.316987 354735552 net.cpp:131] Top shape: 100 8 16 16 (204800)
+I0503 14:53:15.317037 354735552 net.cpp:139] Memory required for data: 2048400
+I0503 14:53:15.317059 354735552 layer_factory.hpp:77] Creating layer bn0
+I0503 14:53:15.317072 354735552 net.cpp:86] Creating Layer bn0
+I0503 14:53:15.317085 354735552 net.cpp:408] bn0 <- conv0
+I0503 14:53:15.317096 354735552 net.cpp:382] bn0 -> bn0
+I0503 14:53:15.317122 354735552 net.cpp:124] Setting up bn0
+I0503 14:53:15.317129 354735552 net.cpp:131] Top shape: 100 8 16 16 (204800)
+I0503 14:53:15.317137 354735552 net.cpp:139] Memory required for data: 2867600
+I0503 14:53:15.317147 354735552 layer_factory.hpp:77] Creating layer relu0
+I0503 14:53:15.317157 354735552 net.cpp:86] Creating Layer relu0
+I0503 14:53:15.317162 354735552 net.cpp:408] relu0 <- bn0
+I0503 14:53:15.317167 354735552 net.cpp:382] relu0 -> relu0
+I0503 14:53:15.317178 354735552 net.cpp:124] Setting up relu0
+I0503 14:53:15.317183 354735552 net.cpp:131] Top shape: 100 8 16 16 (204800)
+I0503 14:53:15.317188 354735552 net.cpp:139] Memory required for data: 3686800
+I0503 14:53:15.317193 354735552 layer_factory.hpp:77] Creating layer relu0_relu0_0_split
+I0503 14:53:15.317200 354735552 net.cpp:86] Creating Layer relu0_relu0_0_split
+I0503 14:53:15.317553 354735552 net.cpp:408] relu0_relu0_0_split <- relu0
+I0503 14:53:15.317571 354735552 net.cpp:382] relu0_relu0_0_split -> relu0_relu0_0_split_0
+I0503 14:53:15.317585 354735552 net.cpp:382] relu0_relu0_0_split -> relu0_relu0_0_split_1
+I0503 14:53:15.317595 354735552 net.cpp:124] Setting up relu0_relu0_0_split
+I0503 14:53:15.317600 354735552 net.cpp:131] Top shape: 100 8 16 16 (204800)
+I0503 14:53:15.317606 354735552 net.cpp:131] Top shape: 100 8 16 16 (204800)
+I0503 14:53:15.317612 354735552 net.cpp:139] Memory required for data: 5325200
+I0503 14:53:15.317618 354735552 layer_factory.hpp:77] Creating layer block1-conv1
+I0503 14:53:15.317627 354735552 net.cpp:86] Creating Layer block1-conv1
+I0503 14:53:15.317633 354735552 net.cpp:408] block1-conv1 <- relu0_relu0_0_split_0
+I0503 14:53:15.317641 354735552 net.cpp:382] block1-conv1 -> block1-conv1
+I0503 14:53:15.317679 354735552 net.cpp:124] Setting up block1-conv1
+I0503 14:53:15.317685 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.317731 354735552 net.cpp:139] Memory required for data: 5734800
+I0503 14:53:15.317741 354735552 layer_factory.hpp:77] Creating layer block1-bn1
+I0503 14:53:15.317750 354735552 net.cpp:86] Creating Layer block1-bn1
+I0503 14:53:15.317755 354735552 net.cpp:408] block1-bn1 <- block1-conv1
+I0503 14:53:15.317762 354735552 net.cpp:382] block1-bn1 -> block1-bn1
+I0503 14:53:15.317781 354735552 net.cpp:124] Setting up block1-bn1
+I0503 14:53:15.317787 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.317793 354735552 net.cpp:139] Memory required for data: 6144400
+I0503 14:53:15.317802 354735552 layer_factory.hpp:77] Creating layer block1-relu1
+I0503 14:53:15.317812 354735552 net.cpp:86] Creating Layer block1-relu1
+I0503 14:53:15.317817 354735552 net.cpp:408] block1-relu1 <- block1-bn1
+I0503 14:53:15.317823 354735552 net.cpp:382] block1-relu1 -> block1-relu1
+I0503 14:53:15.317831 354735552 net.cpp:124] Setting up block1-relu1
+I0503 14:53:15.317836 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.317842 354735552 net.cpp:139] Memory required for data: 6554000
+I0503 14:53:15.317847 354735552 layer_factory.hpp:77] Creating layer block1-conv2
+I0503 14:53:15.317860 354735552 net.cpp:86] Creating Layer block1-conv2
+I0503 14:53:15.317865 354735552 net.cpp:408] block1-conv2 <- block1-relu1
+I0503 14:53:15.317873 354735552 net.cpp:382] block1-conv2 -> block1-conv2
+I0503 14:53:15.318043 354735552 net.cpp:124] Setting up block1-conv2
+I0503 14:53:15.318054 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318063 354735552 net.cpp:139] Memory required for data: 6963600
+I0503 14:53:15.318069 354735552 layer_factory.hpp:77] Creating layer block1-bn2
+I0503 14:53:15.318078 354735552 net.cpp:86] Creating Layer block1-bn2
+I0503 14:53:15.318083 354735552 net.cpp:408] block1-bn2 <- block1-conv2
+I0503 14:53:15.318135 354735552 net.cpp:382] block1-bn2 -> block1-bn2
+I0503 14:53:15.318156 354735552 net.cpp:124] Setting up block1-bn2
+I0503 14:53:15.318161 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318167 354735552 net.cpp:139] Memory required for data: 7373200
+I0503 14:53:15.318174 354735552 layer_factory.hpp:77] Creating layer block1-relu2
+I0503 14:53:15.318181 354735552 net.cpp:86] Creating Layer block1-relu2
+I0503 14:53:15.318188 354735552 net.cpp:408] block1-relu2 <- block1-bn2
+I0503 14:53:15.318197 354735552 net.cpp:382] block1-relu2 -> block1-relu2
+I0503 14:53:15.318205 354735552 net.cpp:124] Setting up block1-relu2
+I0503 14:53:15.318210 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318217 354735552 net.cpp:139] Memory required for data: 7782800
+I0503 14:53:15.318222 354735552 layer_factory.hpp:77] Creating layer block1-project
+I0503 14:53:15.318230 354735552 net.cpp:86] Creating Layer block1-project
+I0503 14:53:15.318235 354735552 net.cpp:408] block1-project <- relu0_relu0_0_split_1
+I0503 14:53:15.318243 354735552 net.cpp:382] block1-project -> block1-project
+I0503 14:53:15.318285 354735552 net.cpp:124] Setting up block1-project
+I0503 14:53:15.318291 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318297 354735552 net.cpp:139] Memory required for data: 8192400
+I0503 14:53:15.318307 354735552 layer_factory.hpp:77] Creating layer block1-res1
+I0503 14:53:15.318317 354735552 net.cpp:86] Creating Layer block1-res1
+I0503 14:53:15.318322 354735552 net.cpp:408] block1-res1 <- block1-project
+I0503 14:53:15.318328 354735552 net.cpp:408] block1-res1 <- block1-relu2
+I0503 14:53:15.318334 354735552 net.cpp:382] block1-res1 -> block1-res1
+I0503 14:53:15.318359 354735552 net.cpp:124] Setting up block1-res1
+I0503 14:53:15.318364 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318372 354735552 net.cpp:139] Memory required for data: 8602000
+I0503 14:53:15.318377 354735552 layer_factory.hpp:77] Creating layer block1-res1_block1-res1_0_split
+I0503 14:53:15.318384 354735552 net.cpp:86] Creating Layer block1-res1_block1-res1_0_split
+I0503 14:53:15.318389 354735552 net.cpp:408] block1-res1_block1-res1_0_split <- block1-res1
+I0503 14:53:15.318395 354735552 net.cpp:382] block1-res1_block1-res1_0_split -> block1-res1_block1-res1_0_split_0
+I0503 14:53:15.318471 354735552 net.cpp:382] block1-res1_block1-res1_0_split -> block1-res1_block1-res1_0_split_1
+I0503 14:53:15.318490 354735552 net.cpp:124] Setting up block1-res1_block1-res1_0_split
+I0503 14:53:15.318495 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318502 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318508 354735552 net.cpp:139] Memory required for data: 9421200
+I0503 14:53:15.318514 354735552 layer_factory.hpp:77] Creating layer block1-conv3
+I0503 14:53:15.318529 354735552 net.cpp:86] Creating Layer block1-conv3
+I0503 14:53:15.318536 354735552 net.cpp:408] block1-conv3 <- block1-res1_block1-res1_0_split_0
+I0503 14:53:15.318547 354735552 net.cpp:382] block1-conv3 -> block1-conv3
+I0503 14:53:15.318588 354735552 net.cpp:124] Setting up block1-conv3
+I0503 14:53:15.318594 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318601 354735552 net.cpp:139] Memory required for data: 9830800
+I0503 14:53:15.318608 354735552 layer_factory.hpp:77] Creating layer block1-bn3
+I0503 14:53:15.318617 354735552 net.cpp:86] Creating Layer block1-bn3
+I0503 14:53:15.318622 354735552 net.cpp:408] block1-bn3 <- block1-conv3
+I0503 14:53:15.318632 354735552 net.cpp:382] block1-bn3 -> block1-bn3
+I0503 14:53:15.318647 354735552 net.cpp:124] Setting up block1-bn3
+I0503 14:53:15.318652 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318658 354735552 net.cpp:139] Memory required for data: 10240400
+I0503 14:53:15.318665 354735552 layer_factory.hpp:77] Creating layer block1-relu3
+I0503 14:53:15.318678 354735552 net.cpp:86] Creating Layer block1-relu3
+I0503 14:53:15.318684 354735552 net.cpp:408] block1-relu3 <- block1-bn3
+I0503 14:53:15.318733 354735552 net.cpp:382] block1-relu3 -> block1-relu3
+I0503 14:53:15.318744 354735552 net.cpp:124] Setting up block1-relu3
+I0503 14:53:15.318749 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318755 354735552 net.cpp:139] Memory required for data: 10650000
+I0503 14:53:15.318761 354735552 layer_factory.hpp:77] Creating layer block1-conv4
+I0503 14:53:15.318770 354735552 net.cpp:86] Creating Layer block1-conv4
+I0503 14:53:15.318775 354735552 net.cpp:408] block1-conv4 <- block1-relu3
+I0503 14:53:15.318785 354735552 net.cpp:382] block1-conv4 -> block1-conv4
+I0503 14:53:15.318827 354735552 net.cpp:124] Setting up block1-conv4
+I0503 14:53:15.318833 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318840 354735552 net.cpp:139] Memory required for data: 11059600
+I0503 14:53:15.318846 354735552 layer_factory.hpp:77] Creating layer block1-bn4
+I0503 14:53:15.318856 354735552 net.cpp:86] Creating Layer block1-bn4
+I0503 14:53:15.318862 354735552 net.cpp:408] block1-bn4 <- block1-conv4
+I0503 14:53:15.318868 354735552 net.cpp:382] block1-bn4 -> block1-bn4
+I0503 14:53:15.318886 354735552 net.cpp:124] Setting up block1-bn4
+I0503 14:53:15.318892 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318897 354735552 net.cpp:139] Memory required for data: 11469200
+I0503 14:53:15.318904 354735552 layer_factory.hpp:77] Creating layer block1-relu4
+I0503 14:53:15.318913 354735552 net.cpp:86] Creating Layer block1-relu4
+I0503 14:53:15.318918 354735552 net.cpp:408] block1-relu4 <- block1-bn4
+I0503 14:53:15.318924 354735552 net.cpp:382] block1-relu4 -> block1-relu4
+I0503 14:53:15.318933 354735552 net.cpp:124] Setting up block1-relu4
+I0503 14:53:15.318948 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.318954 354735552 net.cpp:139] Memory required for data: 11878800
+I0503 14:53:15.318959 354735552 layer_factory.hpp:77] Creating layer block1-res2
+I0503 14:53:15.318966 354735552 net.cpp:86] Creating Layer block1-res2
+I0503 14:53:15.318971 354735552 net.cpp:408] block1-res2 <- block1-res1_block1-res1_0_split_1
+I0503 14:53:15.318977 354735552 net.cpp:408] block1-res2 <- block1-relu4
+I0503 14:53:15.318985 354735552 net.cpp:382] block1-res2 -> block1-res2
+I0503 14:53:15.318997 354735552 net.cpp:124] Setting up block1-res2
+I0503 14:53:15.319002 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319010 354735552 net.cpp:139] Memory required for data: 12288400
+I0503 14:53:15.319015 354735552 layer_factory.hpp:77] Creating layer block1-res2_block1-res2_0_split
+I0503 14:53:15.319021 354735552 net.cpp:86] Creating Layer block1-res2_block1-res2_0_split
+I0503 14:53:15.319026 354735552 net.cpp:408] block1-res2_block1-res2_0_split <- block1-res2
+I0503 14:53:15.319108 354735552 net.cpp:382] block1-res2_block1-res2_0_split -> block1-res2_block1-res2_0_split_0
+I0503 14:53:15.319133 354735552 net.cpp:382] block1-res2_block1-res2_0_split -> block1-res2_block1-res2_0_split_1
+I0503 14:53:15.319147 354735552 net.cpp:124] Setting up block1-res2_block1-res2_0_split
+I0503 14:53:15.319157 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319169 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319175 354735552 net.cpp:139] Memory required for data: 13107600
+I0503 14:53:15.319181 354735552 layer_factory.hpp:77] Creating layer block1-conv5
+I0503 14:53:15.319191 354735552 net.cpp:86] Creating Layer block1-conv5
+I0503 14:53:15.319198 354735552 net.cpp:408] block1-conv5 <- block1-res2_block1-res2_0_split_0
+I0503 14:53:15.319206 354735552 net.cpp:382] block1-conv5 -> block1-conv5
+I0503 14:53:15.319258 354735552 net.cpp:124] Setting up block1-conv5
+I0503 14:53:15.319265 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319272 354735552 net.cpp:139] Memory required for data: 13517200
+I0503 14:53:15.319279 354735552 layer_factory.hpp:77] Creating layer block1-bn5
+I0503 14:53:15.319286 354735552 net.cpp:86] Creating Layer block1-bn5
+I0503 14:53:15.319291 354735552 net.cpp:408] block1-bn5 <- block1-conv5
+I0503 14:53:15.319298 354735552 net.cpp:382] block1-bn5 -> block1-bn5
+I0503 14:53:15.319348 354735552 net.cpp:124] Setting up block1-bn5
+I0503 14:53:15.319355 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319361 354735552 net.cpp:139] Memory required for data: 13926800
+I0503 14:53:15.319368 354735552 layer_factory.hpp:77] Creating layer block1-relu5
+I0503 14:53:15.319375 354735552 net.cpp:86] Creating Layer block1-relu5
+I0503 14:53:15.319380 354735552 net.cpp:408] block1-relu5 <- block1-bn5
+I0503 14:53:15.319387 354735552 net.cpp:382] block1-relu5 -> block1-relu5
+I0503 14:53:15.319550 354735552 net.cpp:124] Setting up block1-relu5
+I0503 14:53:15.319564 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319577 354735552 net.cpp:139] Memory required for data: 14336400
+I0503 14:53:15.319587 354735552 layer_factory.hpp:77] Creating layer block1-conv6
+I0503 14:53:15.319604 354735552 net.cpp:86] Creating Layer block1-conv6
+I0503 14:53:15.319614 354735552 net.cpp:408] block1-conv6 <- block1-relu5
+I0503 14:53:15.319624 354735552 net.cpp:382] block1-conv6 -> block1-conv6
+I0503 14:53:15.319680 354735552 net.cpp:124] Setting up block1-conv6
+I0503 14:53:15.319691 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319715 354735552 net.cpp:139] Memory required for data: 14746000
+I0503 14:53:15.319725 354735552 layer_factory.hpp:77] Creating layer block1-bn6
+I0503 14:53:15.319737 354735552 net.cpp:86] Creating Layer block1-bn6
+I0503 14:53:15.319744 354735552 net.cpp:408] block1-bn6 <- block1-conv6
+I0503 14:53:15.319754 354735552 net.cpp:382] block1-bn6 -> block1-bn6
+I0503 14:53:15.319770 354735552 net.cpp:124] Setting up block1-bn6
+I0503 14:53:15.319775 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319782 354735552 net.cpp:139] Memory required for data: 15155600
+I0503 14:53:15.319792 354735552 layer_factory.hpp:77] Creating layer block1-relu6
+I0503 14:53:15.319800 354735552 net.cpp:86] Creating Layer block1-relu6
+I0503 14:53:15.319806 354735552 net.cpp:408] block1-relu6 <- block1-bn6
+I0503 14:53:15.319813 354735552 net.cpp:382] block1-relu6 -> block1-relu6
+I0503 14:53:15.319821 354735552 net.cpp:124] Setting up block1-relu6
+I0503 14:53:15.319825 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319831 354735552 net.cpp:139] Memory required for data: 15565200
+I0503 14:53:15.319836 354735552 layer_factory.hpp:77] Creating layer block1-res3
+I0503 14:53:15.319844 354735552 net.cpp:86] Creating Layer block1-res3
+I0503 14:53:15.319849 354735552 net.cpp:408] block1-res3 <- block1-res2_block1-res2_0_split_1
+I0503 14:53:15.319854 354735552 net.cpp:408] block1-res3 <- block1-relu6
+I0503 14:53:15.319861 354735552 net.cpp:382] block1-res3 -> block1-res3
+I0503 14:53:15.319870 354735552 net.cpp:124] Setting up block1-res3
+I0503 14:53:15.319875 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.319881 354735552 net.cpp:139] Memory required for data: 15974800
+I0503 14:53:15.319886 354735552 layer_factory.hpp:77] Creating layer block1-res3_block1-res3_0_split
+I0503 14:53:15.319948 354735552 net.cpp:86] Creating Layer block1-res3_block1-res3_0_split
+I0503 14:53:15.319959 354735552 net.cpp:408] block1-res3_block1-res3_0_split <- block1-res3
+I0503 14:53:15.319972 354735552 net.cpp:382] block1-res3_block1-res3_0_split -> block1-res3_block1-res3_0_split_0
+I0503 14:53:15.319983 354735552 net.cpp:382] block1-res3_block1-res3_0_split -> block1-res3_block1-res3_0_split_1
+I0503 14:53:15.319993 354735552 net.cpp:124] Setting up block1-res3_block1-res3_0_split
+I0503 14:53:15.319998 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.320005 354735552 net.cpp:131] Top shape: 100 16 8 8 (102400)
+I0503 14:53:15.320011 354735552 net.cpp:139] Memory required for data: 16794000
+I0503 14:53:15.320016 354735552 layer_factory.hpp:77] Creating layer block2-conv1
+I0503 14:53:15.320029 354735552 net.cpp:86] Creating Layer block2-conv1
+I0503 14:53:15.320034 354735552 net.cpp:408] block2-conv1 <- block1-res3_block1-res3_0_split_0
+I0503 14:53:15.320044 354735552 net.cpp:382] block2-conv1 -> block2-conv1
+I0503 14:53:15.320134 354735552 net.cpp:124] Setting up block2-conv1
+I0503 14:53:15.320142 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.320456 354735552 net.cpp:139] Memory required for data: 16998800
+I0503 14:53:15.320472 354735552 layer_factory.hpp:77] Creating layer block2-bn1
+I0503 14:53:15.320480 354735552 net.cpp:86] Creating Layer block2-bn1
+I0503 14:53:15.320485 354735552 net.cpp:408] block2-bn1 <- block2-conv1
+I0503 14:53:15.320493 354735552 net.cpp:382] block2-bn1 -> block2-bn1
+I0503 14:53:15.320514 354735552 net.cpp:124] Setting up block2-bn1
+I0503 14:53:15.320520 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.320528 354735552 net.cpp:139] Memory required for data: 17203600
+I0503 14:53:15.320534 354735552 layer_factory.hpp:77] Creating layer block2-relu1
+I0503 14:53:15.320545 354735552 net.cpp:86] Creating Layer block2-relu1
+I0503 14:53:15.320551 354735552 net.cpp:408] block2-relu1 <- block2-bn1
+I0503 14:53:15.320557 354735552 net.cpp:382] block2-relu1 -> block2-relu1
+I0503 14:53:15.320565 354735552 net.cpp:124] Setting up block2-relu1
+I0503 14:53:15.320570 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.320576 354735552 net.cpp:139] Memory required for data: 17408400
+I0503 14:53:15.320581 354735552 layer_factory.hpp:77] Creating layer block2-conv2
+I0503 14:53:15.320590 354735552 net.cpp:86] Creating Layer block2-conv2
+I0503 14:53:15.320595 354735552 net.cpp:408] block2-conv2 <- block2-relu1
+I0503 14:53:15.320602 354735552 net.cpp:382] block2-conv2 -> block2-conv2
+I0503 14:53:15.320719 354735552 net.cpp:124] Setting up block2-conv2
+I0503 14:53:15.320724 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.320731 354735552 net.cpp:139] Memory required for data: 17613200
+I0503 14:53:15.320737 354735552 layer_factory.hpp:77] Creating layer block2-bn2
+I0503 14:53:15.320747 354735552 net.cpp:86] Creating Layer block2-bn2
+I0503 14:53:15.320752 354735552 net.cpp:408] block2-bn2 <- block2-conv2
+I0503 14:53:15.320760 354735552 net.cpp:382] block2-bn2 -> block2-bn2
+I0503 14:53:15.320776 354735552 net.cpp:124] Setting up block2-bn2
+I0503 14:53:15.320781 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.320791 354735552 net.cpp:139] Memory required for data: 17818000
+I0503 14:53:15.320802 354735552 layer_factory.hpp:77] Creating layer block2-relu2
+I0503 14:53:15.320812 354735552 net.cpp:86] Creating Layer block2-relu2
+I0503 14:53:15.320821 354735552 net.cpp:408] block2-relu2 <- block2-bn2
+I0503 14:53:15.320833 354735552 net.cpp:382] block2-relu2 -> block2-relu2
+I0503 14:53:15.320847 354735552 net.cpp:124] Setting up block2-relu2
+I0503 14:53:15.320853 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.320863 354735552 net.cpp:139] Memory required for data: 18022800
+I0503 14:53:15.320873 354735552 layer_factory.hpp:77] Creating layer block2-project
+I0503 14:53:15.320886 354735552 net.cpp:86] Creating Layer block2-project
+I0503 14:53:15.320892 354735552 net.cpp:408] block2-project <- block1-res3_block1-res3_0_split_1
+I0503 14:53:15.320900 354735552 net.cpp:382] block2-project -> block2-project
+I0503 14:53:15.321005 354735552 net.cpp:124] Setting up block2-project
+I0503 14:53:15.321012 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321022 354735552 net.cpp:139] Memory required for data: 18227600
+I0503 14:53:15.321033 354735552 layer_factory.hpp:77] Creating layer block2-res1
+I0503 14:53:15.321040 354735552 net.cpp:86] Creating Layer block2-res1
+I0503 14:53:15.321048 354735552 net.cpp:408] block2-res1 <- block2-project
+I0503 14:53:15.321053 354735552 net.cpp:408] block2-res1 <- block2-relu2
+I0503 14:53:15.321060 354735552 net.cpp:382] block2-res1 -> block2-res1
+I0503 14:53:15.321069 354735552 net.cpp:124] Setting up block2-res1
+I0503 14:53:15.321074 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321080 354735552 net.cpp:139] Memory required for data: 18432400
+I0503 14:53:15.321085 354735552 layer_factory.hpp:77] Creating layer block2-res1_block2-res1_0_split
+I0503 14:53:15.321135 354735552 net.cpp:86] Creating Layer block2-res1_block2-res1_0_split
+I0503 14:53:15.321146 354735552 net.cpp:408] block2-res1_block2-res1_0_split <- block2-res1
+I0503 14:53:15.321161 354735552 net.cpp:382] block2-res1_block2-res1_0_split -> block2-res1_block2-res1_0_split_0
+I0503 14:53:15.321177 354735552 net.cpp:382] block2-res1_block2-res1_0_split -> block2-res1_block2-res1_0_split_1
+I0503 14:53:15.321197 354735552 net.cpp:124] Setting up block2-res1_block2-res1_0_split
+I0503 14:53:15.321207 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321218 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321229 354735552 net.cpp:139] Memory required for data: 18842000
+I0503 14:53:15.321238 354735552 layer_factory.hpp:77] Creating layer block2-conv3
+I0503 14:53:15.321254 354735552 net.cpp:86] Creating Layer block2-conv3
+I0503 14:53:15.321264 354735552 net.cpp:408] block2-conv3 <- block2-res1_block2-res1_0_split_0
+I0503 14:53:15.321280 354735552 net.cpp:382] block2-conv3 -> block2-conv3
+I0503 14:53:15.321425 354735552 net.cpp:124] Setting up block2-conv3
+I0503 14:53:15.321435 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321442 354735552 net.cpp:139] Memory required for data: 19046800
+I0503 14:53:15.321451 354735552 layer_factory.hpp:77] Creating layer block2-bn3
+I0503 14:53:15.321461 354735552 net.cpp:86] Creating Layer block2-bn3
+I0503 14:53:15.321467 354735552 net.cpp:408] block2-bn3 <- block2-conv3
+I0503 14:53:15.321475 354735552 net.cpp:382] block2-bn3 -> block2-bn3
+I0503 14:53:15.321496 354735552 net.cpp:124] Setting up block2-bn3
+I0503 14:53:15.321502 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321509 354735552 net.cpp:139] Memory required for data: 19251600
+I0503 14:53:15.321517 354735552 layer_factory.hpp:77] Creating layer block2-relu3
+I0503 14:53:15.321525 354735552 net.cpp:86] Creating Layer block2-relu3
+I0503 14:53:15.321532 354735552 net.cpp:408] block2-relu3 <- block2-bn3
+I0503 14:53:15.321538 354735552 net.cpp:382] block2-relu3 -> block2-relu3
+I0503 14:53:15.321547 354735552 net.cpp:124] Setting up block2-relu3
+I0503 14:53:15.321553 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321560 354735552 net.cpp:139] Memory required for data: 19456400
+I0503 14:53:15.321569 354735552 layer_factory.hpp:77] Creating layer block2-conv4
+I0503 14:53:15.321583 354735552 net.cpp:86] Creating Layer block2-conv4
+I0503 14:53:15.321589 354735552 net.cpp:408] block2-conv4 <- block2-relu3
+I0503 14:53:15.321599 354735552 net.cpp:382] block2-conv4 -> block2-conv4
+I0503 14:53:15.321729 354735552 net.cpp:124] Setting up block2-conv4
+I0503 14:53:15.321740 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321750 354735552 net.cpp:139] Memory required for data: 19661200
+I0503 14:53:15.321758 354735552 layer_factory.hpp:77] Creating layer block2-bn4
+I0503 14:53:15.321774 354735552 net.cpp:86] Creating Layer block2-bn4
+I0503 14:53:15.321780 354735552 net.cpp:408] block2-bn4 <- block2-conv4
+I0503 14:53:15.321792 354735552 net.cpp:382] block2-bn4 -> block2-bn4
+I0503 14:53:15.321816 354735552 net.cpp:124] Setting up block2-bn4
+I0503 14:53:15.321822 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321828 354735552 net.cpp:139] Memory required for data: 19866000
+I0503 14:53:15.321838 354735552 layer_factory.hpp:77] Creating layer block2-relu4
+I0503 14:53:15.321846 354735552 net.cpp:86] Creating Layer block2-relu4
+I0503 14:53:15.321852 354735552 net.cpp:408] block2-relu4 <- block2-bn4
+I0503 14:53:15.321861 354735552 net.cpp:382] block2-relu4 -> block2-relu4
+I0503 14:53:15.321868 354735552 net.cpp:124] Setting up block2-relu4
+I0503 14:53:15.321874 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.321887 354735552 net.cpp:139] Memory required for data: 20070800
+I0503 14:53:15.321895 354735552 layer_factory.hpp:77] Creating layer block2-res2
+I0503 14:53:15.321907 354735552 net.cpp:86] Creating Layer block2-res2
+I0503 14:53:15.321913 354735552 net.cpp:408] block2-res2 <- block2-res1_block2-res1_0_split_1
+I0503 14:53:15.321981 354735552 net.cpp:408] block2-res2 <- block2-relu4
+I0503 14:53:15.321991 354735552 net.cpp:382] block2-res2 -> block2-res2
+I0503 14:53:15.322006 354735552 net.cpp:124] Setting up block2-res2
+I0503 14:53:15.322013 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322021 354735552 net.cpp:139] Memory required for data: 20275600
+I0503 14:53:15.322026 354735552 layer_factory.hpp:77] Creating layer block2-res2_block2-res2_0_split
+I0503 14:53:15.322036 354735552 net.cpp:86] Creating Layer block2-res2_block2-res2_0_split
+I0503 14:53:15.322041 354735552 net.cpp:408] block2-res2_block2-res2_0_split <- block2-res2
+I0503 14:53:15.322048 354735552 net.cpp:382] block2-res2_block2-res2_0_split -> block2-res2_block2-res2_0_split_0
+I0503 14:53:15.322058 354735552 net.cpp:382] block2-res2_block2-res2_0_split -> block2-res2_block2-res2_0_split_1
+I0503 14:53:15.322068 354735552 net.cpp:124] Setting up block2-res2_block2-res2_0_split
+I0503 14:53:15.322134 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322150 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322158 354735552 net.cpp:139] Memory required for data: 20685200
+I0503 14:53:15.322165 354735552 layer_factory.hpp:77] Creating layer block2-conv5
+I0503 14:53:15.322180 354735552 net.cpp:86] Creating Layer block2-conv5
+I0503 14:53:15.322186 354735552 net.cpp:408] block2-conv5 <- block2-res2_block2-res2_0_split_0
+I0503 14:53:15.322202 354735552 net.cpp:382] block2-conv5 -> block2-conv5
+I0503 14:53:15.322348 354735552 net.cpp:124] Setting up block2-conv5
+I0503 14:53:15.322361 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322369 354735552 net.cpp:139] Memory required for data: 20890000
+I0503 14:53:15.322377 354735552 layer_factory.hpp:77] Creating layer block2-bn5
+I0503 14:53:15.322386 354735552 net.cpp:86] Creating Layer block2-bn5
+I0503 14:53:15.322392 354735552 net.cpp:408] block2-bn5 <- block2-conv5
+I0503 14:53:15.322399 354735552 net.cpp:382] block2-bn5 -> block2-bn5
+I0503 14:53:15.322423 354735552 net.cpp:124] Setting up block2-bn5
+I0503 14:53:15.322429 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322435 354735552 net.cpp:139] Memory required for data: 21094800
+I0503 14:53:15.322443 354735552 layer_factory.hpp:77] Creating layer block2-relu5
+I0503 14:53:15.322448 354735552 net.cpp:86] Creating Layer block2-relu5
+I0503 14:53:15.322454 354735552 net.cpp:408] block2-relu5 <- block2-bn5
+I0503 14:53:15.322463 354735552 net.cpp:382] block2-relu5 -> block2-relu5
+I0503 14:53:15.322523 354735552 net.cpp:124] Setting up block2-relu5
+I0503 14:53:15.322532 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322540 354735552 net.cpp:139] Memory required for data: 21299600
+I0503 14:53:15.322546 354735552 layer_factory.hpp:77] Creating layer block2-conv6
+I0503 14:53:15.322561 354735552 net.cpp:86] Creating Layer block2-conv6
+I0503 14:53:15.322567 354735552 net.cpp:408] block2-conv6 <- block2-relu5
+I0503 14:53:15.322577 354735552 net.cpp:382] block2-conv6 -> block2-conv6
+I0503 14:53:15.322702 354735552 net.cpp:124] Setting up block2-conv6
+I0503 14:53:15.322713 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322721 354735552 net.cpp:139] Memory required for data: 21504400
+I0503 14:53:15.322748 354735552 layer_factory.hpp:77] Creating layer block2-bn6
+I0503 14:53:15.322762 354735552 net.cpp:86] Creating Layer block2-bn6
+I0503 14:53:15.322767 354735552 net.cpp:408] block2-bn6 <- block2-conv6
+I0503 14:53:15.322777 354735552 net.cpp:382] block2-bn6 -> block2-bn6
+I0503 14:53:15.322798 354735552 net.cpp:124] Setting up block2-bn6
+I0503 14:53:15.322803 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322810 354735552 net.cpp:139] Memory required for data: 21709200
+I0503 14:53:15.322818 354735552 layer_factory.hpp:77] Creating layer block2-relu6
+I0503 14:53:15.322825 354735552 net.cpp:86] Creating Layer block2-relu6
+I0503 14:53:15.322830 354735552 net.cpp:408] block2-relu6 <- block2-bn6
+I0503 14:53:15.322896 354735552 net.cpp:382] block2-relu6 -> block2-relu6
+I0503 14:53:15.322906 354735552 net.cpp:124] Setting up block2-relu6
+I0503 14:53:15.322911 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322918 354735552 net.cpp:139] Memory required for data: 21914000
+I0503 14:53:15.322923 354735552 layer_factory.hpp:77] Creating layer block2-res3
+I0503 14:53:15.322930 354735552 net.cpp:86] Creating Layer block2-res3
+I0503 14:53:15.322937 354735552 net.cpp:408] block2-res3 <- block2-res2_block2-res2_0_split_1
+I0503 14:53:15.322942 354735552 net.cpp:408] block2-res3 <- block2-relu6
+I0503 14:53:15.322950 354735552 net.cpp:382] block2-res3 -> block2-res3
+I0503 14:53:15.322959 354735552 net.cpp:124] Setting up block2-res3
+I0503 14:53:15.322964 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.322970 354735552 net.cpp:139] Memory required for data: 22118800
+I0503 14:53:15.322975 354735552 layer_factory.hpp:77] Creating layer block2-res3_block2-res3_0_split
+I0503 14:53:15.322983 354735552 net.cpp:86] Creating Layer block2-res3_block2-res3_0_split
+I0503 14:53:15.322988 354735552 net.cpp:408] block2-res3_block2-res3_0_split <- block2-res3
+I0503 14:53:15.323000 354735552 net.cpp:382] block2-res3_block2-res3_0_split -> block2-res3_block2-res3_0_split_0
+I0503 14:53:15.323010 354735552 net.cpp:382] block2-res3_block2-res3_0_split -> block2-res3_block2-res3_0_split_1
+I0503 14:53:15.323019 354735552 net.cpp:124] Setting up block2-res3_block2-res3_0_split
+I0503 14:53:15.323024 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.323030 354735552 net.cpp:131] Top shape: 100 32 4 4 (51200)
+I0503 14:53:15.323036 354735552 net.cpp:139] Memory required for data: 22528400
+I0503 14:53:15.323042 354735552 layer_factory.hpp:77] Creating layer block3-conv1
+I0503 14:53:15.323053 354735552 net.cpp:86] Creating Layer block3-conv1
+I0503 14:53:15.323058 354735552 net.cpp:408] block3-conv1 <- block2-res3_block2-res3_0_split_0
+I0503 14:53:15.323066 354735552 net.cpp:382] block3-conv1 -> block3-conv1
+I0503 14:53:15.323284 354735552 net.cpp:124] Setting up block3-conv1
+I0503 14:53:15.323298 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.323305 354735552 net.cpp:139] Memory required for data: 22630800
+I0503 14:53:15.323313 354735552 layer_factory.hpp:77] Creating layer block3-bn1
+I0503 14:53:15.323321 354735552 net.cpp:86] Creating Layer block3-bn1
+I0503 14:53:15.323326 354735552 net.cpp:408] block3-bn1 <- block3-conv1
+I0503 14:53:15.323333 354735552 net.cpp:382] block3-bn1 -> block3-bn1
+I0503 14:53:15.323362 354735552 net.cpp:124] Setting up block3-bn1
+I0503 14:53:15.323369 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.323375 354735552 net.cpp:139] Memory required for data: 22733200
+I0503 14:53:15.323382 354735552 layer_factory.hpp:77] Creating layer block3-relu1
+I0503 14:53:15.323390 354735552 net.cpp:86] Creating Layer block3-relu1
+I0503 14:53:15.323395 354735552 net.cpp:408] block3-relu1 <- block3-bn1
+I0503 14:53:15.323401 354735552 net.cpp:382] block3-relu1 -> block3-relu1
+I0503 14:53:15.323413 354735552 net.cpp:124] Setting up block3-relu1
+I0503 14:53:15.323418 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.323424 354735552 net.cpp:139] Memory required for data: 22835600
+I0503 14:53:15.323429 354735552 layer_factory.hpp:77] Creating layer block3-conv2
+I0503 14:53:15.323446 354735552 net.cpp:86] Creating Layer block3-conv2
+I0503 14:53:15.323454 354735552 net.cpp:408] block3-conv2 <- block3-relu1
+I0503 14:53:15.323469 354735552 net.cpp:382] block3-conv2 -> block3-conv2
+I0503 14:53:15.323916 354735552 net.cpp:124] Setting up block3-conv2
+I0503 14:53:15.323938 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.323949 354735552 net.cpp:139] Memory required for data: 22938000
+I0503 14:53:15.323958 354735552 layer_factory.hpp:77] Creating layer block3-bn2
+I0503 14:53:15.323999 354735552 net.cpp:86] Creating Layer block3-bn2
+I0503 14:53:15.324009 354735552 net.cpp:408] block3-bn2 <- block3-conv2
+I0503 14:53:15.324018 354735552 net.cpp:382] block3-bn2 -> block3-bn2
+I0503 14:53:15.324131 354735552 net.cpp:124] Setting up block3-bn2
+I0503 14:53:15.324143 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.324151 354735552 net.cpp:139] Memory required for data: 23040400
+I0503 14:53:15.324160 354735552 layer_factory.hpp:77] Creating layer block3-relu2
+I0503 14:53:15.324175 354735552 net.cpp:86] Creating Layer block3-relu2
+I0503 14:53:15.324185 354735552 net.cpp:408] block3-relu2 <- block3-bn2
+I0503 14:53:15.324195 354735552 net.cpp:382] block3-relu2 -> block3-relu2
+I0503 14:53:15.324208 354735552 net.cpp:124] Setting up block3-relu2
+I0503 14:53:15.324220 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.324228 354735552 net.cpp:139] Memory required for data: 23142800
+I0503 14:53:15.324232 354735552 layer_factory.hpp:77] Creating layer block3-project
+I0503 14:53:15.324252 354735552 net.cpp:86] Creating Layer block3-project
+I0503 14:53:15.324260 354735552 net.cpp:408] block3-project <- block2-res3_block2-res3_0_split_1
+I0503 14:53:15.324275 354735552 net.cpp:382] block3-project -> block3-project
+I0503 14:53:15.324807 354735552 net.cpp:124] Setting up block3-project
+I0503 14:53:15.324838 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.324851 354735552 net.cpp:139] Memory required for data: 23245200
+I0503 14:53:15.324863 354735552 layer_factory.hpp:77] Creating layer block3-res1
+I0503 14:53:15.324875 354735552 net.cpp:86] Creating Layer block3-res1
+I0503 14:53:15.324883 354735552 net.cpp:408] block3-res1 <- block3-project
+I0503 14:53:15.324890 354735552 net.cpp:408] block3-res1 <- block3-relu2
+I0503 14:53:15.324901 354735552 net.cpp:382] block3-res1 -> block3-res1
+I0503 14:53:15.324914 354735552 net.cpp:124] Setting up block3-res1
+I0503 14:53:15.324920 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.324929 354735552 net.cpp:139] Memory required for data: 23347600
+I0503 14:53:15.324936 354735552 layer_factory.hpp:77] Creating layer block3-res1_block3-res1_0_split
+I0503 14:53:15.324949 354735552 net.cpp:86] Creating Layer block3-res1_block3-res1_0_split
+I0503 14:53:15.324957 354735552 net.cpp:408] block3-res1_block3-res1_0_split <- block3-res1
+I0503 14:53:15.324966 354735552 net.cpp:382] block3-res1_block3-res1_0_split -> block3-res1_block3-res1_0_split_0
+I0503 14:53:15.324978 354735552 net.cpp:382] block3-res1_block3-res1_0_split -> block3-res1_block3-res1_0_split_1
+I0503 14:53:15.324992 354735552 net.cpp:124] Setting up block3-res1_block3-res1_0_split
+I0503 14:53:15.324998 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.325006 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.325012 354735552 net.cpp:139] Memory required for data: 23552400
+I0503 14:53:15.325018 354735552 layer_factory.hpp:77] Creating layer block3-conv3
+I0503 14:53:15.325064 354735552 net.cpp:86] Creating Layer block3-conv3
+I0503 14:53:15.325078 354735552 net.cpp:408] block3-conv3 <- block3-res1_block3-res1_0_split_0
+I0503 14:53:15.325091 354735552 net.cpp:382] block3-conv3 -> block3-conv3
+I0503 14:53:15.325693 354735552 net.cpp:124] Setting up block3-conv3
+I0503 14:53:15.325714 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.325727 354735552 net.cpp:139] Memory required for data: 23654800
+I0503 14:53:15.325752 354735552 layer_factory.hpp:77] Creating layer block3-bn3
+I0503 14:53:15.325770 354735552 net.cpp:86] Creating Layer block3-bn3
+I0503 14:53:15.325778 354735552 net.cpp:408] block3-bn3 <- block3-conv3
+I0503 14:53:15.325784 354735552 net.cpp:382] block3-bn3 -> block3-bn3
+I0503 14:53:15.325809 354735552 net.cpp:124] Setting up block3-bn3
+I0503 14:53:15.325816 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.325824 354735552 net.cpp:139] Memory required for data: 23757200
+I0503 14:53:15.325832 354735552 layer_factory.hpp:77] Creating layer block3-relu3
+I0503 14:53:15.325839 354735552 net.cpp:86] Creating Layer block3-relu3
+I0503 14:53:15.325845 354735552 net.cpp:408] block3-relu3 <- block3-bn3
+I0503 14:53:15.325855 354735552 net.cpp:382] block3-relu3 -> block3-relu3
+I0503 14:53:15.325942 354735552 net.cpp:124] Setting up block3-relu3
+I0503 14:53:15.325950 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.325958 354735552 net.cpp:139] Memory required for data: 23859600
+I0503 14:53:15.325963 354735552 layer_factory.hpp:77] Creating layer block3-conv4
+I0503 14:53:15.325976 354735552 net.cpp:86] Creating Layer block3-conv4
+I0503 14:53:15.325983 354735552 net.cpp:408] block3-conv4 <- block3-relu3
+I0503 14:53:15.325995 354735552 net.cpp:382] block3-conv4 -> block3-conv4
+I0503 14:53:15.326398 354735552 net.cpp:124] Setting up block3-conv4
+I0503 14:53:15.326412 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.326421 354735552 net.cpp:139] Memory required for data: 23962000
+I0503 14:53:15.326429 354735552 layer_factory.hpp:77] Creating layer block3-bn4
+I0503 14:53:15.326439 354735552 net.cpp:86] Creating Layer block3-bn4
+I0503 14:53:15.326444 354735552 net.cpp:408] block3-bn4 <- block3-conv4
+I0503 14:53:15.326457 354735552 net.cpp:382] block3-bn4 -> block3-bn4
+I0503 14:53:15.326474 354735552 net.cpp:124] Setting up block3-bn4
+I0503 14:53:15.326480 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.326488 354735552 net.cpp:139] Memory required for data: 24064400
+I0503 14:53:15.326495 354735552 layer_factory.hpp:77] Creating layer block3-relu4
+I0503 14:53:15.326508 354735552 net.cpp:86] Creating Layer block3-relu4
+I0503 14:53:15.326514 354735552 net.cpp:408] block3-relu4 <- block3-bn4
+I0503 14:53:15.326521 354735552 net.cpp:382] block3-relu4 -> block3-relu4
+I0503 14:53:15.326529 354735552 net.cpp:124] Setting up block3-relu4
+I0503 14:53:15.326534 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.326540 354735552 net.cpp:139] Memory required for data: 24166800
+I0503 14:53:15.326545 354735552 layer_factory.hpp:77] Creating layer block3-res2
+I0503 14:53:15.326555 354735552 net.cpp:86] Creating Layer block3-res2
+I0503 14:53:15.326560 354735552 net.cpp:408] block3-res2 <- block3-res1_block3-res1_0_split_1
+I0503 14:53:15.326565 354735552 net.cpp:408] block3-res2 <- block3-relu4
+I0503 14:53:15.326573 354735552 net.cpp:382] block3-res2 -> block3-res2
+I0503 14:53:15.326582 354735552 net.cpp:124] Setting up block3-res2
+I0503 14:53:15.326588 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.326594 354735552 net.cpp:139] Memory required for data: 24269200
+I0503 14:53:15.326601 354735552 layer_factory.hpp:77] Creating layer block3-res2_block3-res2_0_split
+I0503 14:53:15.326608 354735552 net.cpp:86] Creating Layer block3-res2_block3-res2_0_split
+I0503 14:53:15.326613 354735552 net.cpp:408] block3-res2_block3-res2_0_split <- block3-res2
+I0503 14:53:15.326624 354735552 net.cpp:382] block3-res2_block3-res2_0_split -> block3-res2_block3-res2_0_split_0
+I0503 14:53:15.326634 354735552 net.cpp:382] block3-res2_block3-res2_0_split -> block3-res2_block3-res2_0_split_1
+I0503 14:53:15.326645 354735552 net.cpp:124] Setting up block3-res2_block3-res2_0_split
+I0503 14:53:15.326649 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.326655 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.326661 354735552 net.cpp:139] Memory required for data: 24474000
+I0503 14:53:15.326666 354735552 layer_factory.hpp:77] Creating layer block3-conv5
+I0503 14:53:15.326676 354735552 net.cpp:86] Creating Layer block3-conv5
+I0503 14:53:15.326683 354735552 net.cpp:408] block3-conv5 <- block3-res2_block3-res2_0_split_0
+I0503 14:53:15.326691 354735552 net.cpp:382] block3-conv5 -> block3-conv5
+I0503 14:53:15.327101 354735552 net.cpp:124] Setting up block3-conv5
+I0503 14:53:15.327114 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.327122 354735552 net.cpp:139] Memory required for data: 24576400
+I0503 14:53:15.327131 354735552 layer_factory.hpp:77] Creating layer block3-bn5
+I0503 14:53:15.327138 354735552 net.cpp:86] Creating Layer block3-bn5
+I0503 14:53:15.327145 354735552 net.cpp:408] block3-bn5 <- block3-conv5
+I0503 14:53:15.327152 354735552 net.cpp:382] block3-bn5 -> block3-bn5
+I0503 14:53:15.327241 354735552 net.cpp:124] Setting up block3-bn5
+I0503 14:53:15.327252 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.327260 354735552 net.cpp:139] Memory required for data: 24678800
+I0503 14:53:15.327270 354735552 layer_factory.hpp:77] Creating layer block3-relu5
+I0503 14:53:15.327277 354735552 net.cpp:86] Creating Layer block3-relu5
+I0503 14:53:15.327282 354735552 net.cpp:408] block3-relu5 <- block3-bn5
+I0503 14:53:15.327294 354735552 net.cpp:382] block3-relu5 -> block3-relu5
+I0503 14:53:15.327304 354735552 net.cpp:124] Setting up block3-relu5
+I0503 14:53:15.327311 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.327316 354735552 net.cpp:139] Memory required for data: 24781200
+I0503 14:53:15.327322 354735552 layer_factory.hpp:77] Creating layer block3-conv6
+I0503 14:53:15.327332 354735552 net.cpp:86] Creating Layer block3-conv6
+I0503 14:53:15.327337 354735552 net.cpp:408] block3-conv6 <- block3-relu5
+I0503 14:53:15.327345 354735552 net.cpp:382] block3-conv6 -> block3-conv6
+I0503 14:53:15.327744 354735552 net.cpp:124] Setting up block3-conv6
+I0503 14:53:15.327756 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.327764 354735552 net.cpp:139] Memory required for data: 24883600
+I0503 14:53:15.327772 354735552 layer_factory.hpp:77] Creating layer block3-bn6
+I0503 14:53:15.327781 354735552 net.cpp:86] Creating Layer block3-bn6
+I0503 14:53:15.327787 354735552 net.cpp:408] block3-bn6 <- block3-conv6
+I0503 14:53:15.327795 354735552 net.cpp:382] block3-bn6 -> block3-bn6
+I0503 14:53:15.327816 354735552 net.cpp:124] Setting up block3-bn6
+I0503 14:53:15.327823 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.327831 354735552 net.cpp:139] Memory required for data: 24986000
+I0503 14:53:15.327838 354735552 layer_factory.hpp:77] Creating layer block3-relu6
+I0503 14:53:15.327847 354735552 net.cpp:86] Creating Layer block3-relu6
+I0503 14:53:15.327852 354735552 net.cpp:408] block3-relu6 <- block3-bn6
+I0503 14:53:15.327859 354735552 net.cpp:382] block3-relu6 -> block3-relu6
+I0503 14:53:15.327867 354735552 net.cpp:124] Setting up block3-relu6
+I0503 14:53:15.327873 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.327879 354735552 net.cpp:139] Memory required for data: 25088400
+I0503 14:53:15.327884 354735552 layer_factory.hpp:77] Creating layer block3-res3
+I0503 14:53:15.327893 354735552 net.cpp:86] Creating Layer block3-res3
+I0503 14:53:15.327898 354735552 net.cpp:408] block3-res3 <- block3-res2_block3-res2_0_split_1
+I0503 14:53:15.327904 354735552 net.cpp:408] block3-res3 <- block3-relu6
+I0503 14:53:15.327916 354735552 net.cpp:382] block3-res3 -> block3-res3
+I0503 14:53:15.327926 354735552 net.cpp:124] Setting up block3-res3
+I0503 14:53:15.327931 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.327939 354735552 net.cpp:139] Memory required for data: 25190800
+I0503 14:53:15.327944 354735552 layer_factory.hpp:77] Creating layer block3-res3_block3-res3_0_split
+I0503 14:53:15.327950 354735552 net.cpp:86] Creating Layer block3-res3_block3-res3_0_split
+I0503 14:53:15.327955 354735552 net.cpp:408] block3-res3_block3-res3_0_split <- block3-res3
+I0503 14:53:15.327962 354735552 net.cpp:382] block3-res3_block3-res3_0_split -> block3-res3_block3-res3_0_split_0
+I0503 14:53:15.327971 354735552 net.cpp:382] block3-res3_block3-res3_0_split -> block3-res3_block3-res3_0_split_1
+I0503 14:53:15.327981 354735552 net.cpp:124] Setting up block3-res3_block3-res3_0_split
+I0503 14:53:15.328012 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.328030 354735552 net.cpp:131] Top shape: 100 64 2 2 (25600)
+I0503 14:53:15.328038 354735552 net.cpp:139] Memory required for data: 25395600
+I0503 14:53:15.328044 354735552 layer_factory.hpp:77] Creating layer block4-conv1
+I0503 14:53:15.328058 354735552 net.cpp:86] Creating Layer block4-conv1
+I0503 14:53:15.328065 354735552 net.cpp:408] block4-conv1 <- block3-res3_block3-res3_0_split_0
+I0503 14:53:15.328083 354735552 net.cpp:382] block4-conv1 -> block4-conv1
+I0503 14:53:15.328897 354735552 net.cpp:124] Setting up block4-conv1
+I0503 14:53:15.328918 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.328927 354735552 net.cpp:139] Memory required for data: 25446800
+I0503 14:53:15.328936 354735552 layer_factory.hpp:77] Creating layer block4-bn1
+I0503 14:53:15.328945 354735552 net.cpp:86] Creating Layer block4-bn1
+I0503 14:53:15.328953 354735552 net.cpp:408] block4-bn1 <- block4-conv1
+I0503 14:53:15.328968 354735552 net.cpp:382] block4-bn1 -> block4-bn1
+I0503 14:53:15.328990 354735552 net.cpp:124] Setting up block4-bn1
+I0503 14:53:15.328995 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.329002 354735552 net.cpp:139] Memory required for data: 25498000
+I0503 14:53:15.329010 354735552 layer_factory.hpp:77] Creating layer block4-relu1
+I0503 14:53:15.329018 354735552 net.cpp:86] Creating Layer block4-relu1
+I0503 14:53:15.329023 354735552 net.cpp:408] block4-relu1 <- block4-bn1
+I0503 14:53:15.329030 354735552 net.cpp:382] block4-relu1 -> block4-relu1
+I0503 14:53:15.329037 354735552 net.cpp:124] Setting up block4-relu1
+I0503 14:53:15.329042 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.329049 354735552 net.cpp:139] Memory required for data: 25549200
+I0503 14:53:15.329054 354735552 layer_factory.hpp:77] Creating layer block4-conv2
+I0503 14:53:15.329063 354735552 net.cpp:86] Creating Layer block4-conv2
+I0503 14:53:15.329071 354735552 net.cpp:408] block4-conv2 <- block4-relu1
+I0503 14:53:15.329082 354735552 net.cpp:382] block4-conv2 -> block4-conv2
+I0503 14:53:15.330353 354735552 net.cpp:124] Setting up block4-conv2
+I0503 14:53:15.330365 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.330372 354735552 net.cpp:139] Memory required for data: 25600400
+I0503 14:53:15.330379 354735552 layer_factory.hpp:77] Creating layer block4-bn2
+I0503 14:53:15.330391 354735552 net.cpp:86] Creating Layer block4-bn2
+I0503 14:53:15.330397 354735552 net.cpp:408] block4-bn2 <- block4-conv2
+I0503 14:53:15.330406 354735552 net.cpp:382] block4-bn2 -> block4-bn2
+I0503 14:53:15.330421 354735552 net.cpp:124] Setting up block4-bn2
+I0503 14:53:15.330426 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.330432 354735552 net.cpp:139] Memory required for data: 25651600
+I0503 14:53:15.330442 354735552 layer_factory.hpp:77] Creating layer block4-relu2
+I0503 14:53:15.330448 354735552 net.cpp:86] Creating Layer block4-relu2
+I0503 14:53:15.330454 354735552 net.cpp:408] block4-relu2 <- block4-bn2
+I0503 14:53:15.330461 354735552 net.cpp:382] block4-relu2 -> block4-relu2
+I0503 14:53:15.330467 354735552 net.cpp:124] Setting up block4-relu2
+I0503 14:53:15.330472 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.330478 354735552 net.cpp:139] Memory required for data: 25702800
+I0503 14:53:15.330483 354735552 layer_factory.hpp:77] Creating layer block4-project
+I0503 14:53:15.330492 354735552 net.cpp:86] Creating Layer block4-project
+I0503 14:53:15.330497 354735552 net.cpp:408] block4-project <- block3-res3_block3-res3_0_split_1
+I0503 14:53:15.330504 354735552 net.cpp:382] block4-project -> block4-project
+I0503 14:53:15.331651 354735552 net.cpp:124] Setting up block4-project
+I0503 14:53:15.331661 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.331668 354735552 net.cpp:139] Memory required for data: 25754000
+I0503 14:53:15.331674 354735552 layer_factory.hpp:77] Creating layer block4-res1
+I0503 14:53:15.331681 354735552 net.cpp:86] Creating Layer block4-res1
+I0503 14:53:15.331686 354735552 net.cpp:408] block4-res1 <- block4-project
+I0503 14:53:15.331692 354735552 net.cpp:408] block4-res1 <- block4-relu2
+I0503 14:53:15.331701 354735552 net.cpp:382] block4-res1 -> block4-res1
+I0503 14:53:15.331710 354735552 net.cpp:124] Setting up block4-res1
+I0503 14:53:15.331715 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.331722 354735552 net.cpp:139] Memory required for data: 25805200
+I0503 14:53:15.331727 354735552 layer_factory.hpp:77] Creating layer block4-res1_block4-res1_0_split
+I0503 14:53:15.331769 354735552 net.cpp:86] Creating Layer block4-res1_block4-res1_0_split
+I0503 14:53:15.331776 354735552 net.cpp:408] block4-res1_block4-res1_0_split <- block4-res1
+I0503 14:53:15.331784 354735552 net.cpp:382] block4-res1_block4-res1_0_split -> block4-res1_block4-res1_0_split_0
+I0503 14:53:15.331792 354735552 net.cpp:382] block4-res1_block4-res1_0_split -> block4-res1_block4-res1_0_split_1
+I0503 14:53:15.331802 354735552 net.cpp:124] Setting up block4-res1_block4-res1_0_split
+I0503 14:53:15.331807 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.331813 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.331820 354735552 net.cpp:139] Memory required for data: 25907600
+I0503 14:53:15.331825 354735552 layer_factory.hpp:77] Creating layer block4-conv3
+I0503 14:53:15.331833 354735552 net.cpp:86] Creating Layer block4-conv3
+I0503 14:53:15.331840 354735552 net.cpp:408] block4-conv3 <- block4-res1_block4-res1_0_split_0
+I0503 14:53:15.331849 354735552 net.cpp:382] block4-conv3 -> block4-conv3
+I0503 14:53:15.333081 354735552 net.cpp:124] Setting up block4-conv3
+I0503 14:53:15.333092 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.333098 354735552 net.cpp:139] Memory required for data: 25958800
+I0503 14:53:15.333106 354735552 layer_factory.hpp:77] Creating layer block4-bn3
+I0503 14:53:15.333115 354735552 net.cpp:86] Creating Layer block4-bn3
+I0503 14:53:15.333122 354735552 net.cpp:408] block4-bn3 <- block4-conv3
+I0503 14:53:15.333130 354735552 net.cpp:382] block4-bn3 -> block4-bn3
+I0503 14:53:15.333148 354735552 net.cpp:124] Setting up block4-bn3
+I0503 14:53:15.333153 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.333159 354735552 net.cpp:139] Memory required for data: 26010000
+I0503 14:53:15.333168 354735552 layer_factory.hpp:77] Creating layer block4-relu3
+I0503 14:53:15.333173 354735552 net.cpp:86] Creating Layer block4-relu3
+I0503 14:53:15.333178 354735552 net.cpp:408] block4-relu3 <- block4-bn3
+I0503 14:53:15.333184 354735552 net.cpp:382] block4-relu3 -> block4-relu3
+I0503 14:53:15.333192 354735552 net.cpp:124] Setting up block4-relu3
+I0503 14:53:15.333197 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.333202 354735552 net.cpp:139] Memory required for data: 26061200
+I0503 14:53:15.333207 354735552 layer_factory.hpp:77] Creating layer block4-conv4
+I0503 14:53:15.333216 354735552 net.cpp:86] Creating Layer block4-conv4
+I0503 14:53:15.333221 354735552 net.cpp:408] block4-conv4 <- block4-relu3
+I0503 14:53:15.333231 354735552 net.cpp:382] block4-conv4 -> block4-conv4
+I0503 14:53:15.334487 354735552 net.cpp:124] Setting up block4-conv4
+I0503 14:53:15.334496 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.334502 354735552 net.cpp:139] Memory required for data: 26112400
+I0503 14:53:15.334508 354735552 layer_factory.hpp:77] Creating layer block4-bn4
+I0503 14:53:15.334518 354735552 net.cpp:86] Creating Layer block4-bn4
+I0503 14:53:15.334523 354735552 net.cpp:408] block4-bn4 <- block4-conv4
+I0503 14:53:15.334532 354735552 net.cpp:382] block4-bn4 -> block4-bn4
+I0503 14:53:15.334547 354735552 net.cpp:124] Setting up block4-bn4
+I0503 14:53:15.334551 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.334558 354735552 net.cpp:139] Memory required for data: 26163600
+I0503 14:53:15.334564 354735552 layer_factory.hpp:77] Creating layer block4-relu4
+I0503 14:53:15.334573 354735552 net.cpp:86] Creating Layer block4-relu4
+I0503 14:53:15.334578 354735552 net.cpp:408] block4-relu4 <- block4-bn4
+I0503 14:53:15.334583 354735552 net.cpp:382] block4-relu4 -> block4-relu4
+I0503 14:53:15.334591 354735552 net.cpp:124] Setting up block4-relu4
+I0503 14:53:15.334595 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.334601 354735552 net.cpp:139] Memory required for data: 26214800
+I0503 14:53:15.334606 354735552 layer_factory.hpp:77] Creating layer block4-res2
+I0503 14:53:15.334612 354735552 net.cpp:86] Creating Layer block4-res2
+I0503 14:53:15.334619 354735552 net.cpp:408] block4-res2 <- block4-res1_block4-res1_0_split_1
+I0503 14:53:15.334653 354735552 net.cpp:408] block4-res2 <- block4-relu4
+I0503 14:53:15.334662 354735552 net.cpp:382] block4-res2 -> block4-res2
+I0503 14:53:15.334671 354735552 net.cpp:124] Setting up block4-res2
+I0503 14:53:15.334676 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.334682 354735552 net.cpp:139] Memory required for data: 26266000
+I0503 14:53:15.334686 354735552 layer_factory.hpp:77] Creating layer block4-res2_block4-res2_0_split
+I0503 14:53:15.334697 354735552 net.cpp:86] Creating Layer block4-res2_block4-res2_0_split
+I0503 14:53:15.334702 354735552 net.cpp:408] block4-res2_block4-res2_0_split <- block4-res2
+I0503 14:53:15.334708 354735552 net.cpp:382] block4-res2_block4-res2_0_split -> block4-res2_block4-res2_0_split_0
+I0503 14:53:15.334717 354735552 net.cpp:382] block4-res2_block4-res2_0_split -> block4-res2_block4-res2_0_split_1
+I0503 14:53:15.334726 354735552 net.cpp:124] Setting up block4-res2_block4-res2_0_split
+I0503 14:53:15.334730 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.334736 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.334780 354735552 net.cpp:139] Memory required for data: 26368400
+I0503 14:53:15.334794 354735552 layer_factory.hpp:77] Creating layer block4-conv5
+I0503 14:53:15.334807 354735552 net.cpp:86] Creating Layer block4-conv5
+I0503 14:53:15.334813 354735552 net.cpp:408] block4-conv5 <- block4-res2_block4-res2_0_split_0
+I0503 14:53:15.334823 354735552 net.cpp:382] block4-conv5 -> block4-conv5
+I0503 14:53:15.336045 354735552 net.cpp:124] Setting up block4-conv5
+I0503 14:53:15.336055 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.336062 354735552 net.cpp:139] Memory required for data: 26419600
+I0503 14:53:15.336069 354735552 layer_factory.hpp:77] Creating layer block4-bn5
+I0503 14:53:15.336076 354735552 net.cpp:86] Creating Layer block4-bn5
+I0503 14:53:15.336081 354735552 net.cpp:408] block4-bn5 <- block4-conv5
+I0503 14:53:15.336088 354735552 net.cpp:382] block4-bn5 -> block4-bn5
+I0503 14:53:15.336105 354735552 net.cpp:124] Setting up block4-bn5
+I0503 14:53:15.336110 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.336117 354735552 net.cpp:139] Memory required for data: 26470800
+I0503 14:53:15.336123 354735552 layer_factory.hpp:77] Creating layer block4-relu5
+I0503 14:53:15.336130 354735552 net.cpp:86] Creating Layer block4-relu5
+I0503 14:53:15.336135 354735552 net.cpp:408] block4-relu5 <- block4-bn5
+I0503 14:53:15.336141 354735552 net.cpp:382] block4-relu5 -> block4-relu5
+I0503 14:53:15.336149 354735552 net.cpp:124] Setting up block4-relu5
+I0503 14:53:15.336154 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.336160 354735552 net.cpp:139] Memory required for data: 26522000
+I0503 14:53:15.336165 354735552 layer_factory.hpp:77] Creating layer block4-conv6
+I0503 14:53:15.336176 354735552 net.cpp:86] Creating Layer block4-conv6
+I0503 14:53:15.336182 354735552 net.cpp:408] block4-conv6 <- block4-relu5
+I0503 14:53:15.336220 354735552 net.cpp:382] block4-conv6 -> block4-conv6
+I0503 14:53:15.337581 354735552 net.cpp:124] Setting up block4-conv6
+I0503 14:53:15.337594 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.337602 354735552 net.cpp:139] Memory required for data: 26573200
+I0503 14:53:15.337625 354735552 layer_factory.hpp:77] Creating layer block4-bn6
+I0503 14:53:15.337635 354735552 net.cpp:86] Creating Layer block4-bn6
+I0503 14:53:15.337642 354735552 net.cpp:408] block4-bn6 <- block4-conv6
+I0503 14:53:15.337649 354735552 net.cpp:382] block4-bn6 -> block4-bn6
+I0503 14:53:15.337668 354735552 net.cpp:124] Setting up block4-bn6
+I0503 14:53:15.337674 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.337680 354735552 net.cpp:139] Memory required for data: 26624400
+I0503 14:53:15.337688 354735552 layer_factory.hpp:77] Creating layer block4-relu6
+I0503 14:53:15.337697 354735552 net.cpp:86] Creating Layer block4-relu6
+I0503 14:53:15.337702 354735552 net.cpp:408] block4-relu6 <- block4-bn6
+I0503 14:53:15.337740 354735552 net.cpp:382] block4-relu6 -> block4-relu6
+I0503 14:53:15.337751 354735552 net.cpp:124] Setting up block4-relu6
+I0503 14:53:15.337756 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.337762 354735552 net.cpp:139] Memory required for data: 26675600
+I0503 14:53:15.337769 354735552 layer_factory.hpp:77] Creating layer block4-res3
+I0503 14:53:15.337775 354735552 net.cpp:86] Creating Layer block4-res3
+I0503 14:53:15.337781 354735552 net.cpp:408] block4-res3 <- block4-res2_block4-res2_0_split_1
+I0503 14:53:15.337787 354735552 net.cpp:408] block4-res3 <- block4-relu6
+I0503 14:53:15.337795 354735552 net.cpp:382] block4-res3 -> block4-res3
+I0503 14:53:15.337806 354735552 net.cpp:124] Setting up block4-res3
+I0503 14:53:15.337811 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.337817 354735552 net.cpp:139] Memory required for data: 26726800
+I0503 14:53:15.337823 354735552 layer_factory.hpp:77] Creating layer pool
+I0503 14:53:15.344986 354735552 net.cpp:86] Creating Layer pool
+I0503 14:53:15.345002 354735552 net.cpp:408] pool <- block4-res3
+I0503 14:53:15.345011 354735552 net.cpp:382] pool -> pool
+I0503 14:53:15.345023 354735552 net.cpp:124] Setting up pool
+I0503 14:53:15.345028 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.345037 354735552 net.cpp:139] Memory required for data: 26778000
+I0503 14:53:15.345043 354735552 layer_factory.hpp:77] Creating layer dropout1
+I0503 14:53:15.345052 354735552 net.cpp:86] Creating Layer dropout1
+I0503 14:53:15.345057 354735552 net.cpp:408] dropout1 <- pool
+I0503 14:53:15.345064 354735552 net.cpp:382] dropout1 -> dropout1
+I0503 14:53:15.345078 354735552 net.cpp:124] Setting up dropout1
+I0503 14:53:15.345083 354735552 net.cpp:131] Top shape: 100 128 1 1 (12800)
+I0503 14:53:15.345090 354735552 net.cpp:139] Memory required for data: 26829200
+I0503 14:53:15.345095 354735552 layer_factory.hpp:77] Creating layer prob
+I0503 14:53:15.345106 354735552 net.cpp:86] Creating Layer prob
+I0503 14:53:15.345111 354735552 net.cpp:408] prob <- dropout1
+I0503 14:53:15.345119 354735552 net.cpp:382] prob -> prob
+I0503 14:53:15.345170 354735552 net.cpp:124] Setting up prob
+I0503 14:53:15.345175 354735552 net.cpp:131] Top shape: 100 10 (1000)
+I0503 14:53:15.345181 354735552 net.cpp:139] Memory required for data: 26833200
+I0503 14:53:15.345188 354735552 layer_factory.hpp:77] Creating layer loss
+I0503 14:53:15.345196 354735552 net.cpp:86] Creating Layer loss
+I0503 14:53:15.345656 354735552 net.cpp:408] loss <- prob
+I0503 14:53:15.345669 354735552 net.cpp:408] loss <- label
+I0503 14:53:15.345679 354735552 net.cpp:382] loss -> loss
+I0503 14:53:15.345692 354735552 layer_factory.hpp:77] Creating layer loss
+I0503 14:53:15.345716 354735552 net.cpp:124] Setting up loss
+I0503 14:53:15.345722 354735552 net.cpp:131] Top shape: (1)
+I0503 14:53:15.345729 354735552 net.cpp:134]     with loss weight 1
+I0503 14:53:15.345744 354735552 net.cpp:139] Memory required for data: 26833204
+I0503 14:53:15.345751 354735552 net.cpp:200] loss needs backward computation.
+I0503 14:53:15.345757 354735552 net.cpp:200] prob needs backward computation.
+I0503 14:53:15.345762 354735552 net.cpp:200] dropout1 needs backward computation.
+I0503 14:53:15.345767 354735552 net.cpp:200] pool needs backward computation.
+I0503 14:53:15.345772 354735552 net.cpp:200] block4-res3 needs backward computation.
+I0503 14:53:15.345778 354735552 net.cpp:200] block4-relu6 needs backward computation.
+I0503 14:53:15.345783 354735552 net.cpp:200] block4-bn6 needs backward computation.
+I0503 14:53:15.345788 354735552 net.cpp:200] block4-conv6 needs backward computation.
+I0503 14:53:15.345795 354735552 net.cpp:200] block4-relu5 needs backward computation.
+I0503 14:53:15.345800 354735552 net.cpp:200] block4-bn5 needs backward computation.
+I0503 14:53:15.345806 354735552 net.cpp:200] block4-conv5 needs backward computation.
+I0503 14:53:15.345811 354735552 net.cpp:200] block4-res2_block4-res2_0_split needs backward computation.
+I0503 14:53:15.345818 354735552 net.cpp:200] block4-res2 needs backward computation.
+I0503 14:53:15.345873 354735552 net.cpp:200] block4-relu4 needs backward computation.
+I0503 14:53:15.345882 354735552 net.cpp:200] block4-bn4 needs backward computation.
+I0503 14:53:15.345887 354735552 net.cpp:200] block4-conv4 needs backward computation.
+I0503 14:53:15.345893 354735552 net.cpp:200] block4-relu3 needs backward computation.
+I0503 14:53:15.345898 354735552 net.cpp:200] block4-bn3 needs backward computation.
+I0503 14:53:15.345903 354735552 net.cpp:200] block4-conv3 needs backward computation.
+I0503 14:53:15.345908 354735552 net.cpp:200] block4-res1_block4-res1_0_split needs backward computation.
+I0503 14:53:15.345914 354735552 net.cpp:200] block4-res1 needs backward computation.
+I0503 14:53:15.345921 354735552 net.cpp:200] block4-project needs backward computation.
+I0503 14:53:15.345926 354735552 net.cpp:200] block4-relu2 needs backward computation.
+I0503 14:53:15.345934 354735552 net.cpp:200] block4-bn2 needs backward computation.
+I0503 14:53:15.345940 354735552 net.cpp:200] block4-conv2 needs backward computation.
+I0503 14:53:15.345947 354735552 net.cpp:200] block4-relu1 needs backward computation.
+I0503 14:53:15.346088 354735552 net.cpp:200] block4-bn1 needs backward computation.
+I0503 14:53:15.346105 354735552 net.cpp:200] block4-conv1 needs backward computation.
+I0503 14:53:15.346112 354735552 net.cpp:200] block3-res3_block3-res3_0_split needs backward computation.
+I0503 14:53:15.346118 354735552 net.cpp:200] block3-res3 needs backward computation.
+I0503 14:53:15.346124 354735552 net.cpp:200] block3-relu6 needs backward computation.
+I0503 14:53:15.346129 354735552 net.cpp:200] block3-bn6 needs backward computation.
+I0503 14:53:15.346135 354735552 net.cpp:200] block3-conv6 needs backward computation.
+I0503 14:53:15.346140 354735552 net.cpp:200] block3-relu5 needs backward computation.
+I0503 14:53:15.346146 354735552 net.cpp:200] block3-bn5 needs backward computation.
+I0503 14:53:15.346151 354735552 net.cpp:200] block3-conv5 needs backward computation.
+I0503 14:53:15.346158 354735552 net.cpp:200] block3-res2_block3-res2_0_split needs backward computation.
+I0503 14:53:15.346163 354735552 net.cpp:200] block3-res2 needs backward computation.
+I0503 14:53:15.346170 354735552 net.cpp:200] block3-relu4 needs backward computation.
+I0503 14:53:15.346175 354735552 net.cpp:200] block3-bn4 needs backward computation.
+I0503 14:53:15.346181 354735552 net.cpp:200] block3-conv4 needs backward computation.
+I0503 14:53:15.346186 354735552 net.cpp:200] block3-relu3 needs backward computation.
+I0503 14:53:15.346191 354735552 net.cpp:200] block3-bn3 needs backward computation.
+I0503 14:53:15.346196 354735552 net.cpp:200] block3-conv3 needs backward computation.
+I0503 14:53:15.346202 354735552 net.cpp:200] block3-res1_block3-res1_0_split needs backward computation.
+I0503 14:53:15.346216 354735552 net.cpp:200] block3-res1 needs backward computation.
+I0503 14:53:15.346222 354735552 net.cpp:200] block3-project needs backward computation.
+I0503 14:53:15.346227 354735552 net.cpp:200] block3-relu2 needs backward computation.
+I0503 14:53:15.346233 354735552 net.cpp:200] block3-bn2 needs backward computation.
+I0503 14:53:15.346324 354735552 net.cpp:200] block3-conv2 needs backward computation.
+I0503 14:53:15.346338 354735552 net.cpp:200] block3-relu1 needs backward computation.
+I0503 14:53:15.346344 354735552 net.cpp:200] block3-bn1 needs backward computation.
+I0503 14:53:15.346349 354735552 net.cpp:200] block3-conv1 needs backward computation.
+I0503 14:53:15.346354 354735552 net.cpp:200] block2-res3_block2-res3_0_split needs backward computation.
+I0503 14:53:15.346360 354735552 net.cpp:200] block2-res3 needs backward computation.
+I0503 14:53:15.346366 354735552 net.cpp:200] block2-relu6 needs backward computation.
+I0503 14:53:15.346371 354735552 net.cpp:200] block2-bn6 needs backward computation.
+I0503 14:53:15.346376 354735552 net.cpp:200] block2-conv6 needs backward computation.
+I0503 14:53:15.346382 354735552 net.cpp:200] block2-relu5 needs backward computation.
+I0503 14:53:15.346387 354735552 net.cpp:200] block2-bn5 needs backward computation.
+I0503 14:53:15.346419 354735552 net.cpp:200] block2-conv5 needs backward computation.
+I0503 14:53:15.346426 354735552 net.cpp:200] block2-res2_block2-res2_0_split needs backward computation.
+I0503 14:53:15.346431 354735552 net.cpp:200] block2-res2 needs backward computation.
+I0503 14:53:15.346437 354735552 net.cpp:200] block2-relu4 needs backward computation.
+I0503 14:53:15.346442 354735552 net.cpp:200] block2-bn4 needs backward computation.
+I0503 14:53:15.346447 354735552 net.cpp:200] block2-conv4 needs backward computation.
+I0503 14:53:15.346452 354735552 net.cpp:200] block2-relu3 needs backward computation.
+I0503 14:53:15.346457 354735552 net.cpp:200] block2-bn3 needs backward computation.
+I0503 14:53:15.346462 354735552 net.cpp:200] block2-conv3 needs backward computation.
+I0503 14:53:15.346468 354735552 net.cpp:200] block2-res1_block2-res1_0_split needs backward computation.
+I0503 14:53:15.346473 354735552 net.cpp:200] block2-res1 needs backward computation.
+I0503 14:53:15.346479 354735552 net.cpp:200] block2-project needs backward computation.
+I0503 14:53:15.346484 354735552 net.cpp:200] block2-relu2 needs backward computation.
+I0503 14:53:15.346489 354735552 net.cpp:200] block2-bn2 needs backward computation.
+I0503 14:53:15.346494 354735552 net.cpp:200] block2-conv2 needs backward computation.
+I0503 14:53:15.346499 354735552 net.cpp:200] block2-relu1 needs backward computation.
+I0503 14:53:15.346565 354735552 net.cpp:200] block2-bn1 needs backward computation.
+I0503 14:53:15.346575 354735552 net.cpp:200] block2-conv1 needs backward computation.
+I0503 14:53:15.346581 354735552 net.cpp:200] block1-res3_block1-res3_0_split needs backward computation.
+I0503 14:53:15.346587 354735552 net.cpp:200] block1-res3 needs backward computation.
+I0503 14:53:15.346593 354735552 net.cpp:200] block1-relu6 needs backward computation.
+I0503 14:53:15.346598 354735552 net.cpp:200] block1-bn6 needs backward computation.
+I0503 14:53:15.346604 354735552 net.cpp:200] block1-conv6 needs backward computation.
+I0503 14:53:15.346609 354735552 net.cpp:200] block1-relu5 needs backward computation.
+I0503 14:53:15.346614 354735552 net.cpp:200] block1-bn5 needs backward computation.
+I0503 14:53:15.346619 354735552 net.cpp:200] block1-conv5 needs backward computation.
+I0503 14:53:15.346626 354735552 net.cpp:200] block1-res2_block1-res2_0_split needs backward computation.
+I0503 14:53:15.346632 354735552 net.cpp:200] block1-res2 needs backward computation.
+I0503 14:53:15.346647 354735552 net.cpp:200] block1-relu4 needs backward computation.
+I0503 14:53:15.346657 354735552 net.cpp:200] block1-bn4 needs backward computation.
+I0503 14:53:15.346665 354735552 net.cpp:200] block1-conv4 needs backward computation.
+I0503 14:53:15.346674 354735552 net.cpp:200] block1-relu3 needs backward computation.
+I0503 14:53:15.346680 354735552 net.cpp:200] block1-bn3 needs backward computation.
+I0503 14:53:15.346685 354735552 net.cpp:200] block1-conv3 needs backward computation.
+I0503 14:53:15.346691 354735552 net.cpp:200] block1-res1_block1-res1_0_split needs backward computation.
+I0503 14:53:15.346698 354735552 net.cpp:200] block1-res1 needs backward computation.
+I0503 14:53:15.346702 354735552 net.cpp:200] block1-project needs backward computation.
+I0503 14:53:15.346707 354735552 net.cpp:200] block1-relu2 needs backward computation.
+I0503 14:53:15.346714 354735552 net.cpp:200] block1-bn2 needs backward computation.
+I0503 14:53:15.346719 354735552 net.cpp:200] block1-conv2 needs backward computation.
+I0503 14:53:15.346724 354735552 net.cpp:200] block1-relu1 needs backward computation.
+I0503 14:53:15.346729 354735552 net.cpp:200] block1-bn1 needs backward computation.
+I0503 14:53:15.346735 354735552 net.cpp:200] block1-conv1 needs backward computation.
+I0503 14:53:15.346740 354735552 net.cpp:200] relu0_relu0_0_split needs backward computation.
+I0503 14:53:15.346783 354735552 net.cpp:200] relu0 needs backward computation.
+I0503 14:53:15.346791 354735552 net.cpp:200] bn0 needs backward computation.
+I0503 14:53:15.346796 354735552 net.cpp:200] conv0 needs backward computation.
+I0503 14:53:15.346830 354735552 net.cpp:202] cifar does not need backward computation.
+I0503 14:53:15.346837 354735552 net.cpp:244] This network produces output loss
+I0503 14:53:15.346899 354735552 net.cpp:257] Network initialization done.
+I0503 14:53:15.347299 354735552 solver.cpp:57] Solver scaffolding done.
+I0503 14:53:15.347643 354735552 caffe.cpp:239] Starting Optimization
+I0503 14:53:15.347656 354735552 solver.cpp:289] Solving ResNet-cifar10
+I0503 14:53:15.347661 354735552 solver.cpp:290] Learning Rate Policy: fixed
+I0503 14:53:15.350987 354735552 net.cpp:593]     [Forward] Layer cifar, top blob data data: 50.5965
+I0503 14:53:15.351011 354735552 net.cpp:593]     [Forward] Layer cifar, top blob label data: 4.19
+I0503 14:53:15.352329 354735552 net.cpp:593]     [Forward] Layer conv0, top blob conv0 data: 29.3679
+I0503 14:53:15.352341 354735552 net.cpp:605]     [Forward] Layer conv0, param blob 0 data: 0.174669
+I0503 14:53:15.352347 354735552 net.cpp:605]     [Forward] Layer conv0, param blob 1 data: 0
+I0503 14:53:15.355003 354735552 net.cpp:593]     [Forward] Layer bn0, top blob bn0 data: 0.792058
+I0503 14:53:15.355037 354735552 net.cpp:605]     [Forward] Layer bn0, param blob 0 data: 2.69964
+I0503 14:53:15.355048 354735552 net.cpp:605]     [Forward] Layer bn0, param blob 1 data: 1440.37
+I0503 14:53:15.355056 354735552 net.cpp:605]     [Forward] Layer bn0, param blob 2 data: 1
+I0503 14:53:15.356375 354735552 net.cpp:593]     [Forward] Layer relu0, top blob relu0 data: 0.396029
+I0503 14:53:15.356542 354735552 net.cpp:593]     [Forward] Layer relu0_relu0_0_split, top blob relu0_relu0_0_split_0 data: 0.396029
+I0503 14:53:15.356676 354735552 net.cpp:593]     [Forward] Layer relu0_relu0_0_split, top blob relu0_relu0_0_split_1 data: 0.396029
+I0503 14:53:15.358853 354735552 net.cpp:593]     [Forward] Layer block1-conv1, top blob block1-conv1 data: 0.54683
+I0503 14:53:15.358896 354735552 net.cpp:605]     [Forward] Layer block1-conv1, param blob 0 data: 0.104495
+I0503 14:53:15.358912 354735552 net.cpp:605]     [Forward] Layer block1-conv1, param blob 1 data: 0
+I0503 14:53:15.361500 354735552 net.cpp:593]     [Forward] Layer block1-bn1, top blob block1-bn1 data: 0.765094
+I0503 14:53:15.361541 354735552 net.cpp:605]     [Forward] Layer block1-bn1, param blob 0 data: 0.33379
+I0503 14:53:15.361549 354735552 net.cpp:605]     [Forward] Layer block1-bn1, param blob 1 data: 0.368023
+I0503 14:53:15.361557 354735552 net.cpp:605]     [Forward] Layer block1-bn1, param blob 2 data: 1
+I0503 14:53:15.362335 354735552 net.cpp:593]     [Forward] Layer block1-relu1, top blob block1-relu1 data: 0.382547
+I0503 14:53:15.364763 354735552 net.cpp:593]     [Forward] Layer block1-conv2, top blob block1-conv2 data: 0.494268
+I0503 14:53:15.364789 354735552 net.cpp:605]     [Forward] Layer block1-conv2, param blob 0 data: 0.0712667
+I0503 14:53:15.364804 354735552 net.cpp:605]     [Forward] Layer block1-conv2, param blob 1 data: 0
+I0503 14:53:15.366462 354735552 net.cpp:593]     [Forward] Layer block1-bn2, top blob block1-bn2 data: 0.763307
+I0503 14:53:15.366482 354735552 net.cpp:605]     [Forward] Layer block1-bn2, param blob 0 data: 0.285562
+I0503 14:53:15.366489 354735552 net.cpp:605]     [Forward] Layer block1-bn2, param blob 1 data: 0.318351
+I0503 14:53:15.366495 354735552 net.cpp:605]     [Forward] Layer block1-bn2, param blob 2 data: 1
+I0503 14:53:15.366772 354735552 net.cpp:593]     [Forward] Layer block1-relu2, top blob block1-relu2 data: 0.381654
+I0503 14:53:15.368520 354735552 net.cpp:593]     [Forward] Layer block1-project, top blob block1-project data: 0.506054
+I0503 14:53:15.368540 354735552 net.cpp:605]     [Forward] Layer block1-project, param blob 0 data: 0.0769427
+I0503 14:53:15.368547 354735552 net.cpp:605]     [Forward] Layer block1-project, param blob 1 data: 0
+I0503 14:53:15.368863 354735552 net.cpp:593]     [Forward] Layer block1-res1, top blob block1-res1 data: 0.672042
+I0503 14:53:15.368886 354735552 net.cpp:593]     [Forward] Layer block1-res1_block1-res1_0_split, top blob block1-res1_block1-res1_0_split_0 data: 0.672042
+I0503 14:53:15.368948 354735552 net.cpp:593]     [Forward] Layer block1-res1_block1-res1_0_split, top blob block1-res1_block1-res1_0_split_1 data: 0.672042
+I0503 14:53:15.370965 354735552 net.cpp:593]     [Forward] Layer block1-conv3, top blob block1-conv3 data: 0.627034
+I0503 14:53:15.370995 354735552 net.cpp:605]     [Forward] Layer block1-conv3, param blob 0 data: 0.0701635
+I0503 14:53:15.371016 354735552 net.cpp:605]     [Forward] Layer block1-conv3, param blob 1 data: 0
+I0503 14:53:15.372222 354735552 net.cpp:593]     [Forward] Layer block1-bn3, top blob block1-bn3 data: 0.761565
+I0503 14:53:15.372238 354735552 net.cpp:605]     [Forward] Layer block1-bn3, param blob 0 data: 0.240926
+I0503 14:53:15.372246 354735552 net.cpp:605]     [Forward] Layer block1-bn3, param blob 1 data: 0.607824
+I0503 14:53:15.372251 354735552 net.cpp:605]     [Forward] Layer block1-bn3, param blob 2 data: 1
+I0503 14:53:15.372546 354735552 net.cpp:593]     [Forward] Layer block1-relu3, top blob block1-relu3 data: 0.380782
+I0503 14:53:15.374421 354735552 net.cpp:593]     [Forward] Layer block1-conv4, top blob block1-conv4 data: 0.519337
+I0503 14:53:15.374431 354735552 net.cpp:605]     [Forward] Layer block1-conv4, param blob 0 data: 0.0715562
+I0503 14:53:15.374438 354735552 net.cpp:605]     [Forward] Layer block1-conv4, param blob 1 data: 0
+I0503 14:53:15.375515 354735552 net.cpp:593]     [Forward] Layer block1-bn4, top blob block1-bn4 data: 0.757298
+I0503 14:53:15.375527 354735552 net.cpp:605]     [Forward] Layer block1-bn4, param blob 0 data: 0.306162
+I0503 14:53:15.375533 354735552 net.cpp:605]     [Forward] Layer block1-bn4, param blob 1 data: 0.347547
+I0503 14:53:15.375538 354735552 net.cpp:605]     [Forward] Layer block1-bn4, param blob 2 data: 1
+I0503 14:53:15.375835 354735552 net.cpp:593]     [Forward] Layer block1-relu4, top blob block1-relu4 data: 0.378649
+I0503 14:53:15.376199 354735552 net.cpp:593]     [Forward] Layer block1-res2, top blob block1-res2 data: 0.90255
+I0503 14:53:15.376222 354735552 net.cpp:593]     [Forward] Layer block1-res2_block1-res2_0_split, top blob block1-res2_block1-res2_0_split_0 data: 0.90255
+I0503 14:53:15.378033 354735552 net.cpp:593]     [Forward] Layer block1-res2_block1-res2_0_split, top blob block1-res2_block1-res2_0_split_1 data: 0.90255
+I0503 14:53:15.379914 354735552 net.cpp:593]     [Forward] Layer block1-conv5, top blob block1-conv5 data: 0.822136
+I0503 14:53:15.379927 354735552 net.cpp:605]     [Forward] Layer block1-conv5, param blob 0 data: 0.0721539
+I0503 14:53:15.379933 354735552 net.cpp:605]     [Forward] Layer block1-conv5, param blob 1 data: 0
+I0503 14:53:15.381114 354735552 net.cpp:593]     [Forward] Layer block1-bn5, top blob block1-bn5 data: 0.752268
+I0503 14:53:15.381137 354735552 net.cpp:605]     [Forward] Layer block1-bn5, param blob 0 data: 0.35841
+I0503 14:53:15.381144 354735552 net.cpp:605]     [Forward] Layer block1-bn5, param blob 1 data: 1.09823
+I0503 14:53:15.381150 354735552 net.cpp:605]     [Forward] Layer block1-bn5, param blob 2 data: 1
+I0503 14:53:15.381491 354735552 net.cpp:593]     [Forward] Layer block1-relu5, top blob block1-relu5 data: 0.376134
+I0503 14:53:15.383448 354735552 net.cpp:593]     [Forward] Layer block1-conv6, top blob block1-conv6 data: 0.531861
+I0503 14:53:15.383469 354735552 net.cpp:605]     [Forward] Layer block1-conv6, param blob 0 data: 0.0722177
+I0503 14:53:15.383476 354735552 net.cpp:605]     [Forward] Layer block1-conv6, param blob 1 data: 0
+I0503 14:53:15.384701 354735552 net.cpp:593]     [Forward] Layer block1-bn6, top blob block1-bn6 data: 0.756734
+I0503 14:53:15.384719 354735552 net.cpp:605]     [Forward] Layer block1-bn6, param blob 0 data: 0.37681
+I0503 14:53:15.384727 354735552 net.cpp:605]     [Forward] Layer block1-bn6, param blob 1 data: 0.3298
+I0503 14:53:15.384732 354735552 net.cpp:605]     [Forward] Layer block1-bn6, param blob 2 data: 1
+I0503 14:53:15.385048 354735552 net.cpp:593]     [Forward] Layer block1-relu6, top blob block1-relu6 data: 0.378367
+I0503 14:53:15.385392 354735552 net.cpp:593]     [Forward] Layer block1-res3, top blob block1-res3 data: 1.17644
+I0503 14:53:15.385455 354735552 net.cpp:593]     [Forward] Layer block1-res3_block1-res3_0_split, top blob block1-res3_block1-res3_0_split_0 data: 1.17644
+I0503 14:53:15.385475 354735552 net.cpp:593]     [Forward] Layer block1-res3_block1-res3_0_split, top blob block1-res3_block1-res3_0_split_1 data: 1.17644
+I0503 14:53:15.386445 354735552 net.cpp:593]     [Forward] Layer block2-conv1, top blob block2-conv1 data: 1.21633
+I0503 14:53:15.386456 354735552 net.cpp:605]     [Forward] Layer block2-conv1, param blob 0 data: 0.0736496
+I0503 14:53:15.386462 354735552 net.cpp:605]     [Forward] Layer block2-conv1, param blob 1 data: 0
+I0503 14:53:15.387076 354735552 net.cpp:593]     [Forward] Layer block2-bn1, top blob block2-bn1 data: 0.75399
+I0503 14:53:15.387086 354735552 net.cpp:605]     [Forward] Layer block2-bn1, param blob 0 data: 0.779982
+I0503 14:53:15.387092 354735552 net.cpp:605]     [Forward] Layer block2-bn1, param blob 1 data: 1.74882
+I0503 14:53:15.387097 354735552 net.cpp:605]     [Forward] Layer block2-bn1, param blob 2 data: 1
+I0503 14:53:15.387230 354735552 net.cpp:593]     [Forward] Layer block2-relu1, top blob block2-relu1 data: 0.376995
+I0503 14:53:15.389089 354735552 net.cpp:593]     [Forward] Layer block2-conv2, top blob block2-conv2 data: 0.434207
+I0503 14:53:15.389118 354735552 net.cpp:605]     [Forward] Layer block2-conv2, param blob 0 data: 0.0511069
+I0503 14:53:15.389125 354735552 net.cpp:605]     [Forward] Layer block2-conv2, param blob 1 data: 0
+I0503 14:53:15.389911 354735552 net.cpp:593]     [Forward] Layer block2-bn2, top blob block2-bn2 data: 0.76556
+I0503 14:53:15.389927 354735552 net.cpp:605]     [Forward] Layer block2-bn2, param blob 0 data: 0.18261
+I0503 14:53:15.389933 354735552 net.cpp:605]     [Forward] Layer block2-bn2, param blob 1 data: 0.273674
+I0503 14:53:15.389940 354735552 net.cpp:605]     [Forward] Layer block2-bn2, param blob 2 data: 1
+I0503 14:53:15.390262 354735552 net.cpp:593]     [Forward] Layer block2-relu2, top blob block2-relu2 data: 0.38278
+I0503 14:53:15.392338 354735552 net.cpp:593]     [Forward] Layer block2-project, top blob block2-project data: 1.0127
+I0503 14:53:15.392381 354735552 net.cpp:605]     [Forward] Layer block2-project, param blob 0 data: 0.0538267
+I0503 14:53:15.392390 354735552 net.cpp:605]     [Forward] Layer block2-project, param blob 1 data: 0
+I0503 14:53:15.392750 354735552 net.cpp:593]     [Forward] Layer block2-res1, top blob block2-res1 data: 1.1994
+I0503 14:53:15.392783 354735552 net.cpp:593]     [Forward] Layer block2-res1_block2-res1_0_split, top blob block2-res1_block2-res1_0_split_0 data: 1.1994
+I0503 14:53:15.392805 354735552 net.cpp:593]     [Forward] Layer block2-res1_block2-res1_0_split, top blob block2-res1_block2-res1_0_split_1 data: 1.1994
+I0503 14:53:15.394945 354735552 net.cpp:593]     [Forward] Layer block2-conv3, top blob block2-conv3 data: 1.07173
+I0503 14:53:15.394999 354735552 net.cpp:605]     [Forward] Layer block2-conv3, param blob 0 data: 0.0512035
+I0503 14:53:15.395015 354735552 net.cpp:605]     [Forward] Layer block2-conv3, param blob 1 data: 0
+I0503 14:53:15.396124 354735552 net.cpp:593]     [Forward] Layer block2-bn3, top blob block2-bn3 data: 0.761706
+I0503 14:53:15.396140 354735552 net.cpp:605]     [Forward] Layer block2-bn3, param blob 0 data: 0.606546
+I0503 14:53:15.396147 354735552 net.cpp:605]     [Forward] Layer block2-bn3, param blob 1 data: 1.49662
+I0503 14:53:15.396153 354735552 net.cpp:605]     [Forward] Layer block2-bn3, param blob 2 data: 1
+I0503 14:53:15.396364 354735552 net.cpp:593]     [Forward] Layer block2-relu3, top blob block2-relu3 data: 0.380853
+I0503 14:53:15.398299 354735552 net.cpp:593]     [Forward] Layer block2-conv4, top blob block2-conv4 data: 0.489387
+I0503 14:53:15.398315 354735552 net.cpp:605]     [Forward] Layer block2-conv4, param blob 0 data: 0.0517011
+I0503 14:53:15.398321 354735552 net.cpp:605]     [Forward] Layer block2-conv4, param blob 1 data: 0
+I0503 14:53:15.399068 354735552 net.cpp:593]     [Forward] Layer block2-bn4, top blob block2-bn4 data: 0.758271
+I0503 14:53:15.399124 354735552 net.cpp:605]     [Forward] Layer block2-bn4, param blob 0 data: 0.261455
+I0503 14:53:15.399133 354735552 net.cpp:605]     [Forward] Layer block2-bn4, param blob 1 data: 0.331045
+I0503 14:53:15.399138 354735552 net.cpp:605]     [Forward] Layer block2-bn4, param blob 2 data: 1
+I0503 14:53:15.399293 354735552 net.cpp:593]     [Forward] Layer block2-relu4, top blob block2-relu4 data: 0.379135
+I0503 14:53:15.399479 354735552 net.cpp:593]     [Forward] Layer block2-res2, top blob block2-res2 data: 1.44095
+I0503 14:53:15.399498 354735552 net.cpp:593]     [Forward] Layer block2-res2_block2-res2_0_split, top blob block2-res2_block2-res2_0_split_0 data: 1.44095
+I0503 14:53:15.399511 354735552 net.cpp:593]     [Forward] Layer block2-res2_block2-res2_0_split, top blob block2-res2_block2-res2_0_split_1 data: 1.44095
+I0503 14:53:15.401360 354735552 net.cpp:593]     [Forward] Layer block2-conv5, top blob block2-conv5 data: 1.24435
+I0503 14:53:15.401371 354735552 net.cpp:605]     [Forward] Layer block2-conv5, param blob 0 data: 0.0507388
+I0503 14:53:15.401377 354735552 net.cpp:605]     [Forward] Layer block2-conv5, param blob 1 data: 0
+I0503 14:53:15.401942 354735552 net.cpp:593]     [Forward] Layer block2-bn5, top blob block2-bn5 data: 0.76695
+I0503 14:53:15.401952 354735552 net.cpp:605]     [Forward] Layer block2-bn5, param blob 0 data: 0.761166
+I0503 14:53:15.401957 354735552 net.cpp:605]     [Forward] Layer block2-bn5, param blob 1 data: 1.91969
+I0503 14:53:15.401963 354735552 net.cpp:605]     [Forward] Layer block2-bn5, param blob 2 data: 1
+I0503 14:53:15.402115 354735552 net.cpp:593]     [Forward] Layer block2-relu5, top blob block2-relu5 data: 0.383475
+I0503 14:53:15.403944 354735552 net.cpp:593]     [Forward] Layer block2-conv6, top blob block2-conv6 data: 0.426885
+I0503 14:53:15.403964 354735552 net.cpp:605]     [Forward] Layer block2-conv6, param blob 0 data: 0.050851
+I0503 14:53:15.403970 354735552 net.cpp:605]     [Forward] Layer block2-conv6, param blob 1 data: 0
+I0503 14:53:15.404611 354735552 net.cpp:593]     [Forward] Layer block2-bn6, top blob block2-bn6 data: 0.774441
+I0503 14:53:15.404623 354735552 net.cpp:605]     [Forward] Layer block2-bn6, param blob 0 data: 0.19725
+I0503 14:53:15.404629 354735552 net.cpp:605]     [Forward] Layer block2-bn6, param blob 1 data: 0.247927
+I0503 14:53:15.404635 354735552 net.cpp:605]     [Forward] Layer block2-bn6, param blob 2 data: 1
+I0503 14:53:15.404830 354735552 net.cpp:593]     [Forward] Layer block2-relu6, top blob block2-relu6 data: 0.38722
+I0503 14:53:15.405015 354735552 net.cpp:593]     [Forward] Layer block2-res3, top blob block2-res3 data: 1.71511
+I0503 14:53:15.405035 354735552 net.cpp:593]     [Forward] Layer block2-res3_block2-res3_0_split, top blob block2-res3_block2-res3_0_split_0 data: 1.71511
+I0503 14:53:15.405048 354735552 net.cpp:593]     [Forward] Layer block2-res3_block2-res3_0_split, top blob block2-res3_block2-res3_0_split_1 data: 1.71511
+I0503 14:53:15.406142 354735552 net.cpp:593]     [Forward] Layer block3-conv1, top blob block3-conv1 data: 1.41695
+I0503 14:53:15.406167 354735552 net.cpp:605]     [Forward] Layer block3-conv1, param blob 0 data: 0.0512689
+I0503 14:53:15.406175 354735552 net.cpp:605]     [Forward] Layer block3-conv1, param blob 1 data: 0
+I0503 14:53:15.406541 354735552 net.cpp:593]     [Forward] Layer block3-bn1, top blob block3-bn1 data: 0.767687
+I0503 14:53:15.406550 354735552 net.cpp:605]     [Forward] Layer block3-bn1, param blob 0 data: 0.951443
+I0503 14:53:15.406556 354735552 net.cpp:605]     [Forward] Layer block3-bn1, param blob 1 data: 2.17681
+I0503 14:53:15.406561 354735552 net.cpp:605]     [Forward] Layer block3-bn1, param blob 2 data: 1
+I0503 14:53:15.406641 354735552 net.cpp:593]     [Forward] Layer block3-relu1, top blob block3-relu1 data: 0.383844
+I0503 14:53:15.409883 354735552 net.cpp:593]     [Forward] Layer block3-conv2, top blob block3-conv2 data: 0.356523
+I0503 14:53:15.409899 354735552 net.cpp:605]     [Forward] Layer block3-conv2, param blob 0 data: 0.0360312
+I0503 14:53:15.409950 354735552 net.cpp:605]     [Forward] Layer block3-conv2, param blob 1 data: 0
+I0503 14:53:15.410329 354735552 net.cpp:593]     [Forward] Layer block3-bn2, top blob block3-bn2 data: 0.77166
+I0503 14:53:15.410338 354735552 net.cpp:605]     [Forward] Layer block3-bn2, param blob 0 data: 0.166864
+I0503 14:53:15.411839 354735552 net.cpp:605]     [Forward] Layer block3-bn2, param blob 1 data: 0.171009
+I0503 14:53:15.411868 354735552 net.cpp:605]     [Forward] Layer block3-bn2, param blob 2 data: 1
+I0503 14:53:15.412022 354735552 net.cpp:593]     [Forward] Layer block3-relu2, top blob block3-relu2 data: 0.38583
+I0503 14:53:15.414851 354735552 net.cpp:593]     [Forward] Layer block3-project, top blob block3-project data: 1.29837
+I0503 14:53:15.414870 354735552 net.cpp:605]     [Forward] Layer block3-project, param blob 0 data: 0.0380534
+I0503 14:53:15.414878 354735552 net.cpp:605]     [Forward] Layer block3-project, param blob 1 data: 0
+I0503 14:53:15.414969 354735552 net.cpp:593]     [Forward] Layer block3-res1, top blob block3-res1 data: 1.3925
+I0503 14:53:15.414983 354735552 net.cpp:593]     [Forward] Layer block3-res1_block3-res1_0_split, top blob block3-res1_block3-res1_0_split_0 data: 1.3925
+I0503 14:53:15.414993 354735552 net.cpp:593]     [Forward] Layer block3-res1_block3-res1_0_split, top blob block3-res1_block3-res1_0_split_1 data: 1.3925
+I0503 14:53:15.418341 354735552 net.cpp:593]     [Forward] Layer block3-conv3, top blob block3-conv3 data: 0.92591
+I0503 14:53:15.418365 354735552 net.cpp:605]     [Forward] Layer block3-conv3, param blob 0 data: 0.0360773
+I0503 14:53:15.418373 354735552 net.cpp:605]     [Forward] Layer block3-conv3, param blob 1 data: 0
+I0503 14:53:15.418716 354735552 net.cpp:593]     [Forward] Layer block3-bn3, top blob block3-bn3 data: 0.776611
+I0503 14:53:15.418726 354735552 net.cpp:605]     [Forward] Layer block3-bn3, param blob 0 data: 0.44786
+I0503 14:53:15.418732 354735552 net.cpp:605]     [Forward] Layer block3-bn3, param blob 1 data: 1.17488
+I0503 14:53:15.418738 354735552 net.cpp:605]     [Forward] Layer block3-bn3, param blob 2 data: 1
+I0503 14:53:15.418818 354735552 net.cpp:593]     [Forward] Layer block3-relu3, top blob block3-relu3 data: 0.388306
+I0503 14:53:15.422169 354735552 net.cpp:593]     [Forward] Layer block3-conv4, top blob block3-conv4 data: 0.35021
+I0503 14:53:15.422188 354735552 net.cpp:605]     [Forward] Layer block3-conv4, param blob 0 data: 0.0361195
+I0503 14:53:15.422194 354735552 net.cpp:605]     [Forward] Layer block3-conv4, param blob 1 data: 0
+I0503 14:53:15.422628 354735552 net.cpp:593]     [Forward] Layer block3-bn4, top blob block3-bn4 data: 0.778035
+I0503 14:53:15.422639 354735552 net.cpp:605]     [Forward] Layer block3-bn4, param blob 0 data: 0.163457
+I0503 14:53:15.422646 354735552 net.cpp:605]     [Forward] Layer block3-bn4, param blob 1 data: 0.165789
+I0503 14:53:15.422650 354735552 net.cpp:605]     [Forward] Layer block3-bn4, param blob 2 data: 1
+I0503 14:53:15.422756 354735552 net.cpp:593]     [Forward] Layer block3-relu4, top blob block3-relu4 data: 0.389018
+I0503 14:53:15.422890 354735552 net.cpp:593]     [Forward] Layer block3-res2, top blob block3-res2 data: 1.54075
+I0503 14:53:15.422904 354735552 net.cpp:593]     [Forward] Layer block3-res2_block3-res2_0_split, top blob block3-res2_block3-res2_0_split_0 data: 1.54075
+I0503 14:53:15.422914 354735552 net.cpp:593]     [Forward] Layer block3-res2_block3-res2_0_split, top blob block3-res2_block3-res2_0_split_1 data: 1.54075
+I0503 14:53:15.426542 354735552 net.cpp:593]     [Forward] Layer block3-conv5, top blob block3-conv5 data: 1.04482
+I0503 14:53:15.426594 354735552 net.cpp:605]     [Forward] Layer block3-conv5, param blob 0 data: 0.0360766
+I0503 14:53:15.426606 354735552 net.cpp:605]     [Forward] Layer block3-conv5, param blob 1 data: 0
+I0503 14:53:15.427177 354735552 net.cpp:593]     [Forward] Layer block3-bn5, top blob block3-bn5 data: 0.774451
+I0503 14:53:15.427201 354735552 net.cpp:605]     [Forward] Layer block3-bn5, param blob 0 data: 0.555785
+I0503 14:53:15.427206 354735552 net.cpp:605]     [Forward] Layer block3-bn5, param blob 1 data: 1.46081
+I0503 14:53:15.427296 354735552 net.cpp:605]     [Forward] Layer block3-bn5, param blob 2 data: 1
+I0503 14:53:15.427423 354735552 net.cpp:593]     [Forward] Layer block3-relu5, top blob block3-relu5 data: 0.387225
+I0503 14:53:15.431210 354735552 net.cpp:593]     [Forward] Layer block3-conv6, top blob block3-conv6 data: 0.367603
+I0503 14:53:15.431241 354735552 net.cpp:605]     [Forward] Layer block3-conv6, param blob 0 data: 0.0361765
+I0503 14:53:15.431252 354735552 net.cpp:605]     [Forward] Layer block3-conv6, param blob 1 data: 0
+I0503 14:53:15.431644 354735552 net.cpp:593]     [Forward] Layer block3-bn6, top blob block3-bn6 data: 0.770993
+I0503 14:53:15.431658 354735552 net.cpp:605]     [Forward] Layer block3-bn6, param blob 0 data: 0.182393
+I0503 14:53:15.431664 354735552 net.cpp:605]     [Forward] Layer block3-bn6, param blob 1 data: 0.191241
+I0503 14:53:15.431669 354735552 net.cpp:605]     [Forward] Layer block3-bn6, param blob 2 data: 1
+I0503 14:53:15.431752 354735552 net.cpp:593]     [Forward] Layer block3-relu6, top blob block3-relu6 data: 0.385496
+I0503 14:53:15.431872 354735552 net.cpp:593]     [Forward] Layer block3-res3, top blob block3-res3 data: 1.74776
+I0503 14:53:15.431886 354735552 net.cpp:593]     [Forward] Layer block3-res3_block3-res3_0_split, top blob block3-res3_block3-res3_0_split_0 data: 1.74776
+I0503 14:53:15.431895 354735552 net.cpp:593]     [Forward] Layer block3-res3_block3-res3_0_split, top blob block3-res3_block3-res3_0_split_1 data: 1.74776
+I0503 14:53:15.434486 354735552 net.cpp:593]     [Forward] Layer block4-conv1, top blob block4-conv1 data: 1.1841
+I0503 14:53:15.434514 354735552 net.cpp:605]     [Forward] Layer block4-conv1, param blob 0 data: 0.0359215
+I0503 14:53:15.434523 354735552 net.cpp:605]     [Forward] Layer block4-conv1, param blob 1 data: 0
+I0503 14:53:15.434748 354735552 net.cpp:593]     [Forward] Layer block4-bn1, top blob block4-bn1 data: 0.770303
+I0503 14:53:15.434758 354735552 net.cpp:605]     [Forward] Layer block4-bn1, param blob 0 data: 0.947136
+I0503 14:53:15.434764 354735552 net.cpp:605]     [Forward] Layer block4-bn1, param blob 1 data: 1.06466
+I0503 14:53:15.434770 354735552 net.cpp:605]     [Forward] Layer block4-bn1, param blob 2 data: 1
+I0503 14:53:15.434813 354735552 net.cpp:593]     [Forward] Layer block4-relu1, top blob block4-relu1 data: 0.385152
+I0503 14:53:15.437305 354735552 net.cpp:593]     [Forward] Layer block4-conv2, top blob block4-conv2 data: 0.180582
+I0503 14:53:15.437337 354735552 net.cpp:605]     [Forward] Layer block4-conv2, param blob 0 data: 0.0255588
+I0503 14:53:15.437347 354735552 net.cpp:605]     [Forward] Layer block4-conv2, param blob 1 data: 0
+I0503 14:53:15.437582 354735552 net.cpp:593]     [Forward] Layer block4-bn2, top blob block4-bn2 data: 0.770921
+I0503 14:53:15.437594 354735552 net.cpp:605]     [Forward] Layer block4-bn2, param blob 0 data: 0.111012
+I0503 14:53:15.437600 354735552 net.cpp:605]     [Forward] Layer block4-bn2, param blob 1 data: 0.0386264
+I0503 14:53:15.437605 354735552 net.cpp:605]     [Forward] Layer block4-bn2, param blob 2 data: 1
+I0503 14:53:15.437650 354735552 net.cpp:593]     [Forward] Layer block4-relu2, top blob block4-relu2 data: 0.38546
+I0503 14:53:15.439854 354735552 net.cpp:593]     [Forward] Layer block4-project, top blob block4-project data: 0.86555
+I0503 14:53:15.439882 354735552 net.cpp:605]     [Forward] Layer block4-project, param blob 0 data: 0.0269917
+I0503 14:53:15.439890 354735552 net.cpp:605]     [Forward] Layer block4-project, param blob 1 data: 0
+I0503 14:53:15.439940 354735552 net.cpp:593]     [Forward] Layer block4-res1, top blob block4-res1 data: 0.994266
+I0503 14:53:15.439951 354735552 net.cpp:593]     [Forward] Layer block4-res1_block4-res1_0_split, top blob block4-res1_block4-res1_0_split_0 data: 0.994266
+I0503 14:53:15.439958 354735552 net.cpp:593]     [Forward] Layer block4-res1_block4-res1_0_split, top blob block4-res1_block4-res1_0_split_1 data: 0.994266
+I0503 14:53:15.442500 354735552 net.cpp:593]     [Forward] Layer block4-conv3, top blob block4-conv3 data: 0.32859
+I0503 14:53:15.442586 354735552 net.cpp:605]     [Forward] Layer block4-conv3, param blob 0 data: 0.0255024
+I0503 14:53:15.442596 354735552 net.cpp:605]     [Forward] Layer block4-conv3, param blob 1 data: 0
+I0503 14:53:15.444991 354735552 net.cpp:593]     [Forward] Layer block4-bn3, top blob block4-bn3 data: 0.768266
+I0503 14:53:15.445010 354735552 net.cpp:605]     [Forward] Layer block4-bn3, param blob 0 data: 0.231518
+I0503 14:53:15.445019 354735552 net.cpp:605]     [Forward] Layer block4-bn3, param blob 1 data: 0.10331
+I0503 14:53:15.445024 354735552 net.cpp:605]     [Forward] Layer block4-bn3, param blob 2 data: 1
+I0503 14:53:15.445075 354735552 net.cpp:593]     [Forward] Layer block4-relu3, top blob block4-relu3 data: 0.384133
+I0503 14:53:15.447593 354735552 net.cpp:593]     [Forward] Layer block4-conv4, top blob block4-conv4 data: 0.177136
+I0503 14:53:15.447629 354735552 net.cpp:605]     [Forward] Layer block4-conv4, param blob 0 data: 0.025524
+I0503 14:53:15.447639 354735552 net.cpp:605]     [Forward] Layer block4-conv4, param blob 1 data: 0
+I0503 14:53:15.447890 354735552 net.cpp:593]     [Forward] Layer block4-bn4, top blob block4-bn4 data: 0.766612
+I0503 14:53:15.447903 354735552 net.cpp:605]     [Forward] Layer block4-bn4, param blob 0 data: 0.098009
+I0503 14:53:15.447909 354735552 net.cpp:605]     [Forward] Layer block4-bn4, param blob 1 data: 0.039351
+I0503 14:53:15.447916 354735552 net.cpp:605]     [Forward] Layer block4-bn4, param blob 2 data: 1
+I0503 14:53:15.447963 354735552 net.cpp:593]     [Forward] Layer block4-relu4, top blob block4-relu4 data: 0.383306
+I0503 14:53:15.448020 354735552 net.cpp:593]     [Forward] Layer block4-res2, top blob block4-res2 data: 1.18682
+I0503 14:53:15.448035 354735552 net.cpp:593]     [Forward] Layer block4-res2_block4-res2_0_split, top blob block4-res2_block4-res2_0_split_0 data: 1.18682
+I0503 14:53:15.448042 354735552 net.cpp:593]     [Forward] Layer block4-res2_block4-res2_0_split, top blob block4-res2_block4-res2_0_split_1 data: 1.18682
+I0503 14:53:15.451242 354735552 net.cpp:593]     [Forward] Layer block4-conv5, top blob block4-conv5 data: 0.392995
+I0503 14:53:15.451277 354735552 net.cpp:605]     [Forward] Layer block4-conv5, param blob 0 data: 0.0255629
+I0503 14:53:15.451285 354735552 net.cpp:605]     [Forward] Layer block4-conv5, param blob 1 data: 0
+I0503 14:53:15.451514 354735552 net.cpp:593]     [Forward] Layer block4-bn5, top blob block4-bn5 data: 0.767142
+I0503 14:53:15.451524 354735552 net.cpp:605]     [Forward] Layer block4-bn5, param blob 0 data: 0.283296
+I0503 14:53:15.451529 354735552 net.cpp:605]     [Forward] Layer block4-bn5, param blob 1 data: 0.145679
+I0503 14:53:15.451534 354735552 net.cpp:605]     [Forward] Layer block4-bn5, param blob 2 data: 1
+I0503 14:53:15.451575 354735552 net.cpp:593]     [Forward] Layer block4-relu5, top blob block4-relu5 data: 0.383571
+I0503 14:53:15.454030 354735552 net.cpp:593]     [Forward] Layer block4-conv6, top blob block4-conv6 data: 0.175808
+I0503 14:53:15.454063 354735552 net.cpp:605]     [Forward] Layer block4-conv6, param blob 0 data: 0.0254842
+I0503 14:53:15.454072 354735552 net.cpp:605]     [Forward] Layer block4-conv6, param blob 1 data: 0
+I0503 14:53:15.454285 354735552 net.cpp:593]     [Forward] Layer block4-bn6, top blob block4-bn6 data: 0.768301
+I0503 14:53:15.454295 354735552 net.cpp:605]     [Forward] Layer block4-bn6, param blob 0 data: 0.0951926
+I0503 14:53:15.454301 354735552 net.cpp:605]     [Forward] Layer block4-bn6, param blob 1 data: 0.0391599
+I0503 14:53:15.454308 354735552 net.cpp:605]     [Forward] Layer block4-bn6, param blob 2 data: 1
+I0503 14:53:15.454350 354735552 net.cpp:593]     [Forward] Layer block4-relu6, top blob block4-relu6 data: 0.384151
+I0503 14:53:15.454406 354735552 net.cpp:593]     [Forward] Layer block4-res3, top blob block4-res3 data: 1.4327
+I0503 14:53:15.456903 354735552 net.cpp:593]     [Forward] Layer pool, top blob pool data: 1.4327
+I0503 14:53:15.457130 354735552 net.cpp:593]     [Forward] Layer dropout1, top blob dropout1 data: 1.43802
+I0503 14:53:15.457293 354735552 net.cpp:593]     [Forward] Layer prob, top blob prob data: 0.213981
+I0503 14:53:15.457309 354735552 net.cpp:605]     [Forward] Layer prob, param blob 0 data: 0.00773419
+I0503 14:53:15.457315 354735552 net.cpp:605]     [Forward] Layer prob, param blob 1 data: 0
+I0503 14:53:15.457437 354735552 net.cpp:593]     [Forward] Layer loss, top blob loss data: 2.3708
+I0503 14:53:15.457459 354735552 net.cpp:621]     [Backward] Layer loss, bottom blob prob diff: 0.00180499
+I0503 14:53:15.457574 354735552 net.cpp:621]     [Backward] Layer prob, bottom blob dropout1 diff: 7.4851e-05
+I0503 14:53:15.457589 354735552 net.cpp:632]     [Backward] Layer prob, param blob 0 diff: 0.0668114
+I0503 14:53:15.457597 354735552 net.cpp:632]     [Backward] Layer prob, param blob 1 diff: 0.0334497
+I0503 14:53:15.457684 354735552 net.cpp:621]     [Backward] Layer dropout1, bottom blob pool diff: 7.44226e-05
+I0503 14:53:15.460209 354735552 net.cpp:621]     [Backward] Layer pool, bottom blob block4-res3 diff: 7.44226e-05
+I0503 14:53:15.460427 354735552 net.cpp:621]     [Backward] Layer block4-res3, bottom blob block4-res2_block4-res2_0_split_1 diff: 7.44226e-05
+I0503 14:53:15.460454 354735552 net.cpp:621]     [Backward] Layer block4-res3, bottom blob block4-relu6 diff: 7.44226e-05
+I0503 14:53:15.460562 354735552 net.cpp:621]     [Backward] Layer block4-relu6, bottom blob block4-bn6 diff: 3.6891e-05
+I0503 14:53:15.460809 354735552 net.cpp:621]     [Backward] Layer block4-bn6, bottom blob block4-conv6 diff: 0.000217017
+I0503 14:53:15.470149 354735552 net.cpp:621]     [Backward] Layer block4-conv6, bottom blob block4-relu5 diff: 0.000117165
+I0503 14:53:15.470187 354735552 net.cpp:632]     [Backward] Layer block4-conv6, param blob 0 diff: 0.000223261
+I0503 14:53:15.470197 354735552 net.cpp:632]     [Backward] Layer block4-conv6, param blob 1 diff: 4.63486e-10
+I0503 14:53:15.470288 354735552 net.cpp:621]     [Backward] Layer block4-relu5, bottom blob block4-bn5 diff: 5.95032e-05
+I0503 14:53:15.470415 354735552 net.cpp:621]     [Backward] Layer block4-bn5, bottom blob block4-conv5 diff: 0.000167996
+I0503 14:53:15.477316 354735552 net.cpp:621]     [Backward] Layer block4-conv5, bottom blob block4-res2_block4-res2_0_split_0 diff: 7.40098e-05
+I0503 14:53:15.477355 354735552 net.cpp:632]     [Backward] Layer block4-conv5, param blob 0 diff: 0.000287614
+I0503 14:53:15.477365 354735552 net.cpp:632]     [Backward] Layer block4-conv5, param blob 1 diff: 3.62702e-10
+I0503 14:53:15.477509 354735552 net.cpp:621]     [Backward] Layer block4-res2_block4-res2_0_split, bottom blob block4-res2 diff: 0.000116455
+I0503 14:53:15.477627 354735552 net.cpp:621]     [Backward] Layer block4-res2, bottom blob block4-res1_block4-res1_0_split_1 diff: 0.000116455
+I0503 14:53:15.477644 354735552 net.cpp:621]     [Backward] Layer block4-res2, bottom blob block4-relu4 diff: 0.000116455
+I0503 14:53:15.477697 354735552 net.cpp:621]     [Backward] Layer block4-relu4, bottom blob block4-bn4 diff: 5.75253e-05
+I0503 14:53:15.477828 354735552 net.cpp:621]     [Backward] Layer block4-bn4, bottom blob block4-conv4 diff: 0.000317994
+I0503 14:53:15.485510 354735552 net.cpp:621]     [Backward] Layer block4-conv4, bottom blob block4-relu3 diff: 0.000147459
+I0503 14:53:15.485548 354735552 net.cpp:632]     [Backward] Layer block4-conv4, param blob 0 diff: 0.000288099
+I0503 14:53:15.485558 354735552 net.cpp:632]     [Backward] Layer block4-conv4, param blob 1 diff: 7.25807e-10
+I0503 14:53:15.485617 354735552 net.cpp:621]     [Backward] Layer block4-relu3, bottom blob block4-bn3 diff: 7.31118e-05
+I0503 14:53:15.485754 354735552 net.cpp:621]     [Backward] Layer block4-bn3, bottom blob block4-conv3 diff: 0.000245096
+I0503 14:53:15.495807 354735552 net.cpp:621]     [Backward] Layer block4-conv3, bottom blob block4-res1_block4-res1_0_split_0 diff: 0.000109663
+I0503 14:53:15.495862 354735552 net.cpp:632]     [Backward] Layer block4-conv3, param blob 0 diff: 0.000345535
+I0503 14:53:15.495877 354735552 net.cpp:632]     [Backward] Layer block4-conv3, param blob 1 diff: 5.29545e-10
+I0503 14:53:15.496057 354735552 net.cpp:621]     [Backward] Layer block4-res1_block4-res1_0_split, bottom blob block4-res1 diff: 0.000162888
+I0503 14:53:15.496179 354735552 net.cpp:621]     [Backward] Layer block4-res1, bottom blob block4-project diff: 0.000162888
+I0503 14:53:15.496198 354735552 net.cpp:621]     [Backward] Layer block4-res1, bottom blob block4-relu2 diff: 0.000162888
+I0503 14:53:15.502916 354735552 net.cpp:621]     [Backward] Layer block4-project, bottom blob block3-res3_block3-res3_0_split_1 diff: 5.76284e-05
+I0503 14:53:15.502955 354735552 net.cpp:632]     [Backward] Layer block4-project, param blob 0 diff: 0.000798244
+I0503 14:53:15.502965 354735552 net.cpp:632]     [Backward] Layer block4-project, param blob 1 diff: 0.00107863
+I0503 14:53:15.503023 354735552 net.cpp:621]     [Backward] Layer block4-relu2, bottom blob block4-bn2 diff: 8.04894e-05
+I0503 14:53:15.503161 354735552 net.cpp:621]     [Backward] Layer block4-bn2, bottom blob block4-conv2 diff: 0.000443271
+I0503 14:53:15.509774 354735552 net.cpp:621]     [Backward] Layer block4-conv2, bottom blob block4-relu1 diff: 0.000202739
+I0503 14:53:15.509816 354735552 net.cpp:632]     [Backward] Layer block4-conv2, param blob 0 diff: 0.000392396
+I0503 14:53:15.509827 354735552 net.cpp:632]     [Backward] Layer block4-conv2, param blob 1 diff: 9.96049e-10
+I0503 14:53:15.509886 354735552 net.cpp:621]     [Backward] Layer block4-relu1, bottom blob block4-bn1 diff: 0.000101779
+I0503 14:53:15.510020 354735552 net.cpp:621]     [Backward] Layer block4-bn1, bottom blob block4-conv1 diff: 0.000106935
+I0503 14:53:15.513278 354735552 net.cpp:621]     [Backward] Layer block4-conv1, bottom blob block3-res3_block3-res3_0_split_0 diff: 6.82608e-05
+I0503 14:53:15.513305 354735552 net.cpp:632]     [Backward] Layer block4-conv1, param blob 0 diff: 0.000976197
+I0503 14:53:15.513315 354735552 net.cpp:632]     [Backward] Layer block4-conv1, param blob 1 diff: 2.11708e-10
+I0503 14:53:15.513438 354735552 net.cpp:621]     [Backward] Layer block3-res3_block3-res3_0_split, bottom blob block3-res3 diff: 8.95419e-05
+I0503 14:53:15.513597 354735552 net.cpp:621]     [Backward] Layer block3-res3, bottom blob block3-res2_block3-res2_0_split_1 diff: 8.95419e-05
+I0503 14:53:15.513609 354735552 net.cpp:621]     [Backward] Layer block3-res3, bottom blob block3-relu6 diff: 8.95419e-05
+I0503 14:53:15.513697 354735552 net.cpp:621]     [Backward] Layer block3-relu6, bottom blob block3-bn6 diff: 4.46843e-05
+I0503 14:53:15.513927 354735552 net.cpp:621]     [Backward] Layer block3-bn6, bottom blob block3-conv6 diff: 0.000108609
+I0503 14:53:15.521073 354735552 net.cpp:621]     [Backward] Layer block3-conv6, bottom blob block3-relu5 diff: 0.000101666
+I0503 14:53:15.521097 354735552 net.cpp:632]     [Backward] Layer block3-conv6, param blob 0 diff: 0.00107435
+I0503 14:53:15.521106 354735552 net.cpp:632]     [Backward] Layer block3-conv6, param blob 1 diff: 5.5207e-10
+I0503 14:53:15.521199 354735552 net.cpp:621]     [Backward] Layer block3-relu5, bottom blob block3-bn5 diff: 5.07081e-05
+I0503 14:53:15.521430 354735552 net.cpp:621]     [Backward] Layer block3-bn5, bottom blob block3-conv5 diff: 4.48822e-05
+I0503 14:53:15.530041 354735552 net.cpp:621]     [Backward] Layer block3-conv5, bottom blob block3-res2_block3-res2_0_split_0 diff: 4.1639e-05
+I0503 14:53:15.530081 354735552 net.cpp:632]     [Backward] Layer block3-conv5, param blob 0 diff: 0.00132671
+I0503 14:53:15.530095 354735552 net.cpp:632]     [Backward] Layer block3-conv5, param blob 1 diff: 2.09461e-10
+I0503 14:53:15.530303 354735552 net.cpp:621]     [Backward] Layer block3-res2_block3-res2_0_split, bottom blob block3-res2 diff: 9.87027e-05
+I0503 14:53:15.530558 354735552 net.cpp:621]     [Backward] Layer block3-res2, bottom blob block3-res1_block3-res1_0_split_1 diff: 9.87027e-05
+I0503 14:53:15.530576 354735552 net.cpp:621]     [Backward] Layer block3-res2, bottom blob block3-relu4 diff: 9.87027e-05
+I0503 14:53:15.530725 354735552 net.cpp:621]     [Backward] Layer block3-relu4, bottom blob block3-bn4 diff: 4.94118e-05
+I0503 14:53:15.531167 354735552 net.cpp:621]     [Backward] Layer block3-bn4, bottom blob block3-conv4 diff: 0.000128546
+I0503 14:53:15.538067 354735552 net.cpp:621]     [Backward] Layer block3-conv4, bottom blob block3-relu3 diff: 0.0001191
+I0503 14:53:15.538097 354735552 net.cpp:632]     [Backward] Layer block3-conv4, param blob 0 diff: 0.00133472
+I0503 14:53:15.538110 354735552 net.cpp:632]     [Backward] Layer block3-conv4, param blob 1 diff: 6.4631e-10
+I0503 14:53:15.538223 354735552 net.cpp:621]     [Backward] Layer block3-relu3, bottom blob block3-bn3 diff: 5.97254e-05
+I0503 14:53:15.538462 354735552 net.cpp:621]     [Backward] Layer block3-bn3, bottom blob block3-conv3 diff: 5.8661e-05
+I0503 14:53:15.545485 354735552 net.cpp:621]     [Backward] Layer block3-conv3, bottom blob block3-res1_block3-res1_0_split_0 diff: 5.46692e-05
+I0503 14:53:15.545513 354735552 net.cpp:632]     [Backward] Layer block3-conv3, param blob 0 diff: 0.0015964
+I0503 14:53:15.545527 354735552 net.cpp:632]     [Backward] Layer block3-conv3, param blob 1 diff: 2.25128e-10
+I0503 14:53:15.545655 354735552 net.cpp:621]     [Backward] Layer block3-res1_block3-res1_0_split, bottom blob block3-res1 diff: 0.000112958
+I0503 14:53:15.545807 354735552 net.cpp:621]     [Backward] Layer block3-res1, bottom blob block3-project diff: 0.000112958
+I0503 14:53:15.545820 354735552 net.cpp:621]     [Backward] Layer block3-res1, bottom blob block3-relu2 diff: 0.000112958
+I0503 14:53:15.553120 354735552 net.cpp:621]     [Backward] Layer block3-project, bottom blob block2-res3_block2-res3_0_split_1 diff: 5.78735e-05
+I0503 14:53:15.553146 354735552 net.cpp:632]     [Backward] Layer block3-project, param blob 0 diff: 0.00323225
+I0503 14:53:15.553156 354735552 net.cpp:632]     [Backward] Layer block3-project, param blob 1 diff: 0.00105035
+I0503 14:53:15.553256 354735552 net.cpp:621]     [Backward] Layer block3-relu2, bottom blob block3-bn2 diff: 5.67849e-05
+I0503 14:53:15.553496 354735552 net.cpp:621]     [Backward] Layer block3-bn2, bottom blob block3-conv2 diff: 0.000143809
+I0503 14:53:15.561983 354735552 net.cpp:621]     [Backward] Layer block3-conv2, bottom blob block3-relu1 diff: 0.000131886
+I0503 14:53:15.562041 354735552 net.cpp:632]     [Backward] Layer block3-conv2, param blob 0 diff: 0.0014948
+I0503 14:53:15.562052 354735552 net.cpp:632]     [Backward] Layer block3-conv2, param blob 1 diff: 7.09093e-10
+I0503 14:53:15.562279 354735552 net.cpp:621]     [Backward] Layer block3-relu1, bottom blob block3-bn1 diff: 6.59664e-05
+I0503 14:53:15.562695 354735552 net.cpp:621]     [Backward] Layer block3-bn1, bottom blob block3-conv1 diff: 4.74394e-05
+I0503 14:53:15.568013 354735552 net.cpp:621]     [Backward] Layer block3-conv1, bottom blob block2-res3_block2-res3_0_split_0 diff: 3.75483e-05
+I0503 14:53:15.568027 354735552 net.cpp:632]     [Backward] Layer block3-conv1, param blob 0 diff: 0.00188797
+I0503 14:53:15.568034 354735552 net.cpp:632]     [Backward] Layer block3-conv1, param blob 1 diff: 2.69271e-10
+I0503 14:53:15.568210 354735552 net.cpp:621]     [Backward] Layer block2-res3_block2-res3_0_split, bottom blob block2-res3 diff: 6.9315e-05
+I0503 14:53:15.568490 354735552 net.cpp:621]     [Backward] Layer block2-res3, bottom blob block2-res2_block2-res2_0_split_1 diff: 6.9315e-05
+I0503 14:53:15.568506 354735552 net.cpp:621]     [Backward] Layer block2-res3, bottom blob block2-relu6 diff: 6.9315e-05
+I0503 14:53:15.568671 354735552 net.cpp:621]     [Backward] Layer block2-relu6, bottom blob block2-bn6 diff: 3.46655e-05
+I0503 14:53:15.569101 354735552 net.cpp:621]     [Backward] Layer block2-bn6, bottom blob block2-conv6 diff: 7.1289e-05
+I0503 14:53:15.574641 354735552 net.cpp:621]     [Backward] Layer block2-conv6, bottom blob block2-relu5 diff: 8.80961e-05
+I0503 14:53:15.574664 354735552 net.cpp:632]     [Backward] Layer block2-conv6, param blob 0 diff: 0.00209971
+I0503 14:53:15.574673 354735552 net.cpp:632]     [Backward] Layer block2-conv6, param blob 1 diff: 6.90989e-10
+I0503 14:53:15.574854 354735552 net.cpp:621]     [Backward] Layer block2-relu5, bottom blob block2-bn5 diff: 4.48271e-05
+I0503 14:53:15.575284 354735552 net.cpp:621]     [Backward] Layer block2-bn5, bottom blob block2-conv5 diff: 3.3434e-05
+I0503 14:53:15.580613 354735552 net.cpp:621]     [Backward] Layer block2-conv5, bottom blob block2-res2_block2-res2_0_split_0 diff: 4.04187e-05
+I0503 14:53:15.580636 354735552 net.cpp:632]     [Backward] Layer block2-conv5, param blob 0 diff: 0.00256079
+I0503 14:53:15.580644 354735552 net.cpp:632]     [Backward] Layer block2-conv5, param blob 1 diff: 2.74213e-10
+I0503 14:53:15.580853 354735552 net.cpp:621]     [Backward] Layer block2-res2_block2-res2_0_split, bottom blob block2-res2 diff: 7.98609e-05
+I0503 14:53:15.581182 354735552 net.cpp:621]     [Backward] Layer block2-res2, bottom blob block2-res1_block2-res1_0_split_1 diff: 7.98609e-05
+I0503 14:53:15.581199 354735552 net.cpp:621]     [Backward] Layer block2-res2, bottom blob block2-relu4 diff: 7.98609e-05
+I0503 14:53:15.581387 354735552 net.cpp:621]     [Backward] Layer block2-relu4, bottom blob block2-bn4 diff: 4.00765e-05
+I0503 14:53:15.581871 354735552 net.cpp:621]     [Backward] Layer block2-bn4, bottom blob block2-conv4 diff: 7.24805e-05
+I0503 14:53:15.586860 354735552 net.cpp:621]     [Backward] Layer block2-conv4, bottom blob block2-relu3 diff: 9.02508e-05
+I0503 14:53:15.586882 354735552 net.cpp:632]     [Backward] Layer block2-conv4, param blob 0 diff: 0.00234718
+I0503 14:53:15.586891 354735552 net.cpp:632]     [Backward] Layer block2-conv4, param blob 1 diff: 7.29642e-10
+I0503 14:53:15.587075 354735552 net.cpp:621]     [Backward] Layer block2-relu3, bottom blob block2-bn3 diff: 4.48179e-05
+I0503 14:53:15.587466 354735552 net.cpp:621]     [Backward] Layer block2-bn3, bottom blob block2-conv3 diff: 3.81135e-05
+I0503 14:53:15.593542 354735552 net.cpp:621]     [Backward] Layer block2-conv3, bottom blob block2-res1_block2-res1_0_split_0 diff: 4.71996e-05
+I0503 14:53:15.593595 354735552 net.cpp:632]     [Backward] Layer block2-conv3, param blob 0 diff: 0.00272594
+I0503 14:53:15.593607 354735552 net.cpp:632]     [Backward] Layer block2-conv3, param blob 1 diff: 5.2114e-10
+I0503 14:53:15.594105 354735552 net.cpp:621]     [Backward] Layer block2-res1_block2-res1_0_split, bottom blob block2-res1 diff: 9.29346e-05
+I0503 14:53:15.594712 354735552 net.cpp:621]     [Backward] Layer block2-res1, bottom blob block2-project diff: 9.29346e-05
+I0503 14:53:15.594753 354735552 net.cpp:621]     [Backward] Layer block2-res1, bottom blob block2-relu2 diff: 9.29346e-05
+I0503 14:53:15.601616 354735552 net.cpp:621]     [Backward] Layer block2-project, bottom blob block1-res3_block1-res3_0_split_1 diff: 5.79051e-05
+I0503 14:53:15.601639 354735552 net.cpp:632]     [Backward] Layer block2-project, param blob 0 diff: 0.00515563
+I0503 14:53:15.601647 354735552 net.cpp:632]     [Backward] Layer block2-project, param blob 1 diff: 0.00135221
+I0503 14:53:15.601867 354735552 net.cpp:621]     [Backward] Layer block2-relu2, bottom blob block2-bn2 diff: 4.64397e-05
+I0503 14:53:15.602263 354735552 net.cpp:621]     [Backward] Layer block2-bn2, bottom blob block2-conv2 diff: 9.09215e-05
+I0503 14:53:15.608055 354735552 net.cpp:621]     [Backward] Layer block2-conv2, bottom blob block2-relu1 diff: 0.000110328
+I0503 14:53:15.608080 354735552 net.cpp:632]     [Backward] Layer block2-conv2, param blob 0 diff: 0.00265694
+I0503 14:53:15.608093 354735552 net.cpp:632]     [Backward] Layer block2-conv2, param blob 1 diff: 8.84938e-10
+I0503 14:53:15.608332 354735552 net.cpp:621]     [Backward] Layer block2-relu1, bottom blob block2-bn1 diff: 5.65395e-05
+I0503 14:53:15.608786 354735552 net.cpp:621]     [Backward] Layer block2-bn1, bottom blob block2-conv1 diff: 4.4503e-05
+I0503 14:53:15.611002 354735552 net.cpp:621]     [Backward] Layer block2-conv1, bottom blob block1-res3_block1-res3_0_split_0 diff: 3.96505e-05
+I0503 14:53:15.611032 354735552 net.cpp:632]     [Backward] Layer block2-conv1, param blob 0 diff: 0.00303232
+I0503 14:53:15.611045 354735552 net.cpp:632]     [Backward] Layer block2-conv1, param blob 1 diff: 4.91866e-10
+I0503 14:53:15.611449 354735552 net.cpp:621]     [Backward] Layer block1-res3_block1-res3_0_split, bottom blob block1-res3 diff: 7.07649e-05
+I0503 14:53:15.612092 354735552 net.cpp:621]     [Backward] Layer block1-res3, bottom blob block1-res2_block1-res2_0_split_1 diff: 7.07649e-05
+I0503 14:53:15.612126 354735552 net.cpp:621]     [Backward] Layer block1-res3, bottom blob block1-relu6 diff: 7.07649e-05
+I0503 14:53:15.612502 354735552 net.cpp:621]     [Backward] Layer block1-relu6, bottom blob block1-bn6 diff: 3.49241e-05
+I0503 14:53:15.613298 354735552 net.cpp:621]     [Backward] Layer block1-bn6, bottom blob block1-conv6 diff: 6.18155e-05
+I0503 14:53:15.618330 354735552 net.cpp:621]     [Backward] Layer block1-conv6, bottom blob block1-relu5 diff: 8.46305e-05
+I0503 14:53:15.618350 354735552 net.cpp:632]     [Backward] Layer block1-conv6, param blob 0 diff: 0.00438253
+I0503 14:53:15.618358 354735552 net.cpp:632]     [Backward] Layer block1-conv6, param blob 1 diff: 1.3406e-09
+I0503 14:53:15.618679 354735552 net.cpp:621]     [Backward] Layer block1-relu5, bottom blob block1-bn5 diff: 4.22823e-05
+I0503 14:53:15.619499 354735552 net.cpp:621]     [Backward] Layer block1-bn5, bottom blob block1-conv5 diff: 4.17488e-05
+I0503 14:53:15.625284 354735552 net.cpp:621]     [Backward] Layer block1-conv5, bottom blob block1-res2_block1-res2_0_split_0 diff: 5.5974e-05
+I0503 14:53:15.625360 354735552 net.cpp:632]     [Backward] Layer block1-conv5, param blob 0 diff: 0.00562584
+I0503 14:53:15.625386 354735552 net.cpp:632]     [Backward] Layer block1-conv5, param blob 1 diff: 9.55879e-10
+I0503 14:53:15.626325 354735552 net.cpp:621]     [Backward] Layer block1-res2_block1-res2_0_split, bottom blob block1-res2 diff: 9.11727e-05
+I0503 14:53:15.627591 354735552 net.cpp:621]     [Backward] Layer block1-res2, bottom blob block1-res1_block1-res1_0_split_1 diff: 9.11727e-05
+I0503 14:53:15.627693 354735552 net.cpp:621]     [Backward] Layer block1-res2, bottom blob block1-relu4 diff: 9.11727e-05
+I0503 14:53:15.628484 354735552 net.cpp:621]     [Backward] Layer block1-relu4, bottom blob block1-bn4 diff: 4.51979e-05
+I0503 14:53:15.629953 354735552 net.cpp:621]     [Backward] Layer block1-bn4, bottom blob block1-conv4 diff: 7.75014e-05
+I0503 14:53:15.634719 354735552 net.cpp:621]     [Backward] Layer block1-conv4, bottom blob block1-relu3 diff: 0.000105443
+I0503 14:53:15.634742 354735552 net.cpp:632]     [Backward] Layer block1-conv4, param blob 0 diff: 0.0058979
+I0503 14:53:15.634750 354735552 net.cpp:632]     [Backward] Layer block1-conv4, param blob 1 diff: 1.53614e-09
+I0503 14:53:15.635087 354735552 net.cpp:621]     [Backward] Layer block1-relu3, bottom blob block1-bn3 diff: 5.34154e-05
+I0503 14:53:15.635885 354735552 net.cpp:621]     [Backward] Layer block1-bn3, bottom blob block1-conv3 diff: 7.03886e-05
+I0503 14:53:15.641088 354735552 net.cpp:621]     [Backward] Layer block1-conv3, bottom blob block1-res1_block1-res1_0_split_0 diff: 9.37157e-05
+I0503 14:53:15.641113 354735552 net.cpp:632]     [Backward] Layer block1-conv3, param blob 0 diff: 0.00737997
+I0503 14:53:15.641122 354735552 net.cpp:632]     [Backward] Layer block1-conv3, param blob 1 diff: 1.12959e-09
+I0503 14:53:15.641438 354735552 net.cpp:621]     [Backward] Layer block1-res1_block1-res1_0_split, bottom blob block1-res1 diff: 0.000132077
+I0503 14:53:15.641999 354735552 net.cpp:621]     [Backward] Layer block1-res1, bottom blob block1-project diff: 0.000132077
+I0503 14:53:15.642025 354735552 net.cpp:621]     [Backward] Layer block1-res1, bottom blob block1-relu2 diff: 0.000132077
+I0503 14:53:15.647102 354735552 net.cpp:621]     [Backward] Layer block1-project, bottom blob relu0_relu0_0_split_1 diff: 8.90862e-05
+I0503 14:53:15.647123 354735552 net.cpp:632]     [Backward] Layer block1-project, param blob 0 diff: 0.00706417
+I0503 14:53:15.647131 354735552 net.cpp:632]     [Backward] Layer block1-project, param blob 1 diff: 0.00388602
+I0503 14:53:15.647488 354735552 net.cpp:621]     [Backward] Layer block1-relu2, bottom blob block1-bn2 diff: 6.58123e-05
+I0503 14:53:15.648373 354735552 net.cpp:621]     [Backward] Layer block1-bn2, bottom blob block1-conv2 diff: 0.000119721
+I0503 14:53:15.653702 354735552 net.cpp:621]     [Backward] Layer block1-conv2, bottom blob block1-relu1 diff: 0.000162178
+I0503 14:53:15.653723 354735552 net.cpp:632]     [Backward] Layer block1-conv2, param blob 0 diff: 0.00885269
+I0503 14:53:15.653729 354735552 net.cpp:632]     [Backward] Layer block1-conv2, param blob 1 diff: 3.00406e-09
+I0503 14:53:15.654036 354735552 net.cpp:621]     [Backward] Layer block1-relu1, bottom blob block1-bn1 diff: 7.98598e-05
+I0503 14:53:15.655174 354735552 net.cpp:621]     [Backward] Layer block1-bn1, bottom blob block1-conv1 diff: 0.000140747
+I0503 14:53:15.658957 354735552 net.cpp:621]     [Backward] Layer block1-conv1, bottom blob relu0_relu0_0_split_0 diff: 0.000135418
+I0503 14:53:15.659008 354735552 net.cpp:632]     [Backward] Layer block1-conv1, param blob 0 diff: 0.0102492
+I0503 14:53:15.659029 354735552 net.cpp:632]     [Backward] Layer block1-conv1, param blob 1 diff: 3.06409e-09
+I0503 14:53:15.660703 354735552 net.cpp:621]     [Backward] Layer relu0_relu0_0_split, bottom blob relu0 diff: 0.00016467
+I0503 14:53:15.662544 354735552 net.cpp:621]     [Backward] Layer relu0, bottom blob bn0 diff: 8.20677e-05
+I0503 14:53:15.665066 354735552 net.cpp:621]     [Backward] Layer bn0, bottom blob conv0 diff: 2.37894e-06
+I0503 14:53:15.667120 354735552 net.cpp:632]     [Backward] Layer conv0, param blob 0 diff: 0.0402949
+I0503 14:53:15.667132 354735552 net.cpp:632]     [Backward] Layer conv0, param blob 1 diff: 1.36879e-10
+E0503 14:53:15.668759 354735552 net.cpp:721]     [Backward] All net params (data, diff): L1 norm = (50976.4, 1161.2); L2 norm = (4581.6, 4.09497)
+I0503 14:53:15.669373 354735552 solver.cpp:239] Iteration 0 (0 iter/s, 0.321s/200 iters), loss = 2.3708
+I0503 14:53:15.669389 354735552 solver.cpp:258]     Train net output #0: loss = 2.3708 (* 1 = 2.3708 loss)
+I0503 14:53:15.669400 354735552 sgd_solver.cpp:112] Iteration 0, lr = 0.001
+I0503 14:53:15.674867 354735552 solver.cpp:474] Snapshotting to HDF5 file examples/cifar10/cifar10_resnet_iter_1.caffemodel.h5
+I0503 14:53:15.693593 354735552 sgd_solver.cpp:296] Snapshotting solver state to HDF5 file examples/cifar10/cifar10_resnet_iter_1.solverstate.h5
+I0503 14:53:15.708741 354735552 solver.cpp:332] Optimization Done.
+I0503 14:53:15.708817 354735552 caffe.cpp:250] Optimization Done.
