@@ -8,6 +8,8 @@
 // e.g., if the Caffe blob axes are (num, channels, height, width),
 // the matcaffe data is stored as (width, height, channels, num)
 // where width is the fastest dimension.
+#define CPU_ONLY
+#define USE_MKL
 
 #include <sstream>
 #include <string>
@@ -16,6 +18,23 @@
 #include "mex.h"
 
 #include "caffe/caffe.hpp"
+
+#include "caffe/sgd_solvers.hpp"
+
+namespace caffe {
+  INSTANTIATE_CLASS(AdaDeltaSolver);
+  REGISTER_SOLVER_CLASS(AdaDelta);
+  INSTANTIATE_CLASS(AdaGradSolver);
+  REGISTER_SOLVER_CLASS(AdaGrad);
+  INSTANTIATE_CLASS(AdamSolver);
+  REGISTER_SOLVER_CLASS(Adam);
+  INSTANTIATE_CLASS(NesterovSolver);
+  REGISTER_SOLVER_CLASS(Nesterov);
+  INSTANTIATE_CLASS(RMSPropSolver);
+  REGISTER_SOLVER_CLASS(RMSProp);
+  INSTANTIATE_CLASS(SGDSolver);
+  REGISTER_SOLVER_CLASS(SGD);
+}
 
 #define MEX_ARGS int nlhs, mxArray **plhs, int nrhs, const mxArray **prhs
 

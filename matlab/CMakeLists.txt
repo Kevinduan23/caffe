@@ -35,20 +35,35 @@ file(GLOB Matlab_srcs +caffe/private/caffe_.cpp)
 set(Matlab_caffe_mex ${PROJECT_SOURCE_DIR}/matlab/+caffe/private/caffe_.mex)
 
 caffe_get_current_cflags(cflags)
+SET(cflags "${cflags};-I${Caffe_INCLUDE_DIR};-I${CMAKE_INSTALL_PREFIX}/include;-I${MKL_ROOT}/include")
 caffe_parse_linker_libs(Caffe_LINKER_LIBS folders libflags macos_frameworks)
 set(folders $<TARGET_LINKER_FILE_DIR:caffe> ${folders})
 
-# prepare linker flag lists
-string(REPLACE ";" ";-L" link_folders "-L${folders}")
-string(REPLACE ";" ":"  rpath_folders   "${folders}")
-
 if(build_using MATCHES "Matlab")
   set(libflags -lcaffe${Caffe_POSTFIX} ${libflags}) # Matlab R2014a complans for -Wl,--whole-archive
+  SET(link_folders "${link_folders} -L/usr/lib")
+
+
+  # prepare linker flag lists
+  string(REPLACE ";" " -L" link_folders "-L${folders}")
+  string(REPLACE ";" ":"  rpath_folders   "${folders}")
+  string(REPLACE ";" " " cflags "${cflags}")
+  string(REPLACE ";" " " libflags "${libflags}")
+
+  message("link_folders: ${link_folders}\n")
+  message("cflags: ${cflags}\n")
+  message("MKL_ROOT: ${MKL_ROOT}\n")
+  message("Caffe_LINKER_LIBS: ${Caffe_LINKER_LIBS}\n")
+  message("folders: ${folders}\n")
+  message("libflags: ${libflags}\n")
+  message("macos_frameworks: ${macos_frameworks}")
 
   caffe_fetch_and_set_proper_mexext(Matlab_caffe_mex)
-  add_custom_command(OUTPUT ${Matlab_caffe_mex} COMMAND ${Matlab_mex}
-      ARGS -output ${Matlab_caffe_mex} ${Matlab_srcs} ${cflags} ${link_folders} ${libflags}
-      DEPENDS caffe COMMENT "Building Matlab interface: ${Matlab_caffe_mex}" VERBATIM)
+  add_custom_command(OUTPUT ${Matlab_caffe_mex}
+          COMMAND ${Matlab_mex}
+          ARGS -output ${Matlab_caffe_mex} ${Matlab_srcs} CFLAGS=\"-I/Users/troy/.envs/include -I/opt/intel/mkl/include\" -L/Users/troy/.envs/lib -lcaffe${Caffe_POSTFIX} -lglog -R2018a -v
+          DEPENDS caffe
+          COMMENT "Building Matlab interface: ${Matlab_caffe_mex}")
   add_custom_target(matlab ALL DEPENDS ${Matlab_caffe_mex} SOURCES ${Matlab_srcs})
 
 elseif(build_using MATCHES "Octave")
