@@ -13,7 +13,7 @@ __global__ void SoftmaxLossForwardGPU(const int nthreads,
           const int num, const int dim, const int spatial_dim,
           const bool has_ignore_label_, const int ignore_label_,
           Dtype* counts,
-          bool use_label_smooth = false, float label_smooth_factor, int num_classes) {
+          bool use_label_smooth, float label_smooth_factor, int num_classes) {
   CUDA_KERNEL_LOOP(index, nthreads) {
     const int n = index / spatial_dim;
     const int s = index % spatial_dim;
@@ -80,7 +80,7 @@ __global__ void SoftmaxLossBackwardGPU(const int nthreads, const Dtype* top,
           const Dtype* label, Dtype* bottom_diff, const int num, const int dim,
           const int spatial_dim, const bool has_ignore_label_,
           const int ignore_label_, Dtype* counts,
-          bool use_label_smooth = false, float label_smooth_factor, int num_classes) {
+          bool use_label_smooth, float label_smooth_factor, int num_classes) {
   const int channels = dim / spatial_dim;
 
   CUDA_KERNEL_LOOP(index, nthreads) {
@@ -95,7 +95,7 @@ __global__ void SoftmaxLossBackwardGPU(const int nthreads, const Dtype* top,
       counts[index] = 0;
     } else {
       if (use_label_smooth && label_smooth_factor > 0.0F) {
-        for (int c = 0; c < num_classes; ++i) {
+        for (int c = 0; c < num_classes; ++c) {
           float coeff = (c == label_value) ? (1.0F - label_smooth_factor)
                                            : (label_smooth_factor / float(num_classes));
           bottom_diff[n * dim + c * spatial_dim + s] -= coeff;
