@@ -6,7 +6,9 @@ This helps crop and align feature maps among other uses.
 """
 
 from __future__ import division
+
 import numpy as np
+
 from caffe import layers as L
 
 PASS_THROUGH_LAYERS = ['AbsVal', 'BatchNorm', 'Bias', 'BNLL', 'Dropout',
@@ -118,6 +120,7 @@ def coord_map_from_to(top_from, top_to):
     Walk the graph to find a common ancestor while composing the coord maps for
     from and to until they meet. As a last step the from map is inverted.
     """
+
     # We need to find a common ancestor of top_from and top_to.
     # We'll assume that all ancestors are equivalent here (otherwise the graph
     # is an inconsistent state (which we could improve this to check for)).
@@ -179,7 +182,7 @@ def crop(top_from, top_to):
     assert (a == 1).all(), 'scale mismatch on crop (a = {})'.format(a)
     assert (b <= 0).all(), 'cannot crop negative offset (b = {})'.format(b)
     assert (np.round(b) == b).all(), 'cannot crop noninteger offset ' \
-        '(b = {})'.format(b)
+                                     '(b = {})'.format(b)
     return L.Crop(top_from, top_to,
                   crop_param=dict(axis=ax + 1,  # +1 for first cropping dim.
                                   offset=list(-np.round(b).astype(int))))

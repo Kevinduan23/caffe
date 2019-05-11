@@ -1,8 +1,8 @@
-import unittest
-import tempfile
-import os
 import numpy as np
+import os
 import six
+import tempfile
+import unittest
 
 import caffe
 from test_net import simple_net_file
@@ -25,11 +25,11 @@ class TestSolver(unittest.TestCase):
         caffe.set_mode_cpu()
         # fill in valid labels
         self.solver.net.blobs['label'].data[...] = \
-                np.random.randint(self.num_output,
-                    size=self.solver.net.blobs['label'].data.shape)
+            np.random.randint(self.num_output,
+                              size=self.solver.net.blobs['label'].data.shape)
         self.solver.test_nets[0].blobs['label'].data[...] = \
-                np.random.randint(self.num_output,
-                    size=self.solver.test_nets[0].blobs['label'].data.shape)
+            np.random.randint(self.num_output,
+                              size=self.solver.test_nets[0].blobs['label'].data.shape)
         os.remove(f.name)
         os.remove(net_f)
 

@@ -15,29 +15,29 @@ list(INSERT Caffe_LINKER_LIBS 0 PUBLIC caffeproto) # note, crucial to prepend!
 # creates 'test_srcs', 'srcs', 'test_cuda', 'cuda' lists
 caffe_pickup_caffe_sources(${PROJECT_SOURCE_DIR})
 
-if(HAVE_CUDA)
-  caffe_cuda_compile(cuda_objs ${cuda})
-  list(APPEND srcs ${cuda_objs} ${cuda})
-endif()
+if (HAVE_CUDA)
+    caffe_cuda_compile(cuda_objs ${cuda})
+    list(APPEND srcs ${cuda_objs} ${cuda})
+endif ()
 
 add_library(caffe ${srcs})
 caffe_default_properties(caffe)
 target_link_libraries(caffe ${Caffe_LINKER_LIBS})
 target_include_directories(caffe ${Caffe_INCLUDE_DIRS}
-                                 PUBLIC
-                                 $<BUILD_INTERFACE:${Caffe_INCLUDE_DIR}>
-                                 $<INSTALL_INTERFACE:include>)
+        PUBLIC
+        $<BUILD_INTERFACE:${Caffe_INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:include>)
 target_compile_definitions(caffe ${Caffe_DEFINITIONS})
-if(Caffe_COMPILE_OPTIONS)
-  target_compile_options(caffe ${Caffe_COMPILE_OPTIONS})
-endif()
+if (Caffe_COMPILE_OPTIONS)
+    target_compile_options(caffe ${Caffe_COMPILE_OPTIONS})
+endif ()
 set_target_properties(caffe PROPERTIES
-    VERSION   ${CAFFE_TARGET_VERSION}
-    SOVERSION ${CAFFE_TARGET_SOVERSION}
-    )
+        VERSION ${CAFFE_TARGET_VERSION}
+        SOVERSION ${CAFFE_TARGET_SOVERSION}
+        )
 
 # ---[ Tests
- add_subdirectory(test)
+add_subdirectory(test)
 
 # ---[ Install
 install(DIRECTORY ${Caffe_INCLUDE_DIR}/caffe DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

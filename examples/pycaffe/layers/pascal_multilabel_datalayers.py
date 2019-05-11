@@ -1,31 +1,22 @@
 # imports
-import json
-import time
-import pickle
-import scipy.misc
-import skimage.io
-import caffe
-
 import numpy as np
 import os.path as osp
-
-from xml.dom import minidom
-from random import shuffle
-from threading import Thread
+import scipy.misc
 from PIL import Image
-
+from random import shuffle
 from tools import SimpleTransformer
+from xml.dom import minidom
+
+import caffe
 
 
 class PascalMultilabelDataLayerSync(caffe.Layer):
-
     """
     This is a simple synchronous datalayer for training a multilabel model on
     PASCAL.
     """
 
     def setup(self, bottom, top):
-
         self.top_names = ['data', 'label']
 
         # === Read input parameters ===
@@ -79,7 +70,6 @@ class PascalMultilabelDataLayerSync(caffe.Layer):
 
 
 class BatchLoader(object):
-
     """
     This class abstracts away the loading of images.
     Images can either be loaded singly, or in a batch. The latter is used for
@@ -120,7 +110,7 @@ class BatchLoader(object):
         im = scipy.misc.imresize(im, self.im_shape)  # resize
 
         # do a simple horizontal flip as data augmentation
-        flip = np.random.choice(2)*2-1
+        flip = np.random.choice(2) * 2 - 1
         im = im[:, ::flip, :]
 
         # Load and prepare ground truth
@@ -150,12 +140,13 @@ def load_pascal_annotation(index, pascal_root):
     classes = ('__background__',  # always index 0
                'aeroplane', 'bicycle', 'bird', 'boat',
                'bottle', 'bus', 'car', 'cat', 'chair',
-                         'cow', 'diningtable', 'dog', 'horse',
-                         'motorbike', 'person', 'pottedplant',
-                         'sheep', 'sofa', 'train', 'tvmonitor')
+               'cow', 'diningtable', 'dog', 'horse',
+               'motorbike', 'person', 'pottedplant',
+               'sheep', 'sofa', 'train', 'tvmonitor')
     class_to_ind = dict(zip(classes, xrange(21)))
 
     filename = osp.join(pascal_root, 'Annotations', index + '.xml')
+
     # print 'Loading: {}'.format(filename)
 
     def get_data_from_tag(node, tag):

@@ -88,6 +88,7 @@ def solve(proto, snapshot, gpus, timing, uid, rank):
 
 if __name__ == '__main__':
     import argparse
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--solver", required=True, help="Solver proto definition.")

@@ -8,9 +8,9 @@ If 'metadata' dict in the JSON file contains 'include_in_docs': true,
 then copies the file to output file, appending the 'metadata' property
 as YAML front-matter, adding the field 'category' with value 'notebook'.
 """
+import json
 import os
 import sys
-import json
 
 filename = sys.argv[1]
 output_filename = sys.argv[2]

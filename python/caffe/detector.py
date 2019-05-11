@@ -32,6 +32,7 @@ class Detector(caffe.Net):
         sized border of pixels in the network input image is context, as in
         R-CNN feature extraction.
     """
+
     def __init__(self, model_file, pretrained_file, mean=None,
                  input_scale=None, raw_scale=None, channel_swap=None,
                  context_pad=None):
@@ -161,7 +162,7 @@ class Detector(caffe.Net):
             box = np.clip(box, 0., [im_h, im_w, im_h, im_w])
             clip_h = box[2] - box[0] + 1
             clip_w = box[3] - box[1] + 1
-            assert(clip_h > 0 and clip_w > 0)
+            assert (clip_h > 0 and clip_w > 0)
             crop_h = round(clip_h * scale_h)
             crop_w = round(clip_w * scale_w)
             if pad_y + crop_h > crop_size:
@@ -192,7 +193,7 @@ class Detector(caffe.Net):
         tpose = self.transformer.transpose[in_]
         inv_tpose = [tpose[t] for t in tpose]
         self.crop_dims = np.array(self.blobs[in_].data.shape[1:])[inv_tpose]
-        #.transpose(inv_tpose)
+        # .transpose(inv_tpose)
         # context padding
         self.context_pad = context_pad
         if self.context_pad:

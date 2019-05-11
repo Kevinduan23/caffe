@@ -1,8 +1,8 @@
-import unittest
-import tempfile
-import os
 import numpy as np
+import os
 import six
+import tempfile
+import unittest
 from collections import OrderedDict
 
 import caffe
@@ -42,8 +42,8 @@ class TestNet(unittest.TestCase):
         self.net = caffe.Net(net_file, caffe.TRAIN)
         # fill in valid labels
         self.net.blobs['label'].data[...] = \
-                np.random.randint(self.num_output,
-                    size=self.net.blobs['label'].data.shape)
+            np.random.randint(self.num_output,
+                              size=self.net.blobs['label'].data.shape)
         os.remove(net_file)
 
     def test_memory(self):
@@ -72,41 +72,41 @@ class TestNet(unittest.TestCase):
         self.net.backward()
 
     def test_forward_start_end(self):
-        conv_blob=self.net.blobs['conv']
-        ip_blob=self.net.blobs['ip_blob']
-        sample_data=np.random.uniform(size=conv_blob.data.shape)
-        sample_data=sample_data.astype(np.float32)
-        conv_blob.data[:]=sample_data
-        forward_blob=self.net.forward(start='ip',end='ip')
-        self.assertIn('ip_blob',forward_blob)
+        conv_blob = self.net.blobs['conv']
+        ip_blob = self.net.blobs['ip_blob']
+        sample_data = np.random.uniform(size=conv_blob.data.shape)
+        sample_data = sample_data.astype(np.float32)
+        conv_blob.data[:] = sample_data
+        forward_blob = self.net.forward(start='ip', end='ip')
+        self.assertIn('ip_blob', forward_blob)
 
-        manual_forward=[]
-        for i in range(0,conv_blob.data.shape[0]):
-          dot=np.dot(self.net.params['ip'][0].data,
-                     conv_blob.data[i].reshape(-1))
-          manual_forward.append(dot+self.net.params['ip'][1].data)
-        manual_forward=np.array(manual_forward)
+        manual_forward = []
+        for i in range(0, conv_blob.data.shape[0]):
+            dot = np.dot(self.net.params['ip'][0].data,
+                         conv_blob.data[i].reshape(-1))
+            manual_forward.append(dot + self.net.params['ip'][1].data)
+        manual_forward = np.array(manual_forward)
 
-        np.testing.assert_allclose(ip_blob.data,manual_forward,rtol=1e-3,atol=1e-5)
+        np.testing.assert_allclose(ip_blob.data, manual_forward, rtol=1e-3, atol=1e-5)
 
     def test_backward_start_end(self):
-        conv_blob=self.net.blobs['conv']
-        ip_blob=self.net.blobs['ip_blob']
-        sample_data=np.random.uniform(size=ip_blob.data.shape)
-        sample_data=sample_data.astype(np.float32)
-        ip_blob.diff[:]=sample_data
-        backward_blob=self.net.backward(start='ip',end='ip')
-        self.assertIn('conv',backward_blob)
+        conv_blob = self.net.blobs['conv']
+        ip_blob = self.net.blobs['ip_blob']
+        sample_data = np.random.uniform(size=ip_blob.data.shape)
+        sample_data = sample_data.astype(np.float32)
+        ip_blob.diff[:] = sample_data
+        backward_blob = self.net.backward(start='ip', end='ip')
+        self.assertIn('conv', backward_blob)
 
-        manual_backward=[]
-        for i in range(0,conv_blob.data.shape[0]):
-          dot=np.dot(self.net.params['ip'][0].data.transpose(),
-                     sample_data[i].reshape(-1))
-          manual_backward.append(dot)
-        manual_backward=np.array(manual_backward)
-        manual_backward=manual_backward.reshape(conv_blob.data.shape)
+        manual_backward = []
+        for i in range(0, conv_blob.data.shape[0]):
+            dot = np.dot(self.net.params['ip'][0].data.transpose(),
+                         sample_data[i].reshape(-1))
+            manual_backward.append(dot)
+        manual_backward = np.array(manual_backward)
+        manual_backward = manual_backward.reshape(conv_blob.data.shape)
 
-        np.testing.assert_allclose(conv_blob.diff,manual_backward,rtol=1e-3,atol=1e-5)
+        np.testing.assert_allclose(conv_blob.diff, manual_backward, rtol=1e-3, atol=1e-5)
 
     def test_clear_param_diffs(self):
         # Run a forward/backward step to have non-zero diffs
@@ -150,7 +150,7 @@ class TestNet(unittest.TestCase):
         for name in self.net.params:
             for i in range(len(self.net.params[name])):
                 self.assertEqual(abs(self.net.params[name][i].data
-                    - net2.params[name][i].data).sum(), 0)
+                                     - net2.params[name][i].data).sum(), 0)
 
     def test_save_hdf5(self):
         f = tempfile.NamedTemporaryFile(mode='w+', delete=False)
@@ -164,10 +164,10 @@ class TestNet(unittest.TestCase):
         for name in self.net.params:
             for i in range(len(self.net.params[name])):
                 self.assertEqual(abs(self.net.params[name][i].data
-                    - net2.params[name][i].data).sum(), 0)
+                                     - net2.params[name][i].data).sum(), 0)
+
 
 class TestLevels(unittest.TestCase):
-
     TEST_NET = """
 layer {
   name: "data"
@@ -238,7 +238,6 @@ layer {
 
 
 class TestStages(unittest.TestCase):
-
     TEST_NET = """
 layer {
   name: "data"
@@ -307,7 +306,6 @@ layer {
 
 
 class TestAllInOne(unittest.TestCase):
-
     TEST_NET = """
 layer {
   name: "train_data"
@@ -372,7 +370,7 @@ layer {
         os.remove(self.f.name)
 
     def check_net(self, net, outputs):
-        self.assertEqual(list(net.blobs['data'].shape), [1,1,10,10])
+        self.assertEqual(list(net.blobs['data'].shape), [1, 1, 10, 10])
         self.assertEqual(net.outputs, outputs)
 
     def test_train(self):
@@ -386,4 +384,3 @@ layer {
     def test_deploy(self):
         net = caffe.Net(self.f.name, caffe.TEST, stages=['deploy'])
         self.check_net(net, ['pred'])
-

@@ -9,21 +9,24 @@ Use this tool to check at a glance that the computation you've specified is the
 computation you expect.
 """
 
-from caffe.proto import caffe_pb2
-from google import protobuf
-import re
 import argparse
+import re
+from google import protobuf
+
+from caffe.proto import caffe_pb2
 
 # ANSI codes for coloring blobs (used cyclically)
 COLORS = ['92', '93', '94', '95', '97', '96', '42', '43;30', '100',
           '444', '103;30', '107;30']
 DISCONNECTED_COLOR = '41'
 
+
 def read_net(filename):
     net = caffe_pb2.NetParameter()
     with open(filename) as f:
         protobuf.text_format.Parse(f.read(), net)
     return net
+
 
 def format_param(param):
     out = []
@@ -35,8 +38,10 @@ def format_param(param):
         out.append('Dx{}'.format(param.decay_mult))
     return ' '.join(out)
 
+
 def printed_len(s):
     return len(re.sub(r'\033\[[\d;]+m', '', s))
+
 
 def print_table(table, max_width):
     """Print a simple nicely-aligned table.
@@ -59,6 +64,7 @@ def print_table(table, max_width):
             row_str += cell + ' '
             row_str += ' ' * max(right_col - printed_len(row_str), 0)
         print row_str
+
 
 def summarize_net(net):
     disconnected_tops = set()
@@ -125,16 +131,18 @@ def summarize_net(net):
                       arg_str])
     return table
 
+
 def main():
     parser = argparse.ArgumentParser(description="Print a concise summary of net computation.")
     parser.add_argument('filename', help='net prototxt file to summarize')
     parser.add_argument('-w', '--max-width', help='maximum field width',
-            type=int, default=30)
+                        type=int, default=30)
     args = parser.parse_args()
 
     net = read_net(args.filename)
     table = summarize_net(net)
     print_table(table, max_width=args.max_width)
+
 
 if __name__ == '__main__':
     main()

@@ -17,13 +17,13 @@
 
 namespace caffe {
 
-  template <typename TypeParam>
+  template<typename TypeParam>
   class BatchNormLayerTest : public MultiDeviceTest<TypeParam> {
     typedef typename TypeParam::Dtype Dtype;
-   protected:
+  protected:
     BatchNormLayerTest()
-        : blob_bottom_(new Blob<Dtype>(5, 2, 3, 4)),
-          blob_top_(new Blob<Dtype>()) {
+            : blob_bottom_(new Blob<Dtype>(5, 2, 3, 4)),
+              blob_top_(new Blob<Dtype>()) {
       // fill the values
       FillerParameter filler_param;
       GaussianFiller<Dtype> filler(filler_param);
@@ -31,11 +31,16 @@ namespace caffe {
       blob_bottom_vec_.push_back(blob_bottom_);
       blob_top_vec_.push_back(blob_top_);
     }
-    virtual ~BatchNormLayerTest() { delete blob_bottom_; delete blob_top_; }
-    Blob<Dtype>* const blob_bottom_;
-    Blob<Dtype>* const blob_top_;
-    vector<Blob<Dtype>*> blob_bottom_vec_;
-    vector<Blob<Dtype>*> blob_top_vec_;
+
+    virtual ~BatchNormLayerTest() {
+      delete blob_bottom_;
+      delete blob_top_;
+    }
+
+    Blob<Dtype> *const blob_bottom_;
+    Blob<Dtype> *const blob_top_;
+    vector<Blob<Dtype> *> blob_bottom_vec_;
+    vector<Blob<Dtype> *> blob_top_vec_;
   };
 
   TYPED_TEST_CASE(BatchNormLayerTest, TestDtypesAndDevices);
@@ -57,8 +62,8 @@ namespace caffe {
     for (int j = 0; j < channels; ++j) {
       Dtype sum = 0, var = 0;
       for (int i = 0; i < num; ++i) {
-        for ( int k = 0; k < height; ++k ) {
-          for ( int l = 0; l < width; ++l ) {
+        for (int k = 0; k < height; ++k) {
+          for (int l = 0; l < width; ++l) {
             Dtype data = this->blob_top_->data_at(i, j, k, l);
             sum += data;
             var += data * data;
@@ -79,8 +84,8 @@ namespace caffe {
   TYPED_TEST(BatchNormLayerTest, TestForwardInplace) {
     typedef typename TypeParam::Dtype Dtype;
     Blob<Dtype> blob_inplace(5, 2, 3, 4);
-    vector<Blob<Dtype>*> blob_bottom_vec;
-    vector<Blob<Dtype>*> blob_top_vec;
+    vector<Blob<Dtype> *> blob_bottom_vec;
+    vector<Blob<Dtype> *> blob_top_vec;
     LayerParameter layer_param;
     FillerParameter filler_param;
     GaussianFiller<Dtype> filler(filler_param);
@@ -101,8 +106,8 @@ namespace caffe {
     for (int j = 0; j < channels; ++j) {
       Dtype sum = 0, var = 0;
       for (int i = 0; i < num; ++i) {
-        for ( int k = 0; k < height; ++k ) {
-          for ( int l = 0; l < width; ++l ) {
+        for (int k = 0; k < height; ++k) {
+          for (int l = 0; l < width; ++l) {
             Dtype data = blob_inplace.data_at(i, j, k, l);
             sum += data;
             var += data * data;
@@ -127,7 +132,7 @@ namespace caffe {
     BatchNormLayer<Dtype> layer(layer_param);
     GradientChecker<Dtype> checker(1e-2, 1e-4);
     checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
-        this->blob_top_vec_);
+                                    this->blob_top_vec_);
   }
 
 }  // namespace caffe

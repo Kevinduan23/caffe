@@ -1,6 +1,6 @@
 # Enter your network definition here.
 # Use Shift+Enter to update the visualization.
-name: "ResNet-cifar10"
+name: "ResNet-cifar10-double"
 layer {
   name : "cifar"
   type : "Data"
@@ -12,11 +12,13 @@ layer {
   transform_param {
     mean_file : "examples/cifar10/mean.binaryproto"
     scale: 0.00390625
+    mirror: true
   }
   data_param {
     source : "examples/cifar10/cifar10_train_lmdb"
     batch_size : 100
     backend : LMDB
+    prefetch: 32
   }
 }
 layer {
@@ -49,7 +51,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 8
+    num_output : 16
     pad : 1
     kernel_size : 3
     stride : 2
@@ -101,7 +103,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 16
+    num_output : 32
     pad : 1
     kernel_size : 3
     stride : 2
@@ -150,7 +152,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 16
+    num_output : 32
     pad : 1
     kernel_size : 3
     stride : 1
@@ -199,9 +201,9 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 16
+    num_output : 32
     pad : 1
-    kernel_size : 4
+    kernel_size : 3
     stride : 2
     weight_filler {
       type : "xavier"
@@ -236,7 +238,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 16
+    num_output : 32
     pad : 1
     kernel_size : 3
     stride : 1
@@ -285,7 +287,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 16
+    num_output : 32
     pad : 1
     kernel_size : 3
     stride : 1
@@ -345,7 +347,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 16
+    num_output : 32
     pad : 1
     kernel_size : 3
     stride : 1
@@ -394,7 +396,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 16
+    num_output : 32
     pad : 1
     kernel_size : 3
     stride : 1
@@ -458,7 +460,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 32
+    num_output : 64
     pad : 1
     kernel_size : 3
     stride : 2
@@ -507,7 +509,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 32
+    num_output : 64
     pad : 1
     kernel_size : 3
     stride : 1
@@ -556,9 +558,9 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 32
+    num_output : 64
     pad : 1
-    kernel_size : 4
+    kernel_size : 3
     stride : 2
     weight_filler {
       type : "xavier"
@@ -593,7 +595,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 32
+    num_output : 64
     pad : 1
     kernel_size : 3
     stride : 1
@@ -642,7 +644,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 32
+    num_output : 64
     pad : 1
     kernel_size : 3
     stride : 1
@@ -702,7 +704,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 32
+    num_output : 64
     pad : 1
     kernel_size : 3
     stride : 1
@@ -751,7 +753,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 32
+    num_output : 64
     pad : 1
     kernel_size : 3
     stride : 1
@@ -815,7 +817,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 64
+    num_output : 128
     pad : 1
     kernel_size : 3
     stride : 2
@@ -864,7 +866,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 64
+    num_output : 128
     pad : 1
     kernel_size : 3
     stride : 1
@@ -913,9 +915,9 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 64
+    num_output : 128
     pad : 1
-    kernel_size : 4
+    kernel_size : 3
     stride : 2
     weight_filler {
       type : "xavier"
@@ -950,7 +952,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 64
+    num_output : 128
     pad : 1
     kernel_size : 3
     stride : 1
@@ -999,7 +1001,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 64
+    num_output : 128
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1059,7 +1061,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 64
+    num_output : 128
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1108,7 +1110,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 64
+    num_output : 128
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1172,7 +1174,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 128
+    num_output : 256
     pad : 1
     kernel_size : 3
     stride : 2
@@ -1221,7 +1223,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 128
+    num_output : 256
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1270,9 +1272,9 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 128
+    num_output : 256
     pad : 1
-    kernel_size : 4
+    kernel_size : 3
     stride : 2
     weight_filler {
       type : "xavier"
@@ -1307,7 +1309,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 128
+    num_output : 256
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1356,7 +1358,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 128
+    num_output : 256
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1416,7 +1418,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 128
+    num_output : 256
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1465,7 +1467,7 @@ layer {
     lr_mult : 2
   }
   convolution_param {
-    num_output : 128
+    num_output : 256
     pad : 1
     kernel_size : 3
     stride : 1
@@ -1526,19 +1528,136 @@ layer {
 }
 
 layer {
-  name: "dropout1"
-  type: "Dropout"
-  dropout_param: {
-  	dropout_ratio: 0.4
-  }
+  name: "flatten"
+  type: "Flatten"
   bottom: "pool"
-  top: "dropout1"
+  top: "flatten"
+}
+
+layer {
+  name: "fc1"
+  type: "InnerProduct"
+  bottom: "flatten"
+  top: "fc1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer {
+  name: "fc1-bn"
+  type: "BatchNorm"
+  bottom: "fc1"
+  top: "fc1-bn"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+}
+layer {
+  name : "fc1-relu"
+  type : "ReLU"
+  bottom : "fc1-bn"
+  top : "fc1-relu"
+  relu_param {
+    negative_slope : 0
+  }
+}
+
+layer {
+  name: "drop1"
+  type: "Dropout"
+  bottom: "fc1-relu"
+  top: "drop1"
+  dropout_param: {
+  	dropout_ratio: 0.5
+  }
+}
+
+layer {
+  name: "fc2"
+  type: "InnerProduct"
+  bottom: "drop1"
+  top: "fc2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+
+layer {
+  name: "fc2-bn"
+  type: "BatchNorm"
+  bottom: "fc2"
+  top: "fc2-bn"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+}
+layer {
+  name : "fc2-relu"
+  type : "ReLU"
+  bottom : "fc2-bn"
+  top : "fc2-relu"
+  relu_param {
+    negative_slope : 0
+  }
+}
+
+layer {
+  name: "drop2"
+  type: "Dropout"
+  bottom: "fc2-relu"
+  top: "drop2"
+  dropout_param: {
+  	dropout_ratio: 0.5
+  }
 }
 
 layer {
   name: "prob"
   type: "InnerProduct"
-  bottom: "dropout1"
+  bottom: "drop2"
   top: "prob"
   param {
     lr_mult: 1
@@ -1566,6 +1685,19 @@ layer {
   bottom : "prob"
   bottom : "label"
   top : "accuracy"
+  include {
+    phase : TEST
+  }
+}
+layer {
+  name : "accuracy-top3"
+  type : "Accuracy"
+  bottom : "prob"
+  bottom : "label"
+  top : "accuracy-top3"
+  accuracy_param: {
+    top_k: 3
+  }
   include {
     phase : TEST
   }

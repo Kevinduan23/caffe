@@ -19,9 +19,9 @@ using std::pair;
 using boost::scoped_ptr;
 
 DEFINE_string(backend, "lmdb",
-        "The backend {leveldb, lmdb} containing the images");
+              "The backend {leveldb, lmdb} containing the images");
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 #ifdef USE_OPENCV
   ::google::InitGoogleLogging(argv[0]);
   // Print output to stderr (while still logging)
@@ -32,9 +32,9 @@ int main(int argc, char** argv) {
 #endif
 
   gflags::SetUsageMessage("Compute the mean_image of a set of images given by"
-        " a leveldb/lmdb\n"
-        "Usage:\n"
-        "    compute_image_mean [FLAGS] INPUT_DB [OUTPUT_FILE]\n");
+                          " a leveldb/lmdb\n"
+                          "Usage:\n"
+                          "    compute_image_mean [FLAGS] INPUT_DB [OUTPUT_FILE]\n");
 
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
@@ -73,21 +73,21 @@ int main(int argc, char** argv) {
     datum.ParseFromString(cursor->value());
     DecodeDatumNative(&datum);
 
-    const std::string& data = datum.data();
+    const std::string &data = datum.data();
     size_in_datum = std::max<int>(datum.data().size(),
-        datum.float_data_size());
+                                  datum.float_data_size());
     CHECK_EQ(size_in_datum, data_size) << "Incorrect data field size " <<
-        size_in_datum;
+                                       size_in_datum;
     if (data.size() != 0) {
       CHECK_EQ(data.size(), size_in_datum);
       for (int i = 0; i < size_in_datum; ++i) {
-        sum_blob.set_data(i, sum_blob.data(i) + (uint8_t)data[i]);
+        sum_blob.set_data(i, sum_blob.data(i) + (uint8_t) data[i]);
       }
     } else {
       CHECK_EQ(datum.float_data_size(), size_in_datum);
       for (int i = 0; i < size_in_datum; ++i) {
         sum_blob.set_data(i, sum_blob.data(i) +
-            static_cast<float>(datum.float_data(i)));
+                             static_cast<float>(datum.float_data(i)));
       }
     }
     ++count;

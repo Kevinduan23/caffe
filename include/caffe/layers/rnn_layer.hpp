@@ -14,7 +14,8 @@
 
 namespace caffe {
 
-template <typename Dtype> class RecurrentLayer;
+  template<typename Dtype>
+  class RecurrentLayer;
 
 /**
  * @brief Processes time-varying inputs using a simple recurrent neural network
@@ -26,21 +27,25 @@ template <typename Dtype> class RecurrentLayer;
  *     o_t := \tanh[ W_{ho} h_t + b_o ]
  * @f$.
  */
-template <typename Dtype>
-class RNNLayer : public RecurrentLayer<Dtype> {
- public:
-  explicit RNNLayer(const LayerParameter& param)
-      : RecurrentLayer<Dtype>(param) {}
+  template<typename Dtype>
+  class RNNLayer : public RecurrentLayer<Dtype> {
+  public:
+    explicit RNNLayer(const LayerParameter &param)
+            : RecurrentLayer<Dtype>(param) {}
 
-  virtual inline const char* type() const { return "RNN"; }
+    virtual inline const char *type() const { return "RNN"; }
 
- protected:
-  virtual void FillUnrolledNet(NetParameter* net_param) const;
-  virtual void RecurrentInputBlobNames(vector<string>* names) const;
-  virtual void RecurrentOutputBlobNames(vector<string>* names) const;
-  virtual void RecurrentInputShapes(vector<BlobShape>* shapes) const;
-  virtual void OutputBlobNames(vector<string>* names) const;
-};
+  protected:
+    virtual void FillUnrolledNet(NetParameter *net_param) const;
+
+    virtual void RecurrentInputBlobNames(vector<string> *names) const;
+
+    virtual void RecurrentOutputBlobNames(vector<string> *names) const;
+
+    virtual void RecurrentInputShapes(vector<BlobShape> *shapes) const;
+
+    virtual void OutputBlobNames(vector<string> *names) const;
+  };
 
 }  // namespace caffe
 

@@ -13,12 +13,12 @@ namespace {
 
   void handle_signal(int signal) {
     switch (signal) {
-    case SIGHUP:
-      got_sighup = true;
-      break;
-    case SIGINT:
-      got_sigint = true;
-      break;
+      case SIGHUP:
+        got_sighup = true;
+        break;
+      case SIGINT:
+        got_sigint = true;
+        break;
     }
   }
 
@@ -85,31 +85,31 @@ namespace {
 
 namespace caffe {
 
-SignalHandler::SignalHandler(SolverAction::Enum SIGINT_action,
-                             SolverAction::Enum SIGHUP_action):
-  SIGINT_action_(SIGINT_action),
-  SIGHUP_action_(SIGHUP_action) {
-  HookupHandler();
-}
-
-SignalHandler::~SignalHandler() {
-  UnhookHandler();
-}
-
-SolverAction::Enum SignalHandler::CheckForSignals() const {
-  if (GotSIGHUP()) {
-    return SIGHUP_action_;
+  SignalHandler::SignalHandler(SolverAction::Enum SIGINT_action,
+                               SolverAction::Enum SIGHUP_action) :
+          SIGINT_action_(SIGINT_action),
+          SIGHUP_action_(SIGHUP_action) {
+    HookupHandler();
   }
-  if (GotSIGINT()) {
-    return SIGINT_action_;
+
+  SignalHandler::~SignalHandler() {
+    UnhookHandler();
   }
-  return SolverAction::NONE;
-}
+
+  SolverAction::Enum SignalHandler::CheckForSignals() const {
+    if (GotSIGHUP()) {
+      return SIGHUP_action_;
+    }
+    if (GotSIGINT()) {
+      return SIGINT_action_;
+    }
+    return SolverAction::NONE;
+  }
 
 // Return the function that the solver can use to find out if a snapshot or
 // early exit is being requested.
-ActionCallback SignalHandler::GetActionFunction() {
-  return boost::bind(&SignalHandler::CheckForSignals, this);
-}
+  ActionCallback SignalHandler::GetActionFunction() {
+    return boost::bind(&SignalHandler::CheckForSignals, this);
+  }
 
 }  // namespace caffe

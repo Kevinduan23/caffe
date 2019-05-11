@@ -1,11 +1,10 @@
 #!/usr/bin/env python
+import argparse
+import hashlib
 import os
 import sys
 import time
 import yaml
-import hashlib
-import argparse
-
 from six.moves import urllib
 
 required_keys = ['caffemodel', 'caffemodel_url', 'sha1']
@@ -24,7 +23,7 @@ def reporthook(count, block_size, total_size):
     speed = int(progress_size / (1024 * duration))
     percent = int(count * block_size * 100 / total_size)
     sys.stdout.write("\r...%d%%, %d MB, %d KB/s, %d seconds passed" %
-                    (percent, progress_size / (1024 * 1024), speed, duration))
+                     (percent, progress_size / (1024 * 1024), speed, duration))
     sys.stdout.flush()
 
 
@@ -59,10 +58,12 @@ if __name__ == '__main__':
     frontmatter = args.dirname[1]
     model_filename = os.path.join(dirname, frontmatter['caffemodel'])
 
+
     # Closure-d function for checking SHA1.
     def model_checks_out(filename=model_filename, sha1=frontmatter['sha1']):
         with open(filename, 'rb') as f:
             return hashlib.sha1(f.read()).hexdigest() == sha1
+
 
     # Check if model exists.
     if os.path.exists(model_filename) and model_checks_out():

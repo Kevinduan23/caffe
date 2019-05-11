@@ -88,11 +88,11 @@ def get_layer_lr_mult(layer):
         return (1.0, 1.0)
 
     if len(params) == 1:
-        lrm0 = getattr(params[0],'lr_mult', 1.0)
+        lrm0 = getattr(params[0], 'lr_mult', 1.0)
         return (lrm0, 1.0)
 
     if len(params) == 2:
-        lrm0, lrm1 = [getattr(p,'lr_mult', 1.0) for p in params]
+        lrm0, lrm1 = [getattr(p, 'lr_mult', 1.0) for p in params]
         return (lrm0, lrm1)
 
     raise ValueError("Could not parse the learning rate multiplier")
@@ -215,22 +215,22 @@ def get_pydot_graph(caffe_net, rankdir, label_edges=True, phase=None, display_lr
     pydot_edges = []
     for layer in caffe_net.layer:
         if phase is not None:
-          included = False
-          if len(layer.include) == 0:
-            included = True
-          if len(layer.include) > 0 and len(layer.exclude) > 0:
-            raise ValueError('layer ' + layer.name + ' has both include '
-                             'and exclude specified.')
-          for layer_phase in layer.include:
-            included = included or layer_phase.phase == phase
-          for layer_phase in layer.exclude:
-            included = included and not layer_phase.phase == phase
-          if not included:
-            continue
+            included = False
+            if len(layer.include) == 0:
+                included = True
+            if len(layer.include) > 0 and len(layer.exclude) > 0:
+                raise ValueError('layer ' + layer.name + ' has both include '
+                                                         'and exclude specified.')
+            for layer_phase in layer.include:
+                included = included or layer_phase.phase == phase
+            for layer_phase in layer.exclude:
+                included = included and not layer_phase.phase == phase
+            if not included:
+                continue
         node_label = get_layer_label(layer, rankdir, display_lrm=display_lrm)
         node_name = "%s_%s" % (layer.name, layer.type)
         if (len(layer.bottom) == 1 and len(layer.top) == 1 and
-           layer.bottom[0] == layer.top[0]):
+                layer.bottom[0] == layer.top[0]):
             # We have an in-place neuron layer.
             pydot_nodes[node_name] = pydot.Node(node_label,
                                                 **NEURON_LAYER_STYLE)
@@ -309,6 +309,6 @@ def draw_net_to_file(caffe_net, filename, rankdir='LR', phase=None, display_lrm=
         If True display the learning rate multipliers for the learning layers
         (default is False).
     """
-    ext = filename[filename.rfind('.')+1:]
+    ext = filename[filename.rfind('.') + 1:]
     with open(filename, 'wb') as fid:
         fid.write(draw_net(caffe_net, rankdir, ext, phase, display_lrm))

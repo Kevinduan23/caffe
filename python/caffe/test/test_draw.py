@@ -1,10 +1,10 @@
 import os
 import unittest
-
 from google.protobuf import text_format
 
 import caffe.draw
 from caffe.proto import caffe_pb2
+
 
 def getFilenames():
     """Yields files in the source tree which are Net prototxts."""

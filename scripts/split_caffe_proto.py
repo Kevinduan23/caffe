@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-import mmap
-import re
-import os
 import errno
+import os
+import re
 
 script_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -26,7 +25,6 @@ caffe_proto_fn = os.path.join(
     '../src/caffe/proto/caffe.proto')
 
 with open(caffe_proto_fn, 'r') as fin:
-
     for m in r.finditer(fin.read(), re.MULTILINE):
         fn = os.path.join(
             script_path,

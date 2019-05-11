@@ -4,17 +4,17 @@ interface.
 """
 
 from collections import OrderedDict
+
 try:
     from itertools import izip_longest
 except:
     from itertools import zip_longest as izip_longest
 import numpy as np
 
-from ._caffe import Net, SGDSolver, NesterovSolver, AdaGradSolver, \
-        RMSPropSolver, AdaDeltaSolver, AdamSolver, NCCL, Timer
-import caffe.io
+from ._caffe import Net
 
 import six
+
 
 # We directly update methods from Net here (rather than using composition or
 # inheritance) so that nets created by caffe (e.g., by SGDSolver) will
@@ -43,6 +43,7 @@ def _Net_blob_loss_weights(self):
                                                        self._blob_loss_weights))
     return self._blob_loss_weights_dict
 
+
 @property
 def _Net_layer_dict(self):
     """
@@ -63,9 +64,9 @@ def _Net_params(self):
     """
     if not hasattr(self, '_params_dict'):
         self._params_dict = OrderedDict([(name, lr.blobs)
-                                        for name, lr in zip(
-                                            self._layer_names, self.layers)
-                                        if len(lr.blobs) > 0])
+                                         for name, lr in zip(
+                self._layer_names, self.layers)
+                                         if len(lr.blobs) > 0])
     return self._params_dict
 
 
@@ -265,7 +266,7 @@ def _Net_set_input_arrays(self, data, labels):
     """
     if labels.ndim == 1:
         labels = np.ascontiguousarray(labels[:, np.newaxis, np.newaxis,
-                                             np.newaxis])
+                                      np.newaxis])
     return self._set_input_arrays(data, labels)
 
 
@@ -302,6 +303,7 @@ def _Net_batch(self, blobs):
                                                  padding])
         yield padded_batch
 
+
 def _Net_get_id_name(func, field):
     """
     Generic property that maps func to the layer names into an OrderedDict.
@@ -317,16 +319,19 @@ def _Net_get_id_name(func, field):
     ------
     A one-parameter function that can be set as a property.
     """
+
     @property
     def get_id_name(self):
         if not hasattr(self, field):
             id_to_name = list(self.blobs)
             res = OrderedDict([(self._layer_names[i],
                                 [id_to_name[j] for j in func(self, i)])
-                                for i in range(len(self.layers))])
+                               for i in range(len(self.layers))])
             setattr(self, field, res)
         return getattr(self, field)
+
     return get_id_name
+
 
 # Attach methods to Net.
 Net.blobs = _Net_blobs

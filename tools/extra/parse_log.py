@@ -6,12 +6,13 @@ Parse training log
 Evolved from parse_log.sh
 """
 
-import os
-import re
-import extract_seconds
 import argparse
 import csv
+import os
+import re
 from collections import OrderedDict
+
+import extract_seconds
 
 
 def parse_log(path_to_log):
@@ -147,10 +148,10 @@ def save_csv_files(logfile_path, output_dir, train_dict_list, test_dict_list,
     """
 
     log_basename = os.path.basename(logfile_path)
-    train_filename = os.path.join(output_dir, log_basename + '.train')
+    train_filename = os.path.join(output_dir, log_basename + '.train.csv')
     write_csv(train_filename, train_dict_list, delimiter, verbose)
 
-    test_filename = os.path.join(output_dir, log_basename + '.test')
+    test_filename = os.path.join(output_dir, log_basename + '.test.csv')
     write_csv(test_filename, test_dict_list, delimiter, verbose)
 
 

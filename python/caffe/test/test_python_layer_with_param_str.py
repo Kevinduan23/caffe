@@ -1,7 +1,6 @@
-import unittest
-import tempfile
 import os
-import six
+import tempfile
+import unittest
 
 import caffe
 
@@ -39,7 +38,7 @@ def python_param_net_file():
 
 
 @unittest.skipIf('Python' not in caffe.layer_type_list(),
-    'Caffe built without Python layer support')
+                 'Caffe built without Python layer support')
 class TestLayerWithParam(unittest.TestCase):
     def setUp(self):
         net_file = python_param_net_file()

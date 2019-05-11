@@ -2,7 +2,6 @@ import numpy as np
 
 
 class SimpleTransformer:
-
     """
     SimpleTransformer is a simple class for preprocessing and deprocessing
     images for caffe.
@@ -51,7 +50,6 @@ class SimpleTransformer:
 
 
 class CaffeSolver:
-
     """
     Caffesolver is a class for creating a solver.prototxt file. It sets default
     values and can export a solver parameter file.
@@ -116,6 +114,6 @@ class CaffeSolver:
         """
         f = open(filepath, 'w')
         for key, value in sorted(self.sp.items()):
-            if not(type(value) is str):
+            if not (type(value) is str):
                 raise TypeError('All solver parameters must be strings')
             f.write('%s: %s\n' % (key, value))
