@@ -12,6 +12,21 @@
 
 namespace caffe {
 
+  /**
+   * @brief \b C=alpha*A*B+beta*C
+   *
+   * @tparam Dtype
+   * @param TransA 是否要对A做转置操作
+   * @param TransB 是否要对B做转置操作
+   * @param M A、C 的行数
+   * @param N B、C 的列数
+   * @param K A 的列数， B 的行数
+   * @param alpha
+   * @param A 输入矩阵（一维数组格式）
+   * @param B 输入矩阵（一维数组格式）
+   * @param beta
+   * @param C 输入矩阵（一维数组格式）
+   */
 // Caffe gemm provides a simpler interface to the gemm functions, with the
 // limitation that the data has to be contiguous in memory.
   template<typename Dtype>
@@ -20,22 +35,66 @@ namespace caffe {
                       const Dtype alpha, const Dtype *A, const Dtype *B, const Dtype beta,
                       Dtype *C);
 
+  /**
+   * @brief  \b y=alpha*A*x+beta*y
+   * @tparam Dtype
+   * @param TransA 是否要对A做转置操作
+   * @param M A 的行数
+   * @param N A 的列数
+   * @param alpha
+   * @param A
+   * @param x
+   * @param beta
+   * @param y
+   */
   template<typename Dtype>
   void caffe_cpu_gemv(const CBLAS_TRANSPOSE TransA, const int M, const int N,
                       const Dtype alpha, const Dtype *A, const Dtype *x, const Dtype beta,
                       Dtype *y);
 
+  /**
+   * @brief \b Y=alpha*X+Y
+   * @tparam Dtype
+   * @param N 为X和Y中element的个数
+   * @param alpha
+   * @param X
+   * @param Y
+   */
   template<typename Dtype>
   void caffe_axpy(const int N, const Dtype alpha, const Dtype *X,
                   Dtype *Y);
 
+  /**
+   * @brief Scales two vectors, adds them to one another and stores result in the vector. <br>
+   * \b y := a*x + b*y
+   * @tparam Dtype
+   * @param N size of the vector
+   * @param alpha a
+   * @param X x
+   * @param beta b
+   * @param Y y
+   */
   template<typename Dtype>
   void caffe_cpu_axpby(const int N, const Dtype alpha, const Dtype *X,
                        const Dtype beta, Dtype *Y);
 
+  /**
+   * @brief Copy X to Y
+   * @tparam Dtype
+   * @param N number of blocks
+   * @param X
+   * @param Y
+   */
   template<typename Dtype>
   void caffe_copy(const int N, const Dtype *X, Dtype *Y);
 
+  /**
+   * @brief 用常数 alpha 对 X 进行初始化
+   * @tparam Dtype
+   * @param N
+   * @param alpha
+   * @param X
+   */
   template<typename Dtype>
   void caffe_set(const int N, const Dtype alpha, Dtype *X);
 
@@ -43,45 +102,147 @@ namespace caffe {
     memset(X, alpha, N);  // NOLINT(caffe/alt_fn)
   }
 
+  /**
+   * @brief 给 X 的每个 element 加上常数 alpha
+   * @tparam Dtype
+   * @param N
+   * @param alpha
+   * @param X
+   */
   template<typename Dtype>
   void caffe_add_scalar(const int N, const Dtype alpha, Dtype *X);
 
+  /**
+   * @brief X = alpha*X
+   * @tparam Dtype
+   * @param N
+   * @param alpha
+   * @param X
+   */
   template<typename Dtype>
   void caffe_scal(const int N, const Dtype alpha, Dtype *X);
 
+  /**
+   * @brief element-wise sqrt
+   * @tparam Dtype
+   * @param N
+   * @param a
+   * @param y
+   */
   template<typename Dtype>
   void caffe_sqr(const int N, const Dtype *a, Dtype *y);
 
+  /**
+   * @brief element-wise sqrt
+   * @tparam Dtype
+   * @param N
+   * @param a
+   * @param y
+   */
   template<typename Dtype>
   void caffe_sqrt(const int N, const Dtype *a, Dtype *y);
 
+  /**
+   * @brief element-wise add
+   * @tparam Dtype
+   * @param N
+   * @param a
+   * @param b
+   * @param y
+   */
   template<typename Dtype>
   void caffe_add(const int N, const Dtype *a, const Dtype *b, Dtype *y);
 
+  /**
+   * @brief element-wise sub
+   * @tparam Dtype
+   * @param N
+   * @param a
+   * @param b
+   * @param y
+   */
   template<typename Dtype>
   void caffe_sub(const int N, const Dtype *a, const Dtype *b, Dtype *y);
 
+  /**
+   * @brief element-wise mul
+   * @tparam Dtype
+   * @param N
+   * @param a
+   * @param b
+   * @param y
+   */
   template<typename Dtype>
   void caffe_mul(const int N, const Dtype *a, const Dtype *b, Dtype *y);
 
+  /**
+   * @brief element-wise div
+   * @tparam Dtype
+   * @param N
+   * @param a
+   * @param b
+   * @param y
+   */
   template<typename Dtype>
   void caffe_div(const int N, const Dtype *a, const Dtype *b, Dtype *y);
 
+  /**
+   * @brief element-wise pow <br>
+   * y[i] = a[i] ^ b
+   * @tparam Dtype
+   * @param n
+   * @param a
+   * @param b
+   * @param y
+   */
   template<typename Dtype>
   void caffe_powx(const int n, const Dtype *a, const Dtype b, Dtype *y);
 
+  /**
+   * @brief 返回一个随机数
+   * @return 随机数
+   */
   unsigned int caffe_rng_rand();
 
+  /**
+   * @brief 返回 b 最大方向上可以表示的最接近的数值。
+   * @tparam Dtype
+   * @param b
+   * @return
+   */
   template<typename Dtype>
   Dtype caffe_nextafter(const Dtype b);
 
+  /**
+   * @brief 产生指定范围内的均匀分布随机数；
+   * @tparam Dtype
+   * @param n size
+   * @param a low
+   * @param b high
+   * @param r
+   */
   template<typename Dtype>
   void caffe_rng_uniform(const int n, const Dtype a, const Dtype b, Dtype *r);
 
+  /**
+   * @brief 产生高斯分布随机数
+   * @tparam Dtype
+   * @param n
+   * @param mu
+   * @param sigma
+   * @param r
+   */
   template<typename Dtype>
   void caffe_rng_gaussian(const int n, const Dtype mu, const Dtype sigma,
                           Dtype *r);
 
+  /**
+   * @brief 产生伯努利分布随机数
+   * @tparam Dtype
+   * @param n
+   * @param p
+   * @param r
+   */
   template<typename Dtype>
   void caffe_rng_bernoulli(const int n, const Dtype p, int *r);
 
@@ -97,14 +258,38 @@ namespace caffe {
   template<typename Dtype>
   void caffe_abs(const int n, const Dtype *a, Dtype *y);
 
+  /**
+   * @brief 计算步长为1的内积
+   * @tparam Dtype
+   * @param n
+   * @param x
+   * @param y
+   * @return
+   */
   template<typename Dtype>
   Dtype caffe_cpu_dot(const int n, const Dtype *x, const Dtype *y);
 
+  /**
+   * @brief 计算指定步长的内积
+   * @tparam Dtype
+   * @param n
+   * @param x
+   * @param incx
+   * @param y
+   * @param incy
+   * @return
+   */
   template<typename Dtype>
   Dtype caffe_cpu_strided_dot(const int n, const Dtype *x, const int incx,
                               const Dtype *y, const int incy);
 
-// Returns the sum of the absolute values of the elements of vector x
+  /**
+   * @brief the sum of the absolute values of the elements of vector x
+   * @tparam Dtype
+   * @param n
+   * @param x
+   * @return
+   */
   template<typename Dtype>
   Dtype caffe_cpu_asum(const int n, const Dtype *x);
 
