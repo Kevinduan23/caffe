@@ -127,6 +127,7 @@ if (HAVE_CUDA)
     set(Caffe_ALL_DEFINITIONS ${Caffe_DEFINITIONS})
     list(REMOVE_ITEM Caffe_ALL_DEFINITIONS PRIVATE PUBLIC)
     list(APPEND CUDA_NVCC_FLAGS ${Caffe_ALL_DEFINITIONS})
+    enable_language(CUDA)
 endif ()
 
 # ---[ Subdirectories
@@ -143,7 +144,7 @@ add_custom_target(lint COMMAND ${CMAKE_COMMAND} -P ${PROJECT_SOURCE_DIR}/cmake/l
 
 # ---[ pytest target
 if (BUILD_python)
-    add_custom_target(pytest COMMAND ${CMAKE_INSTALL_PREFIX}/bin/python${python_version} -m unittest discover -s caffe/test WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/python)
+    add_custom_target(pytest COMMAND ${CMAKE_PREFIX_PATH}/bin/python${python_version} -m unittest discover -s caffe/test WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/python)
     add_dependencies(pytest pycaffe)
 endif ()
 

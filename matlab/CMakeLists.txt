@@ -50,18 +50,18 @@ if (build_using MATCHES "Matlab")
     string(REPLACE ";" " " cflags "${cflags}")
     string(REPLACE ";" " " libflags "${libflags}")
 
-    message("link_folders: ${link_folders}\n")
-    message("cflags: ${cflags}\n")
-    message("MKL_ROOT: ${MKL_ROOT}\n")
-    message("Caffe_LINKER_LIBS: ${Caffe_LINKER_LIBS}\n")
-    message("folders: ${folders}\n")
-    message("libflags: ${libflags}\n")
-    message("macos_frameworks: ${macos_frameworks}")
+    #  message("link_folders: ${link_folders}\n")
+    #  message("cflags: ${cflags}\n")
+    #  message("MKL_ROOT: ${MKL_ROOT}\n")
+    #  message("Caffe_LINKER_LIBS: ${Caffe_LINKER_LIBS}\n")
+    #  message("folders: ${folders}\n")
+    #  message("libflags: ${libflags}\n")
+    #  message("macos_frameworks: ${macos_frameworks}")
 
     caffe_fetch_and_set_proper_mexext(Matlab_caffe_mex)
     add_custom_command(OUTPUT ${Matlab_caffe_mex}
             COMMAND ${Matlab_mex}
-            ARGS -output ${Matlab_caffe_mex} ${Matlab_srcs} CFLAGS=\"-I/Users/troy/.envs/include -I/opt/intel/mkl/include -I/Users/troy/Projects/source/caffe-all/caffe/include -I/Users/troy/Projects/source/caffe-all/caffe/builds/release/include \" -L/Users/troy/.envs/lib -L/Users/troy/Projects/source/caffe-all/caffe/builds/release/lib -lcaffe${Caffe_POSTFIX} -lglog -R2018a -v
+            ARGS -output ${Matlab_caffe_mex} ${Matlab_srcs} CFLAGS=\"-fPIC -I${CMAKE_BINARY_DIR}/include -I${CMAKE_PREFIX_PATH}/include -I/opt/intel/mkl/include -I${PROJECT_SOURCE_DIR}/include\" -L${CMAKE_PREFIX_PATH}/lib -L${CMAKE_BINARY_DIR}/lib -lcaffe${Caffe_POSTFIX} -lglog -lboost_system -R2018a -v
             DEPENDS caffe
             COMMENT "Building Matlab interface: ${Matlab_caffe_mex}")
     add_custom_target(matlab ALL DEPENDS ${Matlab_caffe_mex} SOURCES ${Matlab_srcs})
