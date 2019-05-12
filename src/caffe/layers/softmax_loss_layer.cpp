@@ -21,8 +21,7 @@ namespace caffe {
     softmax_layer_->SetUp(softmax_bottom_vec_, softmax_top_vec_);
     use_label_smooth_ = this->layer_param().softmax_param().label_smooth();
     label_smooth_factor_ = this->layer_param().softmax_param().label_smooth_factor();
-    has_ignore_label_ =
-            this->layer_param_.loss_param().has_ignore_label();
+    has_ignore_label_ = this->layer_param_.loss_param().has_ignore_label();
     if (has_ignore_label_) {
       ignore_label_ = this->layer_param_.loss_param().ignore_label();
     }
@@ -41,8 +40,7 @@ namespace caffe {
           const vector<Blob<Dtype> *> &bottom, const vector<Blob<Dtype> *> &top) {
     LossLayer<Dtype>::Reshape(bottom, top);
     softmax_layer_->Reshape(softmax_bottom_vec_, softmax_top_vec_);
-    softmax_axis_ =
-            bottom[0]->CanonicalAxisIndex(this->layer_param_.softmax_param().axis());
+    softmax_axis_ = bottom[0]->CanonicalAxisIndex(this->layer_param_.softmax_param().axis());
     outer_num_ = bottom[0]->count(0, softmax_axis_);
     inner_num_ = bottom[0]->count(softmax_axis_ + 1);
     CHECK_EQ(outer_num_ * inner_num_, bottom[1]->count())
