@@ -7,36 +7,35 @@
 
 namespace caffe {
 
-  template<typename Dtype>
-  __global__ void SoftmaxLossForwardGPU(const int nthreads,
-                                        const Dtype *prob_data, const Dtype *label, Dtype *loss,
-                                        const int num, const int dim, const int spatial_dim,
-                                        const bool has_ignore_label_, const int ignore_label_,
-                                        Dtype *counts,
-                                        bool use_label_smooth = false, float label_smooth_factor, int num_classes) {
-    CUDA_KERNEL_LOOP(index, nthreads)
-    {
-      const int n = index / spatial_dim;
-      const int s = index % spatial_dim;
-      const int label_value = static_cast<int>(label[n * spatial_dim + s]);
-      if (has_ignore_label_ && label_value == ignore_label_) {
-        loss[index] = 0;
-        counts[index] = 0;
-      } else {
-        if (use_label_smooth && (label_smooth_factor > 0.0F)) {
-          for (int c = 0; c < num_classes; c++) {
-            float coeff = (c == label_value) ? (1.0F - label_smooth_factor)
-                                             : (label_smooth_factor / float(num_classes));
-            loss[index] -= coeff * log(max(prob_data[n * dim + c * spatial_dim + s], Dtype(FLT_MIN)));
-          }
-        } else {
-          loss[index] = -log(max(prob_data[n * dim + label_value * spatial_dim + s],
-                                 Dtype(FLT_MIN)));
+template <typename Dtype>
+__global__ void SoftmaxLossForwardGPU(const int nthreads,
+          const Dtype* prob_data, const Dtype* label, Dtype* loss,
+          const int num, const int dim, const int spatial_dim,
+          const bool has_ignore_label_, const int ignore_label_,
+          Dtype* counts,
+          bool use_label_smooth, float label_smooth_factor, int num_classes) {
+  CUDA_KERNEL_LOOP(index, nthreads) {
+    const int n = index / spatial_dim;
+    const int s = index % spatial_dim;
+    const int label_value = static_cast<int>(label[n * spatial_dim + s]);
+    if (has_ignore_label_ && label_value == ignore_label_) {
+      loss[index] = 0;
+      counts[index] = 0;
+    } else {
+      if (use_label_smooth && (label_smooth_factor > 0.0F)) {
+        for (int c = 0; c < num_classes; c++) {
+          float coeff = (c == label_value) ? (1.0F - label_smooth_factor)
+                                           : (label_smooth_factor / float(num_classes));
+          loss[index] -= coeff * log(max(prob_data[n * dim + c * spatial_dim + s], Dtype(FLT_MIN)));
         }
-        counts[index] = 1;
+      } else {
+        loss[index] = -log(max(prob_data[n * dim + label_value * spatial_dim + s],
+                               Dtype(FLT_MIN)));
       }
+      counts[index] = 1;
     }
   }
+}
 
   template<typename Dtype>
   void SoftmaxWithLossLayer<Dtype>::Forward_gpu(
@@ -76,39 +75,38 @@ namespace caffe {
     caffe_gpu_set(bottom[0]->count(), Dtype(0), bottom[0]->mutable_gpu_diff());
   }
 
-  template<typename Dtype>
-  __global__ void SoftmaxLossBackwardGPU(const int nthreads, const Dtype *top,
-                                         const Dtype *label, Dtype *bottom_diff, const int num, const int dim,
-                                         const int spatial_dim, const bool has_ignore_label_,
-                                         const int ignore_label_, Dtype *counts,
-                                         bool use_label_smooth = false, float label_smooth_factor, int num_classes) {
-    const int channels = dim / spatial_dim;
+template <typename Dtype>
+__global__ void SoftmaxLossBackwardGPU(const int nthreads, const Dtype* top,
+          const Dtype* label, Dtype* bottom_diff, const int num, const int dim,
+          const int spatial_dim, const bool has_ignore_label_,
+          const int ignore_label_, Dtype* counts,
+          bool use_label_smooth, float label_smooth_factor, int num_classes) {
+  const int channels = dim / spatial_dim;
 
-    CUDA_KERNEL_LOOP(index, nthreads)
-    {
-      const int n = index / spatial_dim;
-      const int s = index % spatial_dim;
-      const int label_value = static_cast<int>(label[n * spatial_dim + s]);
+  CUDA_KERNEL_LOOP(index, nthreads) {
+    const int n = index / spatial_dim;
+    const int s = index % spatial_dim;
+    const int label_value = static_cast<int>(label[n * spatial_dim + s]);
 
-      if (has_ignore_label_ && label_value == ignore_label_) {
-        for (int c = 0; c < channels; ++c) {
-          bottom_diff[n * dim + c * spatial_dim + s] = 0;
-        }
-        counts[index] = 0;
-      } else {
-        if (use_label_smooth && label_smooth_factor > 0.0F) {
-          for (int c = 0; c < num_classes; ++i) {
-            float coeff = (c == label_value) ? (1.0F - label_smooth_factor)
-                                             : (label_smooth_factor / float(num_classes));
-            bottom_diff[n * dim + c * spatial_dim + s] -= coeff;
-          }
-        } else {
-          bottom_diff[n * dim + label_value * spatial_dim + s] -= 1;
-        }
-        counts[index] = 1;
+    if (has_ignore_label_ && label_value == ignore_label_) {
+      for (int c = 0; c < channels; ++c) {
+        bottom_diff[n * dim + c * spatial_dim + s] = 0;
       }
+      counts[index] = 0;
+    } else {
+      if (use_label_smooth && label_smooth_factor > 0.0F) {
+        for (int c = 0; c < num_classes; ++c) {
+          float coeff = (c == label_value) ? (1.0F - label_smooth_factor)
+                                           : (label_smooth_factor / float(num_classes));
+          bottom_diff[n * dim + c * spatial_dim + s] -= coeff;
+        }
+      } else {
+        bottom_diff[n * dim + label_value * spatial_dim + s] -= 1;
+      }
+      counts[index] = 1;
     }
   }
+}
 
   template<typename Dtype>
   void SoftmaxWithLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype> *> &top,
