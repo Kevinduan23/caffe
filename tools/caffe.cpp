@@ -17,27 +17,25 @@ namespace bp = boost::python;
 
 using caffe::Blob;
 using caffe::Caffe;
-using caffe::Net;
 using caffe::Layer;
-using caffe::Solver;
+using caffe::Net;
 using caffe::shared_ptr;
+using caffe::Solver;
 using caffe::string;
 using caffe::Timer;
 using caffe::vector;
 using std::ostringstream;
 
-DEFINE_string(gpu, "",
-              "Optional; run in GPU mode on given device IDs separated by ','."
-              "Use '-gpu all' to run on all available GPUs. The effective training "
-              "batch size is multiplied by the number of devices.");
-DEFINE_string(solver, "",
-              "The solver definition protocol buffer text file.");
-DEFINE_string(model, "",
-              "The model definition protocol buffer text file.");
+DEFINE_string(
+    gpu, "",
+    "Optional; run in GPU mode on given device IDs separated by ','."
+    "Use '-gpu all' to run on all available GPUs. The effective training "
+    "batch size is multiplied by the number of devices.");
+DEFINE_string(solver, "", "The solver definition protocol buffer text file.");
+DEFINE_string(model, "", "The model definition protocol buffer text file.");
 DEFINE_string(phase, "",
               "Optional; network phase (TRAIN or TEST). Only used for 'time'.");
-DEFINE_int32(level, 0,
-             "Optional; network level.");
+DEFINE_int32(level, 0, "Optional; network level.");
 DEFINE_string(stage, "",
               "Optional; network stages (not to be confused with phase), "
               "separated by ','.");
@@ -46,8 +44,7 @@ DEFINE_string(snapshot, "",
 DEFINE_string(weights, "",
               "Optional; the pretrained weights to initialize finetuning, "
               "separated by ','. Cannot be set simultaneously with snapshot.");
-DEFINE_int32(iterations, 50,
-             "The number of iterations to run.");
+DEFINE_int32(iterations, 50, "The number of iterations to run.");
 DEFINE_string(sigint_effect, "stop",
               "Optional; action to take when a SIGINT signal is received: "
               "snapshot, stop or none.");
@@ -61,28 +58,26 @@ typedef int (*BrewFunction)();
 typedef std::map<caffe::string, BrewFunction> BrewMap;
 BrewMap g_brew_map;
 
-#define RegisterBrewFunction(func) \
-namespace { \
-class __Registerer_##func { \
- public: /* NOLINT */ \
-  __Registerer_##func() { \
-    g_brew_map[#func] = &func; \
-  } \
-}; \
-__Registerer_##func g_registerer_##func; \
-}
+#define RegisterBrewFunction(func)                                             \
+  namespace {                                                                  \
+  class __Registerer_##func {                                                  \
+  public: /* NOLINT */                                                         \
+    __Registerer_##func() { g_brew_map[#func] = &func; }                       \
+  };                                                                           \
+  __Registerer_##func g_registerer_##func;                                     \
+  }
 
 static BrewFunction GetBrewFunction(const caffe::string &name) {
   if (g_brew_map.count(name)) {
     return g_brew_map[name];
   } else {
     LOG(ERROR) << "Available caffe actions:";
-    for (BrewMap::iterator it = g_brew_map.begin();
-         it != g_brew_map.end(); ++it) {
+    for (BrewMap::iterator it = g_brew_map.begin(); it != g_brew_map.end();
+         ++it) {
       LOG(ERROR) << "\t" << it->first;
     }
     LOG(FATAL) << "Unknown action: " << name;
-    return NULL;  // not reachable, just to suppress old compiler warnings.
+    return NULL; // not reachable, just to suppress old compiler warnings.
   }
 }
 
@@ -118,7 +113,7 @@ caffe::Phase get_phase_from_flags(caffe::Phase default_value) {
   if (FLAGS_phase == "TEST")
     return caffe::TEST;
   LOG(FATAL) << "phase must be \"TRAIN\" or \"TEST\"";
-  return caffe::TRAIN;  // Avoid warning
+  return caffe::TRAIN; // Avoid warning
 }
 
 // Parse stages from flags
@@ -150,8 +145,7 @@ RegisterBrewFunction(device_query);
 
 // Translate the signal effect the user specified on the command-line to the
 // corresponding enumeration.
-caffe::SolverAction::Enum GetRequestedAction(
-        const std::string &flag_value) {
+caffe::SolverAction::Enum GetRequestedAction(const std::string &flag_value) {
   if (flag_value == "stop") {
     return caffe::SolverAction::STOP;
   }
@@ -168,8 +162,8 @@ caffe::SolverAction::Enum GetRequestedAction(
 int train() {
   CHECK_GT(FLAGS_solver.size(), 0) << "Need a solver definition to train.";
   CHECK(!FLAGS_snapshot.size() || !FLAGS_weights.size())
-                  << "Give a snapshot to resume training or weights to finetune "
-                     "but not both.";
+      << "Give a snapshot to resume training or weights to finetune "
+         "but not both.";
   vector<string> stages = get_stages_from_flags();
 
   caffe::SolverParameter solver_param;
@@ -182,13 +176,11 @@ int train() {
 
   // If the gpus flag is not provided, allow the mode and device to be set
   // in the solver prototxt.
-  if (FLAGS_gpu.size() == 0
-      && solver_param.has_solver_mode()
-      && solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {
+  if (FLAGS_gpu.size() == 0 && solver_param.has_solver_mode() &&
+      solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {
     if (solver_param.has_device_id()) {
-      FLAGS_gpu = "" +
-                  boost::lexical_cast<string>(solver_param.device_id());
-    } else {  // Set default GPU if unspecified
+      FLAGS_gpu = "" + boost::lexical_cast<string>(solver_param.device_id());
+    } else { // Set default GPU if unspecified
       FLAGS_gpu = "" + boost::lexical_cast<string>(0);
     }
   }
@@ -217,9 +209,8 @@ int train() {
     Caffe::set_solver_count(gpus.size());
   }
 
-  caffe::SignalHandler signal_handler(
-          GetRequestedAction(FLAGS_sigint_effect),
-          GetRequestedAction(FLAGS_sighup_effect));
+  caffe::SignalHandler signal_handler(GetRequestedAction(FLAGS_sigint_effect),
+                                      GetRequestedAction(FLAGS_sighup_effect));
 
   if (FLAGS_snapshot.size()) {
     solver_param.clear_weights();
@@ -228,8 +219,8 @@ int train() {
     solver_param.add_weights(FLAGS_weights);
   }
 
-  shared_ptr<caffe::Solver<float> >
-          solver(caffe::SolverRegistry<float>::CreateSolver(solver_param));
+  shared_ptr<caffe::Solver<float>> solver(
+      caffe::SolverRegistry<float>::CreateSolver(solver_param));
 
   solver->SetActionFunction(signal_handler.GetActionFunction());
 
@@ -254,7 +245,6 @@ int train() {
 }
 
 RegisterBrewFunction(train);
-
 
 // Test: score a model.
 int test() {
@@ -288,8 +278,7 @@ int test() {
   float loss = 0;
   for (int i = 0; i < FLAGS_iterations; ++i) {
     float iter_loss;
-    const vector<Blob<float> *> &result =
-            caffe_net.Forward(&iter_loss);
+    const vector<Blob<float> *> &result = caffe_net.Forward(&iter_loss);
     loss += iter_loss;
     int idx = 0;
     for (int j = 0; j < result.size(); ++j) {
@@ -302,8 +291,8 @@ int test() {
         } else {
           test_score[idx] += score;
         }
-        const std::string &output_name = caffe_net.blob_names()[
-                caffe_net.output_blob_indices()[j]];
+        const std::string &output_name =
+            caffe_net.blob_names()[caffe_net.output_blob_indices()[j]];
         LOG(INFO) << "Batch " << i << ", " << output_name << " = " << score;
       }
     }
@@ -311,15 +300,17 @@ int test() {
   loss /= FLAGS_iterations;
   LOG(INFO) << "Loss: " << loss;
   for (int i = 0; i < test_score.size(); ++i) {
-    const std::string &output_name = caffe_net.blob_names()[
-            caffe_net.output_blob_indices()[test_score_output_id[i]]];
-    const float loss_weight = caffe_net.blob_loss_weights()[
-            caffe_net.output_blob_indices()[test_score_output_id[i]]];
+    const std::string &output_name =
+        caffe_net.blob_names()
+            [caffe_net.output_blob_indices()[test_score_output_id[i]]];
+    const float loss_weight =
+        caffe_net.blob_loss_weights()
+            [caffe_net.output_blob_indices()[test_score_output_id[i]]];
     std::ostringstream loss_msg_stream;
     const float mean_score = test_score[i] / FLAGS_iterations;
     if (loss_weight) {
-      loss_msg_stream << " (* " << loss_weight
-                      << " = " << loss_weight * mean_score << " loss)";
+      loss_msg_stream << " (* " << loss_weight << " = "
+                      << loss_weight * mean_score << " loss)";
     }
     LOG(INFO) << output_name << " = " << mean_score << loss_msg_stream.str();
   }
@@ -328,7 +319,6 @@ int test() {
 }
 
 RegisterBrewFunction(test);
-
 
 // Time: benchmark the execution time of a model.
 int time() {
@@ -361,11 +351,11 @@ int time() {
   LOG(INFO) << "Performing Backward";
   caffe_net.Backward();
 
-  const vector<shared_ptr<Layer<float> > > &layers = caffe_net.layers();
-  const vector<vector<Blob<float> *> > &bottom_vecs = caffe_net.bottom_vecs();
-  const vector<vector<Blob<float> *> > &top_vecs = caffe_net.top_vecs();
-  const vector<vector<bool> > &bottom_need_backward =
-          caffe_net.bottom_need_backward();
+  const vector<shared_ptr<Layer<float>>> &layers = caffe_net.layers();
+  const vector<vector<Blob<float> *>> &bottom_vecs = caffe_net.bottom_vecs();
+  const vector<vector<Blob<float> *>> &top_vecs = caffe_net.top_vecs();
+  const vector<vector<bool>> &bottom_need_backward =
+      caffe_net.bottom_need_backward();
   LOG(INFO) << "*** Benchmark begins ***";
   LOG(INFO) << "Testing for " << FLAGS_iterations << " iterations.";
   Timer total_timer;
@@ -390,31 +380,31 @@ int time() {
     backward_timer.Start();
     for (int i = layers.size() - 1; i >= 0; --i) {
       timer.Start();
-      layers[i]->Backward(top_vecs[i], bottom_need_backward[i],
-                          bottom_vecs[i]);
+      layers[i]->Backward(top_vecs[i], bottom_need_backward[i], bottom_vecs[i]);
       backward_time_per_layer[i] += timer.MicroSeconds();
     }
     backward_time += backward_timer.MicroSeconds();
-    LOG(INFO) << "Iteration: " << j + 1 << " forward-backward time: "
-              << iter_timer.MilliSeconds() << " ms.";
+    LOG(INFO) << "Iteration: " << j + 1
+              << " forward-backward time: " << iter_timer.MilliSeconds()
+              << " ms.";
   }
   LOG(INFO) << "Average time per layer: ";
   for (int i = 0; i < layers.size(); ++i) {
     const caffe::string &layername = layers[i]->layer_param().name();
-    LOG(INFO) << std::setfill(' ') << std::setw(10) << layername <<
-              "\tforward: " << forward_time_per_layer[i] / 1000 /
-                               FLAGS_iterations << " ms.";
-    LOG(INFO) << std::setfill(' ') << std::setw(10) << layername <<
-              "\tbackward: " << backward_time_per_layer[i] / 1000 /
-                                FLAGS_iterations << " ms.";
+    LOG(INFO) << std::setfill(' ') << std::setw(10) << layername
+              << "\tforward: "
+              << forward_time_per_layer[i] / 1000 / FLAGS_iterations << " ms.";
+    LOG(INFO) << std::setfill(' ') << std::setw(10) << layername
+              << "\tbackward: "
+              << backward_time_per_layer[i] / 1000 / FLAGS_iterations << " ms.";
   }
   total_timer.Stop();
-  LOG(INFO) << "Average Forward pass: " << forward_time / 1000 /
-                                           FLAGS_iterations << " ms.";
-  LOG(INFO) << "Average Backward pass: " << backward_time / 1000 /
-                                            FLAGS_iterations << " ms.";
-  LOG(INFO) << "Average Forward-Backward: " << total_timer.MilliSeconds() /
-                                               FLAGS_iterations << " ms.";
+  LOG(INFO) << "Average Forward pass: "
+            << forward_time / 1000 / FLAGS_iterations << " ms.";
+  LOG(INFO) << "Average Backward pass: "
+            << backward_time / 1000 / FLAGS_iterations << " ms.";
+  LOG(INFO) << "Average Forward-Backward: "
+            << total_timer.MilliSeconds() / FLAGS_iterations << " ms.";
   LOG(INFO) << "Total Time: " << total_timer.MilliSeconds() << " ms.";
   LOG(INFO) << "*** Benchmark ends ***";
   return 0;
@@ -441,7 +431,7 @@ int main(int argc, char **argv) {
 #ifdef WITH_PYTHON_LAYER
     try {
 #endif
-    return GetBrewFunction(caffe::string(argv[1]))();
+      return GetBrewFunction(caffe::string(argv[1]))();
 #ifdef WITH_PYTHON_LAYER
     } catch (bp::error_already_set) {
       PyErr_Print();

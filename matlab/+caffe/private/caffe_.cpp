@@ -22,29 +22,29 @@
 #include "caffe/sgd_solvers.hpp"
 
 namespace caffe {
-  INSTANTIATE_CLASS(AdaDeltaSolver);
+INSTANTIATE_CLASS(AdaDeltaSolver);
 
-  REGISTER_SOLVER_CLASS(AdaDelta);
-  INSTANTIATE_CLASS(AdaGradSolver);
+REGISTER_SOLVER_CLASS(AdaDelta);
+INSTANTIATE_CLASS(AdaGradSolver);
 
-  REGISTER_SOLVER_CLASS(AdaGrad);
-  INSTANTIATE_CLASS(AdamSolver);
+REGISTER_SOLVER_CLASS(AdaGrad);
+INSTANTIATE_CLASS(AdamSolver);
 
-  REGISTER_SOLVER_CLASS(Adam);
-  INSTANTIATE_CLASS(NesterovSolver);
+REGISTER_SOLVER_CLASS(Adam);
+INSTANTIATE_CLASS(NesterovSolver);
 
-  REGISTER_SOLVER_CLASS(Nesterov);
-  INSTANTIATE_CLASS(RMSPropSolver);
+REGISTER_SOLVER_CLASS(Nesterov);
+INSTANTIATE_CLASS(RMSPropSolver);
 
-  REGISTER_SOLVER_CLASS(RMSProp);
-  INSTANTIATE_CLASS(SGDSolver);
+REGISTER_SOLVER_CLASS(RMSProp);
+INSTANTIATE_CLASS(SGDSolver);
 
-  REGISTER_SOLVER_CLASS(SGD);
-}
+REGISTER_SOLVER_CLASS(SGD);
+} // namespace caffe
 
 #define MEX_ARGS int nlhs, mxArray **plhs, int nrhs, const mxArray **prhs
 
-using namespace caffe;  // NOLINT(build/namespaces)
+using namespace caffe; // NOLINT(build/namespaces)
 
 // Do CHECK and throw a Mex error if check fails
 inline void mxCHECK(bool expr, const char *msg) {
@@ -68,8 +68,8 @@ void mxCHECK_FILE_EXIST(const char *file) {
 }
 
 // The pointers to caffe::Solver and caffe::Net instances
-static vector<shared_ptr<Solver<float> > > solvers_;
-static vector<shared_ptr<Net<float> > > nets_;
+static vector<shared_ptr<Solver<float>>> solvers_;
+static vector<shared_ptr<Net<float>>> nets_;
 // init_key is generated at the beginning and every time you call reset
 static double init_key = static_cast<double>(caffe_rng_rand());
 
@@ -77,28 +77,27 @@ static double init_key = static_cast<double>(caffe_rng_rand());
  ** data conversion functions
  **/
 // Enum indicates which blob memory to use
-enum WhichMemory {
-  DATA, DIFF
-};
+enum WhichMemory { DATA, DIFF };
 
 // Copy matlab array to Blob data or diff
 static void mx_mat_to_blob(const mxArray *mx_mat, Blob<float> *blob,
                            WhichMemory data_or_diff) {
-  mxCHECK(blob->count() == mxGetNumberOfElements(mx_mat),
-          "number of elements in target blob doesn't match that in input mxArray");
+  mxCHECK(
+      blob->count() == mxGetNumberOfElements(mx_mat),
+      "number of elements in target blob doesn't match that in input mxArray");
   const float *mat_mem_ptr = reinterpret_cast<const float *>(mxGetData(mx_mat));
   float *blob_mem_ptr = NULL;
   switch (Caffe::mode()) {
-    case Caffe::CPU:
-      blob_mem_ptr = (data_or_diff == DATA ?
-                      blob->mutable_cpu_data() : blob->mutable_cpu_diff());
-      break;
-    case Caffe::GPU:
-      blob_mem_ptr = (data_or_diff == DATA ?
-                      blob->mutable_gpu_data() : blob->mutable_gpu_diff());
-      break;
-    default:
-      mxERROR("Unknown Caffe mode");
+  case Caffe::CPU:
+    blob_mem_ptr = (data_or_diff == DATA ? blob->mutable_cpu_data()
+                                         : blob->mutable_cpu_diff());
+    break;
+  case Caffe::GPU:
+    blob_mem_ptr = (data_or_diff == DATA ? blob->mutable_gpu_data()
+                                         : blob->mutable_gpu_diff());
+    break;
+  default:
+    mxERROR("Unknown Caffe mode");
   }
   caffe_copy(blob->count(), mat_mem_ptr, blob_mem_ptr);
 }
@@ -117,18 +116,18 @@ static mxArray *blob_to_mx_mat(const Blob<float> *blob,
     dims.push_back(1);
   }
   mxArray *mx_mat =
-          mxCreateNumericArray(dims.size(), dims.data(), mxSINGLE_CLASS, mxREAL);
+      mxCreateNumericArray(dims.size(), dims.data(), mxSINGLE_CLASS, mxREAL);
   float *mat_mem_ptr = reinterpret_cast<float *>(mxGetData(mx_mat));
   const float *blob_mem_ptr = NULL;
   switch (Caffe::mode()) {
-    case Caffe::CPU:
-      blob_mem_ptr = (data_or_diff == DATA ? blob->cpu_data() : blob->cpu_diff());
-      break;
-    case Caffe::GPU:
-      blob_mem_ptr = (data_or_diff == DATA ? blob->gpu_data() : blob->gpu_diff());
-      break;
-    default:
-      mxERROR("Unknown Caffe mode");
+  case Caffe::CPU:
+    blob_mem_ptr = (data_or_diff == DATA ? blob->cpu_data() : blob->cpu_diff());
+    break;
+  case Caffe::GPU:
+    blob_mem_ptr = (data_or_diff == DATA ? blob->gpu_data() : blob->gpu_diff());
+    break;
+  default:
+    mxERROR("Unknown Caffe mode");
   }
   caffe_copy(blob->count(), blob_mem_ptr, mat_mem_ptr);
   return mx_mat;
@@ -160,46 +159,44 @@ static mxArray *str_vec_to_mx_strcell(const vector<std::string> &str_vec) {
  **   (double) init_key : caffe initialization key
  **/
 // Convert a handle in matlab to a pointer in C++. Check if init_key matches
-template<typename T>
-static T *handle_to_ptr(const mxArray *mx_handle) {
+template <typename T> static T *handle_to_ptr(const mxArray *mx_handle) {
   mxArray *mx_ptr = mxGetField(mx_handle, 0, "ptr");
   mxArray *mx_init_key = mxGetField(mx_handle, 0, "init_key");
   mxCHECK(mxIsUint64(mx_ptr), "pointer type must be uint64");
   mxCHECK(mxGetScalar(mx_init_key) == init_key,
           "Could not convert handle to pointer due to invalid init_key. "
           "The object might have been cleared.");
-  return reinterpret_cast<T *>(*reinterpret_cast<uint64_t *>(mxGetData(mx_ptr)));
+  return reinterpret_cast<T *>(
+      *reinterpret_cast<uint64_t *>(mxGetData(mx_ptr)));
 }
 
 // Create a handle struct vector, without setting up each handle in it
-template<typename T>
-static mxArray *create_handle_vec(int ptr_num) {
+template <typename T> static mxArray *create_handle_vec(int ptr_num) {
   const int handle_field_num = 2;
   const char *handle_fields[handle_field_num] = {"ptr", "init_key"};
   return mxCreateStructMatrix(ptr_num, 1, handle_field_num, handle_fields);
 }
 
 // Set up a handle in a handle struct vector by its index
-template<typename T>
+template <typename T>
 static void setup_handle(const T *ptr, int index, mxArray *mx_handle_vec) {
   mxArray *mx_ptr = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
   *reinterpret_cast<uint64_t *>(mxGetData(mx_ptr)) =
-          reinterpret_cast<uint64_t>(ptr);
+      reinterpret_cast<uint64_t>(ptr);
   mxSetField(mx_handle_vec, index, "ptr", mx_ptr);
   mxSetField(mx_handle_vec, index, "init_key", mxCreateDoubleScalar(init_key));
 }
 
 // Convert a pointer in C++ to a handle in matlab
-template<typename T>
-static mxArray *ptr_to_handle(const T *ptr) {
+template <typename T> static mxArray *ptr_to_handle(const T *ptr) {
   mxArray *mx_handle = create_handle_vec<T>(1);
   setup_handle(ptr, 0, mx_handle);
   return mx_handle;
 }
 
 // Convert a vector of shared_ptr in C++ to handle struct vector
-template<typename T>
-static mxArray *ptr_vec_to_handle_vec(const vector<shared_ptr<T> > &ptr_vec) {
+template <typename T>
+static mxArray *ptr_vec_to_handle_vec(const vector<shared_ptr<T>> &ptr_vec) {
   mxArray *mx_handle_vec = create_handle_vec<T>(ptr_vec.size());
   for (int i = 0; i < ptr_vec.size(); i++) {
     setup_handle(ptr_vec[i].get(), i, mx_handle_vec);
@@ -218,10 +215,10 @@ static void get_solver(MEX_ARGS) {
   mxCHECK_FILE_EXIST(solver_file);
   SolverParameter solver_param;
   ReadSolverParamsFromTextFileOrDie(solver_file, &solver_param);
-  shared_ptr<Solver<float> > solver(
-          SolverRegistry<float>::CreateSolver(solver_param));
+  shared_ptr<Solver<float>> solver(
+      SolverRegistry<float>::CreateSolver(solver_param));
   solvers_.push_back(solver);
-  plhs[0] = ptr_to_handle<Solver<float> >(solver.get());
+  plhs[0] = ptr_to_handle<Solver<float>>(solver.get());
   mxFree(solver_file);
 }
 
@@ -229,26 +226,28 @@ static void get_solver(MEX_ARGS) {
 static void delete_solver(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('delete_solver', hSolver)");
-  Solver<float> *solver = handle_to_ptr<Solver<float> >(prhs[0]);
-  solvers_.erase(std::remove_if(solvers_.begin(), solvers_.end(),
-                                [solver](const shared_ptr<Solver<float> > &solverPtr) {
-                                  return solverPtr.get() == solver;
-                                }), solvers_.end());
+  Solver<float> *solver = handle_to_ptr<Solver<float>>(prhs[0]);
+  solvers_.erase(
+      std::remove_if(solvers_.begin(), solvers_.end(),
+                     [solver](const shared_ptr<Solver<float>> &solverPtr) {
+                       return solverPtr.get() == solver;
+                     }),
+      solvers_.end());
 }
 
 // Usage: caffe_('solver_get_attr', hSolver)
 static void solver_get_attr(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('solver_get_attr', hSolver)");
-  Solver<float> *solver = handle_to_ptr<Solver<float> >(prhs[0]);
+  Solver<float> *solver = handle_to_ptr<Solver<float>>(prhs[0]);
   const int solver_attr_num = 2;
   const char *solver_attrs[solver_attr_num] = {"hNet_net", "hNet_test_nets"};
-  mxArray *mx_solver_attr = mxCreateStructMatrix(1, 1, solver_attr_num,
-                                                 solver_attrs);
+  mxArray *mx_solver_attr =
+      mxCreateStructMatrix(1, 1, solver_attr_num, solver_attrs);
   mxSetField(mx_solver_attr, 0, "hNet_net",
-             ptr_to_handle<Net<float> >(solver->net().get()));
+             ptr_to_handle<Net<float>>(solver->net().get()));
   mxSetField(mx_solver_attr, 0, "hNet_test_nets",
-             ptr_vec_to_handle_vec<Net<float> >(solver->test_nets()));
+             ptr_vec_to_handle_vec<Net<float>>(solver->test_nets()));
   plhs[0] = mx_solver_attr;
 }
 
@@ -256,7 +255,7 @@ static void solver_get_attr(MEX_ARGS) {
 static void solver_get_iter(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('solver_get_iter', hSolver)");
-  Solver<float> *solver = handle_to_ptr<Solver<float> >(prhs[0]);
+  Solver<float> *solver = handle_to_ptr<Solver<float>>(prhs[0]);
   plhs[0] = mxCreateDoubleScalar(solver->iter());
 }
 
@@ -264,7 +263,7 @@ static void solver_get_iter(MEX_ARGS) {
 static void solver_restore(MEX_ARGS) {
   mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsChar(prhs[1]),
           "Usage: caffe_('solver_restore', hSolver, snapshot_file)");
-  Solver<float> *solver = handle_to_ptr<Solver<float> >(prhs[0]);
+  Solver<float> *solver = handle_to_ptr<Solver<float>>(prhs[0]);
   char *snapshot_file = mxArrayToString(prhs[1]);
   mxCHECK_FILE_EXIST(snapshot_file);
   solver->Restore(snapshot_file);
@@ -275,7 +274,7 @@ static void solver_restore(MEX_ARGS) {
 static void solver_solve(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('solver_solve', hSolver)");
-  Solver<float> *solver = handle_to_ptr<Solver<float> >(prhs[0]);
+  Solver<float> *solver = handle_to_ptr<Solver<float>>(prhs[0]);
   solver->Solve();
 }
 
@@ -283,7 +282,7 @@ static void solver_solve(MEX_ARGS) {
 static void solver_step(MEX_ARGS) {
   mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsDouble(prhs[1]),
           "Usage: caffe_('solver_step', hSolver, iters)");
-  Solver<float> *solver = handle_to_ptr<Solver<float> >(prhs[0]);
+  Solver<float> *solver = handle_to_ptr<Solver<float>>(prhs[0]);
   int iters = mxGetScalar(prhs[1]);
   solver->Step(iters);
 }
@@ -303,9 +302,9 @@ static void get_net(MEX_ARGS) {
   } else {
     mxERROR("Unknown phase");
   }
-  shared_ptr<Net<float> > net(new caffe::Net<float>(model_file, phase));
+  shared_ptr<Net<float>> net(new caffe::Net<float>(model_file, phase));
   nets_.push_back(net);
-  plhs[0] = ptr_to_handle<Net<float> >(net.get());
+  plhs[0] = ptr_to_handle<Net<float>>(net.get());
   mxFree(model_file);
   mxFree(phase_name);
 }
@@ -314,27 +313,28 @@ static void get_net(MEX_ARGS) {
 static void delete_net(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('delete_solver', hNet)");
-  Net<float> *net = handle_to_ptr<Net<float> >(prhs[0]);
+  Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   nets_.erase(std::remove_if(nets_.begin(), nets_.end(),
-                             [net](const shared_ptr<Net<float> > &netPtr) {
+                             [net](const shared_ptr<Net<float>> &netPtr) {
                                return netPtr.get() == net;
-                             }), nets_.end());
+                             }),
+              nets_.end());
 }
 
 // Usage: caffe_('net_get_attr', hNet)
 static void net_get_attr(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('net_get_attr', hNet)");
-  Net<float> *net = handle_to_ptr<Net<float> >(prhs[0]);
+  Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   const int net_attr_num = 6;
-  const char *net_attrs[net_attr_num] = {"hLayer_layers", "hBlob_blobs",
-                                         "input_blob_indices", "output_blob_indices", "layer_names", "blob_names"};
-  mxArray *mx_net_attr = mxCreateStructMatrix(1, 1, net_attr_num,
-                                              net_attrs);
+  const char *net_attrs[net_attr_num] = {
+      "hLayer_layers",       "hBlob_blobs", "input_blob_indices",
+      "output_blob_indices", "layer_names", "blob_names"};
+  mxArray *mx_net_attr = mxCreateStructMatrix(1, 1, net_attr_num, net_attrs);
   mxSetField(mx_net_attr, 0, "hLayer_layers",
-             ptr_vec_to_handle_vec<Layer<float> >(net->layers()));
+             ptr_vec_to_handle_vec<Layer<float>>(net->layers()));
   mxSetField(mx_net_attr, 0, "hBlob_blobs",
-             ptr_vec_to_handle_vec<Blob<float> >(net->blobs()));
+             ptr_vec_to_handle_vec<Blob<float>>(net->blobs()));
   mxSetField(mx_net_attr, 0, "input_blob_indices",
              int_vec_to_mx_vec(net->input_blob_indices()));
   mxSetField(mx_net_attr, 0, "output_blob_indices",
@@ -350,7 +350,7 @@ static void net_get_attr(MEX_ARGS) {
 static void net_forward(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('net_forward', hNet)");
-  Net<float> *net = handle_to_ptr<Net<float> >(prhs[0]);
+  Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   net->ForwardPrefilled();
 }
 
@@ -358,7 +358,7 @@ static void net_forward(MEX_ARGS) {
 static void net_backward(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('net_backward', hNet)");
-  Net<float> *net = handle_to_ptr<Net<float> >(prhs[0]);
+  Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   net->Backward();
 }
 
@@ -366,7 +366,7 @@ static void net_backward(MEX_ARGS) {
 static void net_copy_from(MEX_ARGS) {
   mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsChar(prhs[1]),
           "Usage: caffe_('net_copy_from', hNet, weights_file)");
-  Net<float> *net = handle_to_ptr<Net<float> >(prhs[0]);
+  Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   char *weights_file = mxArrayToString(prhs[1]);
   mxCHECK_FILE_EXIST(weights_file);
   net->CopyTrainedLayersFrom(weights_file);
@@ -377,7 +377,7 @@ static void net_copy_from(MEX_ARGS) {
 static void net_reshape(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('net_reshape', hNet)");
-  Net<float> *net = handle_to_ptr<Net<float> >(prhs[0]);
+  Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   net->Reshape();
 }
 
@@ -385,7 +385,7 @@ static void net_reshape(MEX_ARGS) {
 static void net_save(MEX_ARGS) {
   mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsChar(prhs[1]),
           "Usage: caffe_('net_save', hNet, save_file)");
-  Net<float> *net = handle_to_ptr<Net<float> >(prhs[0]);
+  Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   char *weights_file = mxArrayToString(prhs[1]);
   NetParameter net_param;
   net->ToProto(&net_param, false);
@@ -397,13 +397,13 @@ static void net_save(MEX_ARGS) {
 static void layer_get_attr(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('layer_get_attr', hLayer)");
-  Layer<float> *layer = handle_to_ptr<Layer<float> >(prhs[0]);
+  Layer<float> *layer = handle_to_ptr<Layer<float>>(prhs[0]);
   const int layer_attr_num = 1;
   const char *layer_attrs[layer_attr_num] = {"hBlob_blobs"};
-  mxArray *mx_layer_attr = mxCreateStructMatrix(1, 1, layer_attr_num,
-                                                layer_attrs);
+  mxArray *mx_layer_attr =
+      mxCreateStructMatrix(1, 1, layer_attr_num, layer_attrs);
   mxSetField(mx_layer_attr, 0, "hBlob_blobs",
-             ptr_vec_to_handle_vec<Blob<float> >(layer->blobs()));
+             ptr_vec_to_handle_vec<Blob<float>>(layer->blobs()));
   plhs[0] = mx_layer_attr;
 }
 
@@ -411,7 +411,7 @@ static void layer_get_attr(MEX_ARGS) {
 static void layer_get_type(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('layer_get_type', hLayer)");
-  Layer<float> *layer = handle_to_ptr<Layer<float> >(prhs[0]);
+  Layer<float> *layer = handle_to_ptr<Layer<float>>(prhs[0]);
   plhs[0] = mxCreateString(layer->type());
 }
 
@@ -419,7 +419,7 @@ static void layer_get_type(MEX_ARGS) {
 static void blob_get_shape(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('blob_get_shape', hBlob)");
-  Blob<float> *blob = handle_to_ptr<Blob<float> >(prhs[0]);
+  Blob<float> *blob = handle_to_ptr<Blob<float>>(prhs[0]);
   const int num_axes = blob->num_axes();
   mxArray *mx_shape = mxCreateDoubleMatrix(1, num_axes, mxREAL);
   double *shape_mem_mtr = mxGetPr(mx_shape);
@@ -434,7 +434,7 @@ static void blob_get_shape(MEX_ARGS) {
 static void blob_reshape(MEX_ARGS) {
   mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsDouble(prhs[1]),
           "Usage: caffe_('blob_reshape', hBlob, new_shape)");
-  Blob<float> *blob = handle_to_ptr<Blob<float> >(prhs[0]);
+  Blob<float> *blob = handle_to_ptr<Blob<float>>(prhs[0]);
   const mxArray *mx_shape = prhs[1];
   double *shape_mem_mtr = mxGetPr(mx_shape);
   const int num_axes = mxGetNumberOfElements(mx_shape);
@@ -450,7 +450,7 @@ static void blob_reshape(MEX_ARGS) {
 static void blob_get_data(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('blob_get_data', hBlob)");
-  Blob<float> *blob = handle_to_ptr<Blob<float> >(prhs[0]);
+  Blob<float> *blob = handle_to_ptr<Blob<float>>(prhs[0]);
   plhs[0] = blob_to_mx_mat(blob, DATA);
 }
 
@@ -458,7 +458,7 @@ static void blob_get_data(MEX_ARGS) {
 static void blob_set_data(MEX_ARGS) {
   mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsSingle(prhs[1]),
           "Usage: caffe_('blob_set_data', hBlob, new_data)");
-  Blob<float> *blob = handle_to_ptr<Blob<float> >(prhs[0]);
+  Blob<float> *blob = handle_to_ptr<Blob<float>>(prhs[0]);
   mx_mat_to_blob(prhs[1], blob, DATA);
 }
 
@@ -466,7 +466,7 @@ static void blob_set_data(MEX_ARGS) {
 static void blob_get_diff(MEX_ARGS) {
   mxCHECK(nrhs == 1 && mxIsStruct(prhs[0]),
           "Usage: caffe_('blob_get_diff', hBlob)");
-  Blob<float> *blob = handle_to_ptr<Blob<float> >(prhs[0]);
+  Blob<float> *blob = handle_to_ptr<Blob<float>>(prhs[0]);
   plhs[0] = blob_to_mx_mat(blob, DIFF);
 }
 
@@ -474,7 +474,7 @@ static void blob_get_diff(MEX_ARGS) {
 static void blob_set_diff(MEX_ARGS) {
   mxCHECK(nrhs == 2 && mxIsStruct(prhs[0]) && mxIsSingle(prhs[1]),
           "Usage: caffe_('blob_set_diff', hBlob, new_diff)");
-  Blob<float> *blob = handle_to_ptr<Blob<float> >(prhs[0]);
+  Blob<float> *blob = handle_to_ptr<Blob<float>>(prhs[0]);
   mx_mat_to_blob(prhs[1], blob, DIFF);
 }
 
@@ -508,8 +508,8 @@ static void get_init_key(MEX_ARGS) {
 static void reset(MEX_ARGS) {
   mxCHECK(nrhs == 0, "Usage: caffe_('reset')");
   // Clear solvers and stand-alone nets
-  mexPrintf("Cleared %d solvers and %d stand-alone nets\n",
-            solvers_.size(), nets_.size());
+  mexPrintf("Cleared %d solvers and %d stand-alone nets\n", solvers_.size(),
+            nets_.size());
   solvers_.clear();
   nets_.clear();
   // Generate new init_key, so that handles created before becomes invalid
@@ -571,40 +571,40 @@ struct handler_registry {
 };
 
 static handler_registry handlers[] = {
-        // Public API functions
-        {"get_solver",      get_solver},
-        {"delete_solver",   delete_solver},
-        {"solver_get_attr", solver_get_attr},
-        {"solver_get_iter", solver_get_iter},
-        {"solver_restore",  solver_restore},
-        {"solver_solve",    solver_solve},
-        {"solver_step",     solver_step},
-        {"get_net",         get_net},
-        {"delete_net",      delete_net},
-        {"net_get_attr",    net_get_attr},
-        {"net_forward",     net_forward},
-        {"net_backward",    net_backward},
-        {"net_copy_from",   net_copy_from},
-        {"net_reshape",     net_reshape},
-        {"net_save",        net_save},
-        {"layer_get_attr",  layer_get_attr},
-        {"layer_get_type",  layer_get_type},
-        {"blob_get_shape",  blob_get_shape},
-        {"blob_reshape",    blob_reshape},
-        {"blob_get_data",   blob_get_data},
-        {"blob_set_data",   blob_set_data},
-        {"blob_get_diff",   blob_get_diff},
-        {"blob_set_diff",   blob_set_diff},
-        {"set_mode_cpu",    set_mode_cpu},
-        {"set_mode_gpu",    set_mode_gpu},
-        {"set_device",      set_device},
-        {"get_init_key",    get_init_key},
-        {"reset",           reset},
-        {"read_mean",       read_mean},
-        {"write_mean",      write_mean},
-        {"version",         version},
-        // The end.
-        {"END", NULL},
+    // Public API functions
+    {"get_solver", get_solver},
+    {"delete_solver", delete_solver},
+    {"solver_get_attr", solver_get_attr},
+    {"solver_get_iter", solver_get_iter},
+    {"solver_restore", solver_restore},
+    {"solver_solve", solver_solve},
+    {"solver_step", solver_step},
+    {"get_net", get_net},
+    {"delete_net", delete_net},
+    {"net_get_attr", net_get_attr},
+    {"net_forward", net_forward},
+    {"net_backward", net_backward},
+    {"net_copy_from", net_copy_from},
+    {"net_reshape", net_reshape},
+    {"net_save", net_save},
+    {"layer_get_attr", layer_get_attr},
+    {"layer_get_type", layer_get_type},
+    {"blob_get_shape", blob_get_shape},
+    {"blob_reshape", blob_reshape},
+    {"blob_get_data", blob_get_data},
+    {"blob_set_data", blob_set_data},
+    {"blob_get_diff", blob_get_diff},
+    {"blob_set_diff", blob_set_diff},
+    {"set_mode_cpu", set_mode_cpu},
+    {"set_mode_gpu", set_mode_gpu},
+    {"set_device", set_device},
+    {"get_init_key", get_init_key},
+    {"reset", reset},
+    {"read_mean", read_mean},
+    {"write_mean", write_mean},
+    {"version", version},
+    // The end.
+    {"END", NULL},
 };
 
 /** -----------------------------------------------------------------
@@ -612,7 +612,7 @@ static handler_registry handlers[] = {
  **/
 // Usage: caffe_(api_command, arg1, arg2, ...)
 void mexFunction(MEX_ARGS) {
-  mexLock();  // Avoid clearing the mex file.
+  mexLock(); // Avoid clearing the mex file.
   mxCHECK(nrhs > 0, "Usage: caffe_(api_command, arg1, arg2, ...)");
   // Handle input command
   char *cmd = mxArrayToString(prhs[0]);
