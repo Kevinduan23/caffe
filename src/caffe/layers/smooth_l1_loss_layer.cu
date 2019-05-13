@@ -2,7 +2,7 @@
 // Created by Troy Liu on 2019-05-12.
 //
 
-#include "caffe/layers/smooth_L1_loss_layer.hpp"
+#include "caffe/layers/smooth_l1_loss_layer.hpp"
 #include "caffe/util/math_functions.hpp"
 
 #include <vector>
@@ -68,37 +68,20 @@ void SmoothL1LossLayer<Dtype>::Backward_gpu(
   SmoothL1Backward<Dtype>
       <<<CAFFE_GET_BLOCKS(count), CAFFE_CUDA_NUM_THREADS>>>(count,
                                                             diff_.
-
                                                             gpu_data(),
-                                                            diff_
-
-                                                                .
-
-                                                            mutable_gpu_data()
-
-      );
+                                                            diff_.mutable_gpu_data());
   CUDA_POST_KERNEL_CHECK;
   for (int i = 0; i < 2; ++i) {
     if (propagate_down[i]) {
       const Dtype sign = (i == 0) ? 1 : -1;
       const Dtype alpha = sign * top[0]->cpu_diff()[0] / bottom[i]->num();
       caffe_gpu_axpby(bottom[i]->
-
                       count(), // count
                       alpha,   // alpha
-                      diff_
-
-                          .
-
-                      gpu_data(), // x
+                      diff_.gpu_data(), // x
                       Dtype(0),   // beta
-                      bottom[i]
-
-                          ->
-
-                      mutable_gpu_diff()
-
-      ); // y
+                      bottom[i]-> mutable_gpu_diff() // y
+      );
     }
   }
 }

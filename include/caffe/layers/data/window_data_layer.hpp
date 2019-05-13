@@ -1,16 +1,16 @@
 #ifndef CAFFE_WINDOW_DATA_LAYER_HPP_
 #define CAFFE_WINDOW_DATA_LAYER_HPP_
 
-#include "../../../../../../../../.envs/Cellar/llvm/8.0.0/include/c++/v1/string"
-#include "../../../../../../../../.envs/Cellar/llvm/8.0.0/include/c++/v1/utility"
-#include "../../../../../../../../.envs/Cellar/llvm/8.0.0/include/c++/v1/vector"
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "../../blob.hpp"
-#include "../../data_transformer.hpp"
-#include "../../internal_thread.hpp"
-#include "../../layer.hpp"
-#include "base_data_layer.hpp"
-#include "../../../../builds/release/include/caffe/proto/caffe.pb.h"
+#include "caffe/blob.hpp"
+#include "caffe/data_transformer.hpp"
+#include "caffe/internal_thread.hpp"
+#include "caffe/layer.hpp"
+#include "caffe/layers/data/base_data_layer.hpp"
+#include "caffe/proto/caffe.pb.h"
 
 namespace caffe {
 
