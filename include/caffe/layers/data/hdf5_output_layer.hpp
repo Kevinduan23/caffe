@@ -1,14 +1,14 @@
 #ifndef CAFFE_HDF5_OUTPUT_LAYER_HPP_
 #define CAFFE_HDF5_OUTPUT_LAYER_HPP_
 
-#include "hdf5.h"
+#include "../../../../../../../../.envs/include/hdf5.h"
 
-#include <string>
-#include <vector>
+#include "../../../../../../../../.envs/Cellar/llvm/8.0.0/include/c++/v1/string"
+#include "../../../../../../../../.envs/Cellar/llvm/8.0.0/include/c++/v1/vector"
 
-#include "caffe/blob.hpp"
-#include "caffe/layer.hpp"
-#include "caffe/proto/caffe.pb.h"
+#include "../../blob.hpp"
+#include "../../layer.hpp"
+#include "../../../../builds/release/include/caffe/proto/caffe.pb.h"
 
 namespace caffe {
 
