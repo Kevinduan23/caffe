@@ -1,14 +1,14 @@
 #ifndef CAFFE_DATA_LAYERS_HPP_
 #define CAFFE_DATA_LAYERS_HPP_
 
-#include <vector>
+#include "../../../../../../../../.envs/Cellar/llvm/8.0.0/include/c++/v1/vector"
 
-#include "caffe/blob.hpp"
-#include "caffe/data_transformer.hpp"
-#include "caffe/internal_thread.hpp"
-#include "caffe/layer.hpp"
-#include "caffe/proto/caffe.pb.h"
-#include "caffe/util/blocking_queue.hpp"
+#include "../../blob.hpp"
+#include "../../data_transformer.hpp"
+#include "../../internal_thread.hpp"
+#include "../../layer.hpp"
+#include "../../../../builds/release/include/caffe/proto/caffe.pb.h"
+#include "../../util/blocking_queue.hpp"
 
 namespace caffe {
 

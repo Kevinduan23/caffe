@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "caffe/data_transformer.hpp"
-#include "caffe/layers/data_layer.hpp"
+#include "caffe/layers/data/data_layer.hpp"
 #include "caffe/util/benchmark.hpp"
 
 namespace caffe {
