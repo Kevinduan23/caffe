@@ -6,6 +6,7 @@
 #include "caffe/util/benchmark.hpp"
 #include "caffe/util/data.hpp"
 #include <lz4.h>
+#include <caffe/layers/base_data_layer.hpp>
 
 namespace caffe {
 
@@ -95,8 +96,10 @@ namespace caffe {
       // Copy label.
       if (this->output_labels_) {
         Dtype *top_label = batch->label_.mutable_cpu_data();
+        offset = batch->label_.offset(item_id);
+        top_label += offset;
         for (int j = 0; j < datum.label_size(); ++j) {
-          top_label[item_id] = datum.label(j);
+          top_label[j] = datum.label(j);
         }
       }
       trans_time += timer.MicroSeconds();
