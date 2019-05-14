@@ -35,6 +35,6 @@ std::string decompress(const std::string &data) {
   out.push(bio::gzip_decompressor());
   out.push(compressed);
   bio::copy(out, decompressed);
-  return compressed.str();
+  return decompressed.str();
 }
 } // namespace caffe

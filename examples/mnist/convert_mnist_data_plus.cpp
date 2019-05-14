@@ -15,7 +15,7 @@
 #include <leveldb/db.h>
 #include <leveldb/write_batch.h>
 #include <lmdb.h>
-#include <lz4.h>
+#include "caffe/util/data.hpp"
 
 #endif
 
@@ -94,11 +94,10 @@ void convert_dataset(const char *image_filename, const char *label_filename,
     image_file.read(pixels, rows * cols);
     label_file.read(&label, 1);
     datumPlus.set_compressed(true);
-    char compressed[rows * cols];
-    int compress_size = LZ4_compress_default(pixels, compressed, rows * cols, rows * cols);
+    string compressed = compress(string(pixels, rows * cols));
     datumPlus.clear_data();
     datumPlus.clear_label();
-    datumPlus.set_data(compressed, compress_size);
+    datumPlus.set_data(compressed);
     datumPlus.add_label(label);
     string key_str = caffe::format_int(item_id, 8);
     datumPlus.SerializeToString(&value);
