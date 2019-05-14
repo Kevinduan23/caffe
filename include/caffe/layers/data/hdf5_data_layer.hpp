@@ -41,9 +41,9 @@ namespace caffe {
     virtual inline int MinTopBlobs() const { return 1; }
 
   protected:
-    void Next();
+    virtual void Next();
 
-    bool Skip();
+    virtual bool Skip();
 
     virtual void Forward_cpu(const vector<Blob<Dtype> *> &bottom,
                              const vector<Blob<Dtype> *> &top);
