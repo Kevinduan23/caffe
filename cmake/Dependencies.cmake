@@ -64,6 +64,7 @@ if (USE_LMDB)
     if (ALLOW_LMDB_NOLOCK)
         list(APPEND Caffe_DEFINITIONS PRIVATE -DALLOW_LMDB_NOLOCK)
     endif ()
+    list(APPEND Caffe_LINKER_LIBS PUBLIC -llz4)
 endif ()
 
 # ---[ LevelDB

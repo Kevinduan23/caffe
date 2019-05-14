@@ -40,6 +40,17 @@ message Datum {
     optional bool encoded = 7 [default = false];
 }
 
+message DatumPlus {
+    optional int32 channels = 1;
+    optional int32 height = 2;
+    optional int32 width = 3;
+    optional bool compressed = 4 [default = false];
+    // the actual image data, in bytes
+    optional bytes data = 5;
+    repeated float label = 6 [packed = true];
+    optional bool encoded = 7 [default = false];
+}
+
 message FillerParameter {
     // The filler type.
     optional string type = 1 [default = 'constant'];
@@ -422,6 +433,7 @@ message LayerParameter {
     optional TileParameter tile_param = 138;
     optional WindowDataParameter window_data_param = 129;
     optional FocalLossParameter focal_loss_param = 200;
+    optional HDF5PrefetchDataParameter hdf5_prefetch_data_param = 201;
 }
 
 // Message that stores parameters used to apply transformation
@@ -1455,4 +1467,11 @@ message PReLUParameter {
 message FocalLossParameter {
     optional float alpha = 1 [default = 0.25];
     optional float gamma = 2 [default = 2.0];
+}
+
+message HDF5PrefetchDataParameter {
+    required string source = 1;
+    optional uint32 prefetch = 2 [default = 0];
+    required uint32 batch_size = 3;
+    optional bool shuffle = 4 [default = false];
 }
