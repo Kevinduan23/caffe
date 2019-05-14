@@ -14,7 +14,11 @@ namespace caffe {
     const int batch_size = this->layer_param().data_param().batch_size();
     DatumPlus datum;
     datum.ParseFromString(this->cursor_->value());
-    this->uncompress(datum);
+    if (datum.compressed()) {
+      string decompressed_data = decompress(datum.data());
+      datum.clear_data();
+      datum.set_data(decompressed_data);
+    }
     Datum shape_datum;
     convert_datum(datum, shape_datum);
 
@@ -62,7 +66,11 @@ namespace caffe {
         this->Next();
       }
       datum.ParseFromString(this->cursor_->value());
-      this->uncompress(datum);
+      if (datum.compressed()) {
+        string decompressed_data = decompress(datum.data());
+        datum.clear_data();
+        datum.set_data(decompressed_data);
+      }
       convert_datum(datum, data);
       read_time += timer.MicroSeconds();
 
@@ -99,17 +107,6 @@ namespace caffe {
     DLOG(INFO) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";
     DLOG(INFO) << "     Read time: " << read_time / 1000 << " ms.";
     DLOG(INFO) << "Transform time: " << trans_time / 1000 << " ms.";
-  }
-
-  template<typename Dtype>
-  void DataPlusLayer<Dtype>::uncompress(DatumPlus &datum) {
-    if (datum.compressed()) {
-      int uncompressed_cap = datum.data().length() * datum.data().length() + 8;
-      char buf[uncompressed_cap];
-      int uncompressed_size = LZ4_decompress_safe(datum.data().data(), buf, datum.data().length(), uncompressed_cap);
-      datum.clear_data();
-      datum.set_data(buf, uncompressed_size);
-    }
   }
 
   INSTANTIATE_CLASS(DataPlusLayer);

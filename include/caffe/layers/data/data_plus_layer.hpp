@@ -20,8 +20,6 @@ namespace caffe {
 
   protected:
     void load_batch(Batch<Dtype> *batch) override;
-
-    void uncompress(DatumPlus &datum);
   };
 } // namespace caffe
 
