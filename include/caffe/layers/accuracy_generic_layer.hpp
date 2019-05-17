@@ -34,7 +34,12 @@ protected:
   }
 
   virtual void Backward_gpu(const vector<Blob<Dtype> *> &top,
-                            const vector<bool> &propagate_down, const vector<Blob<Dtype> *> &bottom);
+                            const vector<bool> &propagate_down, const vector<Blob<Dtype> *> &bottom) {
+    for (const auto &i : propagate_down) {
+      if (i)
+        NOT_IMPLEMENTED;
+    }
+  }
 
   AccuracyGenericParameter_Type acc_type;
 };
