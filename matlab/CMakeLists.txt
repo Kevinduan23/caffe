@@ -61,7 +61,7 @@ if (build_using MATCHES "Matlab")
     caffe_fetch_and_set_proper_mexext(Matlab_caffe_mex)
     add_custom_command(OUTPUT ${Matlab_caffe_mex}
             COMMAND ${Matlab_mex}
-            ARGS -output ${Matlab_caffe_mex} ${Matlab_srcs} CFLAGS=\"-fPIC -I${CMAKE_BINARY_DIR}/include -I${CMAKE_PREFIX_PATH}/include -I/opt/intel/mkl/include -I${PROJECT_SOURCE_DIR}/include\" -L${CMAKE_PREFIX_PATH}/lib -L${CMAKE_BINARY_DIR}/lib -lcaffe${Caffe_POSTFIX} -lglog -lboost_system -R2018a -v
+            ARGS -output ${Matlab_caffe_mex} ${Matlab_srcs} CFLAGS=\"-fPIC -I${CMAKE_BINARY_DIR}/include -I${CMAKE_PREFIX_PATH}/include -I/opt/intel/mkl/include -I${PROJECT_SOURCE_DIR}/include\" -L${CMAKE_PREFIX_PATH}/lib -L${CMAKE_BINARY_DIR}/lib -lcaffe${Caffe_POSTFIX} -lglog -lboost_system
             DEPENDS caffe
             COMMENT "Building Matlab interface: ${Matlab_caffe_mex}")
     add_custom_target(matlab ALL DEPENDS ${Matlab_caffe_mex} SOURCES ${Matlab_srcs})
