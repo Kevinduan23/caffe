@@ -205,10 +205,10 @@ Solver<Dtype> *GetSolverFromFile(const string &filename) {
 }
 
 struct NdarrayConverterGenerator {
-  template <typename T> struct apply;
+  template<typename T> struct apply;
 };
 
-template <> struct NdarrayConverterGenerator::apply<Dtype *> {
+template<> struct NdarrayConverterGenerator::apply<Dtype *> {
   struct type {
     PyObject *operator()(Dtype *data) const {
       // Just store the data pointer, and add the shape information in postcall.
@@ -231,7 +231,7 @@ struct NdarrayCallPolicies : public bp::default_call_policies {
     Py_DECREF(result);
     const int num_axes = blob->num_axes();
     vector<npy_intp> dims(blob->shape().begin(), blob->shape().end());
-    PyObject *arr_obj =
+    PyObject * arr_obj =
         PyArray_SimpleNewFromData(num_axes, dims.data(), NPY_FLOAT32, data);
     // SetBaseObject steals a ref, so we need to INCREF.
     Py_INCREF(pyblob.ptr());
@@ -270,7 +270,7 @@ bp::object BlobVec_add_blob(bp::tuple args, bp::dict kwargs) {
   return bp::object();
 }
 
-template <typename Dtype>
+template<typename Dtype>
 class SolverCallback : public Solver<Dtype>::Callback {
 protected:
   bp::object on_start_, on_gradients_ready_;
@@ -284,7 +284,7 @@ public:
   virtual void on_start() { on_start_(); }
 };
 
-template <typename Dtype>
+template<typename Dtype>
 void Solver_add_callback(Solver<Dtype> *solver, bp::object on_start,
                          bp::object on_gradients_ready) {
   solver->add_callback(new SolverCallback<Dtype>(on_start, on_gradients_ready));
@@ -293,8 +293,8 @@ void Solver_add_callback(Solver<Dtype> *solver, bp::object on_start,
 // Seems boost cannot call the base method directly
 void Solver_add_nccl(Solver<Dtype> *solver
 #ifdef USE_NCCL
-                     ,
-                     NCCL<Dtype> *nccl
+,
+NCCL<Dtype> *nccl
 #endif
 ) {
 #ifdef USE_NCCL
@@ -306,7 +306,7 @@ void share_weights(Solver<Dtype> *solver, Net<Dtype> *net) {
   net->ShareTrainedLayersWith(solver->net().get());
 }
 
-template <typename Dtype> class NetCallback : public Net<Dtype>::Callback {
+template<typename Dtype> class NetCallback : public Net<Dtype>::Callback {
 public:
   explicit NetCallback(bp::object run) : run_(run) {}
 
@@ -334,8 +334,8 @@ void Net_after_backward(Net<Dtype> *net, bp::object run) {
 
 void Net_add_nccl(Net<Dtype> *net
 #ifdef USE_NCCL
-                  ,
-                  NCCL<Dtype> *nccl
+,
+NCCL<Dtype> *nccl
 #endif
 ) {
 #ifdef USE_NCCL
@@ -345,7 +345,7 @@ void Net_add_nccl(Net<Dtype> *net
 
 #ifndef USE_NCCL
 
-template <typename Dtype> class NCCL {
+template<typename Dtype> class NCCL {
 public:
   NCCL(shared_ptr<Solver<Dtype>> solver, const string &uid) {}
 };
@@ -383,7 +383,7 @@ bp::object NCCL_New_Uid() {
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(SolveOverloads, Solve, 0, 1);
 
-BOOST_PYTHON_MODULE(_caffe) {
+BOOST_PYTHON_MODULE (_caffe) {
   // below, we prepend an underscore to methods that will be replaced
   // in Python
 
@@ -413,18 +413,18 @@ BOOST_PYTHON_MODULE(_caffe) {
       .def("__init__",
            bp::make_constructor(&Net_Init, bp::default_call_policies(),
                                 (bp::arg("network_file"), "phase",
-                                 bp::arg("level") = 0,
-                                 bp::arg("stages") = bp::object(),
-                                 bp::arg("weights") = bp::object())))
-      // Legacy constructor
+                                    bp::arg("level") = 0,
+                                    bp::arg("stages") = bp::object(),
+                                    bp::arg("weights") = bp::object())))
+          // Legacy constructor
       .def("__init__", bp::make_constructor(&Net_Init_Load))
       .def("_forward", &Net<Dtype>::ForwardFromTo)
       .def("_backward", &Net<Dtype>::BackwardFromTo)
       .def("reshape", &Net<Dtype>::Reshape)
       .def("clear_param_diffs", &Net<Dtype>::ClearParamDiffs)
-      // The cast is to select a particular overload.
+          // The cast is to select a particular overload.
       .def("copy_from", static_cast<void (Net<Dtype>::*)(const string &)>(
-                            &Net<Dtype>::CopyTrainedLayersFrom))
+          &Net<Dtype>::CopyTrainedLayersFrom))
       .def("share_with", &Net<Dtype>::ShareTrainedLayersWith)
       .add_property("_blob_loss_weights",
                     bp::make_function(&Net<Dtype>::blob_loss_weights,
@@ -434,8 +434,8 @@ BOOST_PYTHON_MODULE(_caffe) {
                &Net<Dtype>::bottom_ids,
                bp::return_value_policy<bp::copy_const_reference>()))
       .def("_top_ids", bp::make_function(
-                           &Net<Dtype>::top_ids,
-                           bp::return_value_policy<bp::copy_const_reference>()))
+          &Net<Dtype>::top_ids,
+          bp::return_value_policy<bp::copy_const_reference>()))
       .add_property("_blobs",
                     bp::make_function(&Net<Dtype>::blobs,
                                       bp::return_internal_reference<>()))
@@ -475,15 +475,15 @@ BOOST_PYTHON_MODULE(_caffe) {
       "Blob", bp::no_init)
       .add_property(
           "shape", bp::make_function(
-                       static_cast<const vector<int> &(Blob<Dtype>::*)() const>(
-                           &Blob<Dtype>::shape),
-                       bp::return_value_policy<bp::copy_const_reference>()))
+              static_cast<const vector<int> &(Blob<Dtype>::*)() const>(
+                  &Blob<Dtype>::shape),
+              bp::return_value_policy<bp::copy_const_reference>()))
       .add_property("num", &Blob<Dtype>::num)
       .add_property("channels", &Blob<Dtype>::channels)
       .add_property("height", &Blob<Dtype>::height)
       .add_property("width", &Blob<Dtype>::width)
       .add_property("count", static_cast<int (Blob<Dtype>::*)() const>(
-                                 &Blob<Dtype>::count))
+          &Blob<Dtype>::count))
       .def("reshape", bp::raw_function(&Blob_Reshape))
 #ifndef CPU_ONLY
       .add_property("_gpu_data_ptr",
@@ -585,11 +585,11 @@ BOOST_PYTHON_MODULE(_caffe) {
   bp::class_<NCCL<Dtype>, shared_ptr<NCCL<Dtype>>, boost::noncopyable>(
       "NCCL", bp::init<shared_ptr<Solver<Dtype>>, const string &>())
 #ifdef USE_NCCL
-      .def("new_uid", NCCL_New_Uid)
-      .staticmethod("new_uid")
-      .def("bcast", &NCCL<Dtype>::Broadcast)
+    .def("new_uid", NCCL_New_Uid)
+    .staticmethod("new_uid")
+    .def("bcast", &NCCL<Dtype>::Broadcast)
 #endif
-      /* NOLINT_NEXT_LINE(whitespace/semicolon) */
+    /* NOLINT_NEXT_LINE(whitespace/semicolon) */
       ;
   BP_REGISTER_SHARED_PTR_TO_PYTHON(NCCL<Dtype>);
 

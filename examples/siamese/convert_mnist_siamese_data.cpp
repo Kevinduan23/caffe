@@ -70,7 +70,7 @@ void convert_dataset(const char *image_filename, const char *label_filename,
   options.create_if_missing = true;
   options.error_if_exists = true;
   leveldb::Status status = leveldb::DB::Open(
-          options, db_filename, &db);
+      options, db_filename, &db);
   CHECK(status.ok()) << "Failed to open leveldb " << db_filename
                      << ". Is it already existing?";
 

@@ -72,7 +72,6 @@ void convert_dataset(const char *image_filename, const char *label_filename,
   image_file.read(reinterpret_cast<char *>(&cols), 4);
   cols = swap_endian(cols);
 
-
   scoped_ptr<db::DB> db(db::GetDB(db_backend));
   db->Open(db_path, db::NEW);
   scoped_ptr<db::Transaction> txn(db->NewTransaction());

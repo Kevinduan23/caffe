@@ -69,7 +69,7 @@ Classifier::Classifier(const string &model_file,
   Blob<float> *input_layer = net_->input_blobs()[0];
   num_channels_ = input_layer->channels();
   CHECK(num_channels_ == 3 || num_channels_ == 1)
-                  << "Input layer should have 1 or 3 channels.";
+          << "Input layer should have 1 or 3 channels.";
   input_geometry_ = cv::Size(input_layer->width(), input_layer->height());
 
   /* Load the binaryproto mean file. */
@@ -227,8 +227,8 @@ void Classifier::Preprocess(const cv::Mat &img,
   cv::split(sample_normalized, *input_channels);
 
   CHECK(reinterpret_cast<float *>(input_channels->at(0).data)
-        == net_->input_blobs()[0]->cpu_data())
-                  << "Input channels are not wrapping the input layer of the network.";
+            == net_->input_blobs()[0]->cpu_data())
+          << "Input channels are not wrapping the input layer of the network.";
 }
 
 int main(int argc, char **argv) {

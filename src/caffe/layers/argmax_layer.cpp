@@ -7,7 +7,7 @@
 
 namespace caffe {
 
-template <typename Dtype>
+template<typename Dtype>
 void ArgMaxLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
                                     const vector<Blob<Dtype> *> &top) {
   const ArgMaxParameter &argmax_param = this->layer_param_.argmax_param();
@@ -19,17 +19,17 @@ void ArgMaxLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
     axis_ = bottom[0]->CanonicalAxisIndex(argmax_param.axis());
     CHECK_GE(axis_, 0) << "axis must not be less than 0.";
     CHECK_LE(axis_, bottom[0]->num_axes())
-        << "axis must be less than or equal to the number of axis.";
+      << "axis must be less than or equal to the number of axis.";
     CHECK_LE(top_k_, bottom[0]->shape(axis_))
-        << "top_k must be less than or equal to the dimension of the axis.";
+      << "top_k must be less than or equal to the dimension of the axis.";
   } else {
     CHECK_LE(top_k_, bottom[0]->count(1))
-        << "top_k must be less than or equal to"
-           " the dimension of the flattened bottom blob per instance.";
+      << "top_k must be less than or equal to"
+         " the dimension of the flattened bottom blob per instance.";
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void ArgMaxLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
                                  const vector<Blob<Dtype> *> &top) {
   int num_top_axes = bottom[0]->num_axes();
@@ -52,7 +52,7 @@ void ArgMaxLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
   top[0]->Reshape(shape);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void ArgMaxLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
                                      const vector<Blob<Dtype> *> &top) {
   const Dtype *bottom_data = bottom[0]->cpu_data();

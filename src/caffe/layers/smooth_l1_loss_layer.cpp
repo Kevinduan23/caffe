@@ -5,14 +5,14 @@
 #include "caffe/layers/smooth_l1_loss_layer.hpp"
 
 namespace caffe {
-template <typename Dtype>
+template<typename Dtype>
 void SmoothL1LossLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
                                           const vector<Blob<Dtype> *> &top) {
   LossLayer<Dtype>::LayerSetUp(bottom, top);
   has_weght_ = (bottom.size() == 3);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void SmoothL1LossLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
                                        const vector<Blob<Dtype> *> &top) {
   LossLayer<Dtype>::Reshape(bottom, top);
@@ -28,7 +28,7 @@ void SmoothL1LossLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
   errors_.Reshape(bottom[0]->shape());
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void SmoothL1LossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
                                            const vector<Blob<Dtype> *> &top) {
   int count = bottom[0]->count();
@@ -53,7 +53,7 @@ void SmoothL1LossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
       caffe_cpu_asum(count, errors_.cpu_data()) / bottom[0]->shape(0);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void SmoothL1LossLayer<Dtype>::Backward_cpu(
     const vector<Blob<Dtype> *> &top, const vector<bool> &propagate_down,
     const vector<Blob<Dtype> *> &bottom) {

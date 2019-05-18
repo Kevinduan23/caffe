@@ -18,7 +18,7 @@ namespace caffe {
 
 // Reference convolution for checking results:
 // accumulate through explicit loops over input, output, and filters.
-template <typename Dtype>
+template<typename Dtype>
 void caffe_conv(const Blob<Dtype> *in, ConvolutionParameter *conv_param,
                 const vector<shared_ptr<Blob<Dtype>>> &weights,
                 Blob<Dtype> *out) {
@@ -112,7 +112,7 @@ void caffe_conv(const Blob<Dtype> *in, ConvolutionParameter *conv_param,
                         out_offset[3 + has_depth] = x;
                         out_data[out->offset(out_offset)] +=
                             in->data_at(in_offset) *
-                            weights[0]->data_at(weight_offset);
+                                weights[0]->data_at(weight_offset);
                       }
                     }
                   }
@@ -158,7 +158,7 @@ template void caffe_conv(const Blob<double> *in,
                          const vector<shared_ptr<Blob<double>>> &weights,
                          Blob<double> *out);
 
-template <typename TypeParam>
+template<typename TypeParam>
 class ConvolutionLayerTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -346,7 +346,7 @@ TYPED_TEST(ConvolutionLayerTest, Test0DConvolution) {
       for (int bottom_d = 0; bottom_d < bottom_dim; ++bottom_d) {
         weight_offset[1] = bottom_d;
         value += weight->data_at(weight_offset) *
-                 this->blob_bottom_->cpu_data()[n * bottom_dim + bottom_d];
+            this->blob_bottom_->cpu_data()[n * bottom_dim + bottom_d];
       }
       EXPECT_NEAR(value, this->blob_top_->cpu_data()[n * dim + d], 1e-4);
     }

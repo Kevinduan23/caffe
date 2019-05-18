@@ -8,7 +8,7 @@
 
 namespace caffe {
 
-template <typename Dtype>
+template<typename Dtype>
 void ScaleLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
                                    const vector<Blob<Dtype> *> &top) {
   const ScaleParameter &param = this->layer_param_.scale_param();
@@ -22,8 +22,8 @@ void ScaleLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
                            << "or -1 to extend to the end of bottom[0]";
     if (num_axes >= 0) {
       CHECK_GE(bottom[0]->num_axes(), axis_ + num_axes)
-          << "scale blob's shape extends past bottom[0]'s shape when applied "
-          << "starting with bottom[0] axis = " << axis_;
+        << "scale blob's shape extends past bottom[0]'s shape when applied "
+        << "starting with bottom[0] axis = " << axis_;
     }
     this->blobs_.resize(1);
     const vector<int>::const_iterator &shape_start =
@@ -72,7 +72,7 @@ void ScaleLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
   this->param_propagate_down_.resize(this->blobs_.size(), true);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void ScaleLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
                                 const vector<Blob<Dtype> *> &top) {
   const ScaleParameter &param = this->layer_param_.scale_param();
@@ -84,15 +84,15 @@ void ScaleLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
   // bottom[0]->num_axes() - 1, giving inner_dim_ == 1, would be equally
   // performant.)
   axis_ = (scale->num_axes() == 0)
-              ? 0
-              : bottom[0]->CanonicalAxisIndex(param.axis());
+          ? 0
+          : bottom[0]->CanonicalAxisIndex(param.axis());
   CHECK_GE(bottom[0]->num_axes(), axis_ + scale->num_axes())
-      << "scale blob's shape extends past bottom[0]'s shape when applied "
-      << "starting with bottom[0] axis = " << axis_;
+    << "scale blob's shape extends past bottom[0]'s shape when applied "
+    << "starting with bottom[0] axis = " << axis_;
   for (int i = 0; i < scale->num_axes(); ++i) {
     CHECK_EQ(bottom[0]->shape(axis_ + i), scale->shape(i))
-        << "dimension mismatch between bottom[0]->shape(" << axis_ + i
-        << ") and scale->shape(" << i << ")";
+      << "dimension mismatch between bottom[0]->shape(" << axis_ + i
+      << ") and scale->shape(" << i << ")";
   }
   outer_dim_ = bottom[0]->count(0, axis_);
   scale_dim_ = scale->count();
@@ -114,7 +114,7 @@ void ScaleLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void ScaleLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
                                     const vector<Blob<Dtype> *> &top) {
   const Dtype *bottom_data = bottom[0]->cpu_data();
@@ -142,7 +142,7 @@ void ScaleLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void ScaleLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype> *> &top,
                                      const vector<bool> &propagate_down,
                                      const vector<Blob<Dtype> *> &bottom) {

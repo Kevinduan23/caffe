@@ -7,7 +7,7 @@
 
 namespace caffe {
 
-template <typename Dtype>
+template<typename Dtype>
 void FocalLossLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
                                        const vector<Blob<Dtype> *> &top) {
   LossLayer<Dtype>::LayerSetUp(bottom, top);
@@ -21,25 +21,25 @@ void FocalLossLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
     normalization_ = this->layer_param_.loss_param().normalization();
   } else if (this->layer_param_.loss_param().has_normalize()) {
     normalization_ = this->layer_param_.loss_param().normalize()
-                         ? LossParameter_NormalizationMode_VALID
-                         : LossParameter_NormalizationMode_BATCH_SIZE;
+                     ? LossParameter_NormalizationMode_VALID
+                     : LossParameter_NormalizationMode_BATCH_SIZE;
   } else {
     normalization_ = LossParameter_NormalizationMode_BATCH_SIZE;
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void FocalLossLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
                                     const vector<Blob<Dtype> *> &top) {
   // shape top size to 1
   LossLayer<Dtype>::Reshape(bottom, top);
   CHECK_EQ(bottom[0]->shape(0), bottom[1]->shape(0))
-      << "Inputs must have the same dimension.";
+    << "Inputs must have the same dimension.";
   outer_num_ = bottom[0]->shape(0); // batch size
   inner_num_ = bottom[0]->count(1); // instance size: |output| == |target|
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void FocalLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
                                         const vector<Blob<Dtype> *> &top) {
   const Dtype *input_data = bottom[0]->cpu_data();
@@ -69,7 +69,7 @@ void FocalLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void FocalLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype> *> &top,
                                          const vector<bool> &propagate_down,
                                          const vector<Blob<Dtype> *> &bottom) {
@@ -98,11 +98,11 @@ void FocalLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype> *> &top,
           focal_diff =
               alpha_ * gamma_ * log(std::max(pt, Dtype(FLT_MIN))) *
                   pow(1.0 - pt, gamma_ - 1) -
-              (alpha_ * pow(1.0 - pt, gamma_)) / std::max(pt, Dtype(FLT_MIN));
+                  (alpha_ * pow(1.0 - pt, gamma_)) / std::max(pt, Dtype(FLT_MIN));
         } else {
           focal_diff = -((alpha_ * pow(pt, gamma_)) / (pt - 1.0)) -
-                       alpha_ * pow(pt, gamma_ - 1) * gamma_ *
-                           log(std::max(Dtype(1.0 - pt), Dtype(FLT_MIN)));
+              alpha_ * pow(pt, gamma_ - 1) * gamma_ *
+                  log(std::max(Dtype(1.0 - pt), Dtype(FLT_MIN)));
         }
         bottom_diff[i * dim + j] = focal_diff;
         valid_count++;

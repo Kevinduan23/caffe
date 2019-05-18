@@ -122,7 +122,7 @@ TEST_F(IOTest, TestReadImageToDatumContent) {
     for (int h = 0; h < datum.height(); ++h) {
       for (int w = 0; w < datum.width(); ++w) {
         EXPECT_TRUE(data[index++] ==
-                    static_cast<char>(cv_img.at<cv::Vec3b>(h, w)[c]));
+            static_cast<char>(cv_img.at<cv::Vec3b>(h, w)[c]));
       }
     }
   }
@@ -332,7 +332,7 @@ TEST_F(IOTest, TestDecodeDatumToCVMatContent) {
     for (int h = 0; h < datum.height(); ++h) {
       for (int w = 0; w < datum.width(); ++w) {
         EXPECT_TRUE(cv_img.at<cv::Vec3b>(h, w)[c] ==
-                    cv_img_ref.at<cv::Vec3b>(h, w)[c]);
+            cv_img_ref.at<cv::Vec3b>(h, w)[c]);
       }
     }
   }
@@ -412,7 +412,7 @@ TEST_F(IOTest, TestDecodeDatumToCVMatContentNative) {
     for (int h = 0; h < datum.height(); ++h) {
       for (int w = 0; w < datum.width(); ++w) {
         EXPECT_TRUE(cv_img.at<cv::Vec3b>(h, w)[c] ==
-                    cv_img_ref.at<cv::Vec3b>(h, w)[c]);
+            cv_img_ref.at<cv::Vec3b>(h, w)[c]);
       }
     }
   }

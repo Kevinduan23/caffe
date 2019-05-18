@@ -8,7 +8,7 @@
 
 namespace caffe {
 
-template <typename Dtype>
+template<typename Dtype>
 void InfogainLossLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
                                           const vector<Blob<Dtype> *> &top) {
   LossLayer<Dtype>::LayerSetUp(bottom, top);
@@ -33,12 +33,12 @@ void InfogainLossLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
   }
   // normalization
   CHECK(!this->layer_param_.loss_param().has_normalize())
-      << "normalize is deprecated. use \"normalization\"";
+          << "normalize is deprecated. use \"normalization\"";
   normalization_ = this->layer_param_.loss_param().normalization();
   // matrix H
   if (bottom.size() < 3) {
     CHECK(this->layer_param_.infogain_loss_param().has_source())
-        << "Infogain matrix source must be specified.";
+            << "Infogain matrix source must be specified.";
     BlobProto blob_proto;
     ReadProtoFromBinaryFile(this->layer_param_.infogain_loss_param().source(),
                             &blob_proto);
@@ -46,7 +46,7 @@ void InfogainLossLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void InfogainLossLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
                                        const vector<Blob<Dtype> *> &top) {
   LossLayer<Dtype>::Reshape(bottom, top);
@@ -56,10 +56,10 @@ void InfogainLossLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
   outer_num_ = bottom[0]->count(0, infogain_axis_);
   inner_num_ = bottom[0]->count(infogain_axis_ + 1);
   CHECK_EQ(outer_num_ * inner_num_, bottom[1]->count())
-      << "Number of labels must match number of predictions; "
-      << "e.g., if infogain axis == 1 and prediction shape is (N, C, H, W), "
-      << "label count (number of labels) must be N*H*W, "
-      << "with integer values in {0, 1, ..., C-1}.";
+    << "Number of labels must match number of predictions; "
+    << "e.g., if infogain axis == 1 and prediction shape is (N, C, H, W), "
+    << "label count (number of labels) must be N*H*W, "
+    << "with integer values in {0, 1, ..., C-1}.";
   num_labels_ = bottom[0]->shape(infogain_axis_);
   Blob<Dtype> *infogain = NULL;
   if (bottom.size() < 3) {
@@ -79,7 +79,7 @@ void InfogainLossLayer<Dtype>::Reshape(const vector<Blob<Dtype> *> &bottom,
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 Dtype InfogainLossLayer<Dtype>::get_normalizer(
     LossParameter_NormalizationMode normalization_mode, int valid_count) {
   Dtype normalizer;
@@ -109,10 +109,10 @@ Dtype InfogainLossLayer<Dtype>::get_normalizer(
   return std::max(Dtype(1.0), normalizer);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void InfogainLossLayer<Dtype>::sum_rows_of_H(const Blob<Dtype> *H) {
   CHECK_EQ(H->count(), num_labels_ * num_labels_)
-      << "H must be " << num_labels_ << "x" << num_labels_;
+    << "H must be " << num_labels_ << "x" << num_labels_;
   const Dtype *infogain_mat = H->cpu_data();
   Dtype *sum = sum_rows_H_.mutable_cpu_data();
   for (int row = 0; row < num_labels_; row++) {
@@ -123,7 +123,7 @@ void InfogainLossLayer<Dtype>::sum_rows_of_H(const Blob<Dtype> *H) {
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void InfogainLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
                                            const vector<Blob<Dtype> *> &top) {
   // The forward pass computes the softmax prob values.
@@ -150,9 +150,9 @@ void InfogainLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
       for (int l = 0; l < num_labels_; l++) {
         loss -=
             infogain_mat[label_value * num_labels_ + l] *
-            log(std::max(
-                prob_data[i * inner_num_ * num_labels_ + l * inner_num_ + j],
-                Dtype(kLOG_THRESHOLD)));
+                log(std::max(
+                    prob_data[i * inner_num_ * num_labels_ + l * inner_num_ + j],
+                    Dtype(kLOG_THRESHOLD)));
       }
       ++count;
     }
@@ -163,7 +163,7 @@ void InfogainLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &bottom,
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void InfogainLossLayer<Dtype>::Backward_cpu(
     const vector<Blob<Dtype> *> &top, const vector<bool> &propagate_down,
     const vector<Blob<Dtype> *> &bottom) {
@@ -205,7 +205,7 @@ void InfogainLossLayer<Dtype>::Backward_cpu(
             bottom_diff[i * dim + l * inner_num_ + j] =
                 prob_data[i * dim + l * inner_num_ + j] *
                     sum_rows_H[label_value] -
-                infogain_mat[label_value * num_labels_ + l];
+                    infogain_mat[label_value * num_labels_ + l];
           }
           ++count;
         }

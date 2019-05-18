@@ -12,7 +12,7 @@
 
 namespace caffe {
 
-template <typename TypeParam>
+template<typename TypeParam>
 class ReshapeLayerTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 

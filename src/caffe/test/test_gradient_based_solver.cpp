@@ -19,7 +19,7 @@ using std::ostringstream;
 
 namespace caffe {
 
-template <typename TypeParam>
+template<typename TypeParam>
 class GradientBasedSolverTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -303,7 +303,7 @@ protected:
       grad /= N;
       // Add the weight decay to the gradient.
       grad += weight_decay *
-              ((i == D) ? bias.cpu_data()[0] : weights.cpu_data()[i]);
+          ((i == D) ? bias.cpu_data()[0] : weights.cpu_data()[i]);
       // Finally, compute update.
       const vector<shared_ptr<Blob<Dtype>>> &history = solver_->history();
       if (solver_->type() != string("AdaDelta") &&
@@ -327,8 +327,8 @@ protected:
       } else if (solver_->type() == string("RMSProp")) {
         const Dtype rms_decay = 0.95;
         update_value /= std::sqrt(rms_decay * history_value +
-                                  grad * grad * (1 - rms_decay)) +
-                        delta_;
+            grad * grad * (1 - rms_decay)) +
+            delta_;
       } else if (solver_->type() == string("AdaDelta")) {
         const Dtype update_history_value =
             (i == D) ? history[1 + num_param_blobs]->cpu_data()[0]
@@ -336,9 +336,9 @@ protected:
         const Dtype weighted_gradient_average =
             momentum * history_value + (1 - momentum) * (grad * grad);
         update_value = grad *
-                       std::sqrt((update_history_value + delta_) /
-                                 (weighted_gradient_average + delta_)) *
-                       learning_rate;
+            std::sqrt((update_history_value + delta_) /
+                (weighted_gradient_average + delta_)) *
+            learning_rate;
         // not actually needed, just here for illustrative purposes
         // const Dtype weighted_update_average =
         //   momentum * update_history_value + (1 - momentum) * (update_value);
@@ -350,8 +350,8 @@ protected:
         const Dtype val_m = (1 - momentum) * grad + momentum * m;
         const Dtype val_v = (1 - momentum2) * grad * grad + momentum2 * v;
         Dtype alpha_t = learning_rate *
-                        std::sqrt(Dtype(1) - pow(momentum2, num_iters)) /
-                        (Dtype(1.) - pow(momentum, num_iters));
+            std::sqrt(Dtype(1) - pow(momentum2, num_iters)) /
+            (Dtype(1.) - pow(momentum, num_iters));
         update_value = alpha_t * val_m / (std::sqrt(val_v) + delta_);
       } else {
         LOG(FATAL) << "Unknown solver type: " << solver_->type();
@@ -586,10 +586,10 @@ protected:
       for (int j = 0; j < params[i]->count(); ++j) {
         EXPECT_FLOAT_EQ(param_copies[i]->cpu_data()[j],
                         params[i]->cpu_data()[j])
-            << "param " << i << " data differed at dim " << j;
+                << "param " << i << " data differed at dim " << j;
         EXPECT_FLOAT_EQ(param_copies[i]->cpu_diff()[j],
                         params[i]->cpu_diff()[j])
-            << "param " << i << " diff differed at dim " << j;
+                << "param " << i << " diff differed at dim " << j;
       }
     }
 
@@ -599,16 +599,16 @@ protected:
       for (int j = 0; j < history[i]->count(); ++j) {
         EXPECT_FLOAT_EQ(history_copies[i]->cpu_data()[j],
                         history[i]->cpu_data()[j])
-            << "history blob " << i << " data differed at dim " << j;
+                << "history blob " << i << " data differed at dim " << j;
         EXPECT_FLOAT_EQ(history_copies[i]->cpu_diff()[j],
                         history[i]->cpu_diff()[j])
-            << "history blob " << i << " diff differed at dim " << j;
+                << "history blob " << i << " diff differed at dim " << j;
       }
     }
   }
 };
 
-template <typename TypeParam>
+template<typename TypeParam>
 class SGDSolverTest : public GradientBasedSolverTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -743,7 +743,7 @@ TYPED_TEST(SGDSolverTest, TestSnapshotShare) {
   }
 }
 
-template <typename TypeParam>
+template<typename TypeParam>
 class AdaGradSolverTest : public GradientBasedSolverTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -842,7 +842,7 @@ TYPED_TEST(AdaGradSolverTest, TestSnapshotShare) {
   }
 }
 
-template <typename TypeParam>
+template<typename TypeParam>
 class NesterovSolverTest : public GradientBasedSolverTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -975,7 +975,7 @@ TYPED_TEST(NesterovSolverTest, TestSnapshotShare) {
   }
 }
 
-template <typename TypeParam>
+template<typename TypeParam>
 class AdaDeltaSolverTest : public GradientBasedSolverTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -1104,7 +1104,7 @@ TYPED_TEST(AdaDeltaSolverTest, TestSnapshotShare) {
   }
 }
 
-template <typename TypeParam>
+template<typename TypeParam>
 class AdamSolverTest : public GradientBasedSolverTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -1206,7 +1206,7 @@ TYPED_TEST(AdamSolverTest, TestSnapshotShare) {
   }
 }
 
-template <typename TypeParam>
+template<typename TypeParam>
 class RMSPropSolverTest : public GradientBasedSolverTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 

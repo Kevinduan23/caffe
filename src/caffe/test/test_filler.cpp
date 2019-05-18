@@ -8,7 +8,7 @@
 
 namespace caffe {
 
-template <typename Dtype> class ConstantFillerTest : public ::testing::Test {
+template<typename Dtype> class ConstantFillerTest : public ::testing::Test {
 protected:
   ConstantFillerTest() : blob_(new Blob<Dtype>()), filler_param_() {
     filler_param_.set_value(10.);
@@ -66,7 +66,7 @@ TYPED_TEST(ConstantFillerTest, TestFill5D) {
   this->test_params(blob_shape);
 }
 
-template <typename Dtype> class UniformFillerTest : public ::testing::Test {
+template<typename Dtype> class UniformFillerTest : public ::testing::Test {
 protected:
   UniformFillerTest() : blob_(new Blob<Dtype>()), filler_param_() {
     filler_param_.set_min(1.);
@@ -126,7 +126,7 @@ TYPED_TEST(UniformFillerTest, TestFill5D) {
   this->test_params(blob_shape);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 class PositiveUnitballFillerTest : public ::testing::Test {
 protected:
   PositiveUnitballFillerTest() : blob_(new Blob<Dtype>()), filler_param_() {
@@ -195,7 +195,7 @@ TYPED_TEST(PositiveUnitballFillerTest, TestFill5D) {
   this->test_params(blob_shape);
 }
 
-template <typename Dtype> class GaussianFillerTest : public ::testing::Test {
+template<typename Dtype> class GaussianFillerTest : public ::testing::Test {
 protected:
   GaussianFillerTest() : blob_(new Blob<Dtype>()), filler_param_() {
     filler_param_.set_mean(10.);
@@ -283,7 +283,7 @@ TYPED_TEST(GaussianFillerTest, TestFill5D) {
   this->test_params(blob_shape, tolerance);
 }
 
-template <typename Dtype> class XavierFillerTest : public ::testing::Test {
+template<typename Dtype> class XavierFillerTest : public ::testing::Test {
 protected:
   XavierFillerTest() : blob_(new Blob<Dtype>()), filler_param_() {}
 
@@ -392,7 +392,7 @@ TYPED_TEST(XavierFillerTest, TestFill5D) {
   this->filler_->Fill(this->blob_);
 }
 
-template <typename Dtype> class MSRAFillerTest : public ::testing::Test {
+template<typename Dtype> class MSRAFillerTest : public ::testing::Test {
 protected:
   MSRAFillerTest() : blob_(new Blob<Dtype>()), filler_param_() {}
 
@@ -501,7 +501,7 @@ TYPED_TEST(MSRAFillerTest, TestFill5D) {
   this->filler_->Fill(this->blob_);
 }
 
-template <typename Dtype> class BilinearFillerTest : public ::testing::Test {
+template<typename Dtype> class BilinearFillerTest : public ::testing::Test {
 protected:
   BilinearFillerTest() : blob_(new Blob<Dtype>()), filler_param_() {}
 

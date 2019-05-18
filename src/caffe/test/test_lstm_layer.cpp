@@ -13,7 +13,7 @@
 
 namespace caffe {
 
-template <typename TypeParam>
+template<typename TypeParam>
 class LSTMLayerTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -159,7 +159,7 @@ TYPED_TEST(LSTMLayerTest, TestForward) {
       ASSERT_LT(t * top_count + i, top_copy.count());
       EXPECT_NEAR(this->blob_top_.cpu_data()[i],
                   top_copy.cpu_data()[t * top_count + i], kEpsilon)
-          << "t = " << t << "; i = " << i;
+              << "t = " << t << "; i = " << i;
     }
   }
 
@@ -180,11 +180,11 @@ TYPED_TEST(LSTMLayerTest, TestForward) {
       if (t == 0) {
         EXPECT_NEAR(this->blob_top_.cpu_data()[i],
                     top_copy.cpu_data()[t * top_count + i], kEpsilon)
-            << "t = " << t << "; i = " << i;
+                << "t = " << t << "; i = " << i;
       } else {
         EXPECT_NE(this->blob_top_.cpu_data()[i],
                   top_copy.cpu_data()[t * top_count + i])
-            << "t = " << t << "; i = " << i;
+                << "t = " << t << "; i = " << i;
       }
     }
   }

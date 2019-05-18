@@ -10,7 +10,7 @@
 
 namespace caffe {
 
-template <typename Dtype> class BlobSimpleTest : public ::testing::Test {
+template<typename Dtype> class BlobSimpleTest : public ::testing::Test {
 protected:
   BlobSimpleTest()
       : blob_(new Blob<Dtype>()), blob_preshaped_(new Blob<Dtype>(2, 3, 4, 5)) {
@@ -116,7 +116,7 @@ TYPED_TEST(BlobSimpleTest, TestLegacyBlobProtoShapeEquals) {
   EXPECT_FALSE(this->blob_->ShapeEquals(blob_proto));
 }
 
-template <typename TypeParam>
+template<typename TypeParam>
 class BlobMathTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 

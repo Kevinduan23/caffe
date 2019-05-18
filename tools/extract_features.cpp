@@ -19,7 +19,7 @@ using caffe::Net;
 using std::string;
 namespace db = caffe::db;
 
-template <typename Dtype>
+template<typename Dtype>
 int feature_extraction_pipeline(int argc, char **argv);
 
 int main(int argc, char **argv) {
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   //  return feature_extraction_pipeline<double>(argc, argv);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 int feature_extraction_pipeline(int argc, char **argv) {
   ::google::InitGoogleLogging(argv[0]);
   const int num_required_args = 7;
@@ -110,13 +110,13 @@ int feature_extraction_pipeline(int argc, char **argv) {
   boost::split(dataset_names, save_feature_dataset_names,
                boost::is_any_of(","));
   CHECK_EQ(blob_names.size(), dataset_names.size())
-      << " the number of blob names and dataset names must be equal";
+    << " the number of blob names and dataset names must be equal";
   size_t num_features = blob_names.size();
 
   for (size_t i = 0; i < num_features; i++) {
     CHECK(feature_extraction_net->has_blob(blob_names[i]))
-        << "Unknown feature blob name " << blob_names[i] << " in the network "
-        << feature_extraction_proto;
+            << "Unknown feature blob name " << blob_names[i] << " in the network "
+            << feature_extraction_proto;
   }
 
   int num_mini_batches = atoi(argv[++arg_pos]);

@@ -13,7 +13,7 @@
 
 namespace caffe {
 
-template <typename TypeParam>
+template<typename TypeParam>
 class SigmoidCrossEntropyLossLayerTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -87,7 +87,7 @@ protected:
       const Dtype *blob_bottom_targets = this->blob_bottom_targets_->cpu_data();
       Dtype reference_loss =
           kLossWeight * SigmoidCrossEntropyLossReference(
-                            count, num, blob_bottom_data, blob_bottom_targets);
+              count, num, blob_bottom_data, blob_bottom_targets);
       EXPECT_NEAR(reference_loss, layer_loss, eps) << "debug: trial #" << i;
     }
   }

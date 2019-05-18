@@ -21,7 +21,7 @@ using std::min;
 
 namespace caffe {
 
-template <typename TypeParam>
+template<typename TypeParam>
 class LRNLayerTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -57,7 +57,7 @@ protected:
   vector<Blob<Dtype> *> blob_top_vec_;
 };
 
-template <typename TypeParam>
+template<typename TypeParam>
 void LRNLayerTest<TypeParam>::ReferenceLRNForward(
     const Blob<Dtype> &blob_bottom, const LayerParameter &layer_param,
     Blob<Dtype> *blob_top) {

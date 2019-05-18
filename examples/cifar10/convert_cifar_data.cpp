@@ -54,7 +54,7 @@ void convert_dataset(const string &input_folder, const string &output_folder,
     // Open files
     LOG(INFO) << "Training Batch " << fileid + 1;
     string batchFileName = input_folder + "/data_batch_"
-                           + caffe::format_int(fileid + 1) + ".bin";
+        + caffe::format_int(fileid + 1) + ".bin";
     std::ifstream data_file(batchFileName.c_str(),
                             std::ios::in | std::ios::binary);
     CHECK(data_file) << "Unable to open train file #" << fileid + 1;

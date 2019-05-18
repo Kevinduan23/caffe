@@ -2945,9 +2945,9 @@ protected:
 };
 
 TEST_F(SolverTypeUpgradeTest, TestSimple) {
-  const char *old_type_vec[6] = {"SGD",     "ADAGRAD",  "NESTEROV",
+  const char *old_type_vec[6] = {"SGD", "ADAGRAD", "NESTEROV",
                                  "RMSPROP", "ADADELTA", "ADAM"};
-  const char *new_type_vec[6] = {"SGD",     "AdaGrad",  "Nesterov",
+  const char *new_type_vec[6] = {"SGD", "AdaGrad", "Nesterov",
                                  "RMSProp", "AdaDelta", "Adam"};
   for (int i = 0; i < 6; ++i) {
     const string &input_proto =
@@ -2968,7 +2968,7 @@ TEST_F(SolverTypeUpgradeTest, TestSimple) {
         "snapshot_prefix: 'examples/mnist/lenet_rmsprop' "
         "solver_mode: GPU "
         "solver_type: " +
-        std::string(old_type_vec[i]) + " ";
+            std::string(old_type_vec[i]) + " ";
     const string &expected_output_proto =
         "net: 'examples/mnist/lenet_train_test.prototxt' "
         "weights: 'examples/mnist/lenet_train_test1.caffemodel' "
@@ -2987,7 +2987,7 @@ TEST_F(SolverTypeUpgradeTest, TestSimple) {
         "snapshot_prefix: 'examples/mnist/lenet_rmsprop' "
         "solver_mode: GPU "
         "type: '" +
-        std::string(new_type_vec[i]) + "' ";
+            std::string(new_type_vec[i]) + "' ";
     this->RunSolverTypeUpgradeTest(input_proto, expected_output_proto);
   }
 }

@@ -12,12 +12,12 @@
 
 namespace caffe {
 
-template <typename Dtype>
+template<typename Dtype>
 void Solver<Dtype>::SetActionFunction(ActionCallback func) {
   action_request_function_ = func;
 }
 
-template <typename Dtype>
+template<typename Dtype>
 SolverAction::Enum Solver<Dtype>::GetRequestedAction() {
   if (action_request_function_) {
     // If the external request function has been set, call it.
@@ -26,13 +26,13 @@ SolverAction::Enum Solver<Dtype>::GetRequestedAction() {
   return SolverAction::NONE;
 }
 
-template <typename Dtype>
+template<typename Dtype>
 Solver<Dtype>::Solver(const SolverParameter &param)
     : net_(), callbacks_(), requested_early_exit_(false) {
   Init(param);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 Solver<Dtype>::Solver(const string &param_file)
     : net_(), callbacks_(), requested_early_exit_(false) {
   SolverParameter param;
@@ -40,11 +40,11 @@ Solver<Dtype>::Solver(const string &param_file)
   Init(param);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void Solver<Dtype>::Init(const SolverParameter &param) {
   LOG_IF(INFO, Caffe::root_solver())
-      << "Initializing solver from parameters: " << std::endl
-      << param.DebugString();
+          << "Initializing solver from parameters: " << std::endl
+          << param.DebugString();
   param_ = param;
   CHECK_GE(param_.average_loss(), 1) << "average_loss should be non-negative.";
   CheckSnapshotWritePermissions();
@@ -63,7 +63,7 @@ void Solver<Dtype>::Init(const SolverParameter &param) {
 
 // Load weights from the caffemodel(s) specified in "weights" solver parameter
 // into the train and test nets.
-template <typename Dtype>
+template<typename Dtype>
 void LoadNetWeights(shared_ptr<Net<Dtype>> net, const std::string &model_list) {
   std::vector<std::string> model_names;
   boost::split(model_names, model_list, boost::is_any_of(","));
@@ -74,34 +74,34 @@ void LoadNetWeights(shared_ptr<Net<Dtype>> net, const std::string &model_list) {
   }
 }
 
-template <typename Dtype> void Solver<Dtype>::InitTrainNet() {
+template<typename Dtype> void Solver<Dtype>::InitTrainNet() {
   const int num_train_nets = param_.has_net() + param_.has_net_param() +
-                             param_.has_train_net() +
-                             param_.has_train_net_param();
+      param_.has_train_net() +
+      param_.has_train_net_param();
   const string field_names = "net, net_param, train_net, train_net_param";
   CHECK_GE(num_train_nets, 1) << "SolverParameter must specify a train net "
                               << "using one of these fields: " << field_names;
   CHECK_LE(num_train_nets, 1)
-      << "SolverParameter must not contain more than "
-      << "one of these fields specifying a train_net: " << field_names;
+    << "SolverParameter must not contain more than "
+    << "one of these fields specifying a train_net: " << field_names;
   NetParameter net_param;
   if (param_.has_train_net_param()) {
     LOG_IF(INFO, Caffe::root_solver())
-        << "Creating training net specified in train_net_param.";
+            << "Creating training net specified in train_net_param.";
     net_param.CopyFrom(param_.train_net_param());
   } else if (param_.has_train_net()) {
     LOG_IF(INFO, Caffe::root_solver())
-        << "Creating training net from train_net file: " << param_.train_net();
+            << "Creating training net from train_net file: " << param_.train_net();
     ReadNetParamsFromTextFileOrDie(param_.train_net(), &net_param);
   }
   if (param_.has_net_param()) {
     LOG_IF(INFO, Caffe::root_solver())
-        << "Creating training net specified in net_param.";
+            << "Creating training net specified in net_param.";
     net_param.CopyFrom(param_.net_param());
   }
   if (param_.has_net()) {
     LOG_IF(INFO, Caffe::root_solver())
-        << "Creating training net from net file: " << param_.net();
+            << "Creating training net from net file: " << param_.net();
     ReadNetParamsFromTextFileOrDie(param_.net(), &net_param);
   }
   // Set the correct NetState.  We start with the solver defaults (lowest
@@ -119,21 +119,21 @@ template <typename Dtype> void Solver<Dtype>::InitTrainNet() {
   }
 }
 
-template <typename Dtype> void Solver<Dtype>::InitTestNets() {
+template<typename Dtype> void Solver<Dtype>::InitTestNets() {
   const bool has_net_param = param_.has_net_param();
   const bool has_net_file = param_.has_net();
   const int num_generic_nets = has_net_param + has_net_file;
   CHECK_LE(num_generic_nets, 1)
-      << "Both net_param and net_file may not be specified.";
+    << "Both net_param and net_file may not be specified.";
   const int num_test_net_params = param_.test_net_param_size();
   const int num_test_net_files = param_.test_net_size();
   const int num_test_nets = num_test_net_params + num_test_net_files;
   if (num_generic_nets) {
     CHECK_GE(param_.test_iter_size(), num_test_nets)
-        << "test_iter must be specified for each test network.";
+      << "test_iter must be specified for each test network.";
   } else {
     CHECK_EQ(param_.test_iter_size(), num_test_nets)
-        << "test_iter must be specified for each test network.";
+      << "test_iter must be specified for each test network.";
   }
   // If we have a generic net (specified by net or net_param, rather than
   // test_net or test_net_param), we may have an unlimited number of actual
@@ -144,7 +144,7 @@ template <typename Dtype> void Solver<Dtype>::InitTestNets() {
   const int num_test_net_instances = num_test_nets + num_generic_net_instances;
   if (param_.test_state_size()) {
     CHECK_EQ(param_.test_state_size(), num_test_net_instances)
-        << "test_state must be unspecified or specified once per test net.";
+      << "test_state must be unspecified or specified once per test net.";
   }
   if (num_test_net_instances) {
     CHECK_GT(param_.test_interval(), 0);
@@ -196,7 +196,7 @@ template <typename Dtype> void Solver<Dtype>::InitTestNets() {
   }
 }
 
-template <typename Dtype> void Solver<Dtype>::Step(int iters) {
+template<typename Dtype> void Solver<Dtype>::Step(int iters) {
   const int start_iter = iter_;
   const int stop_iter = iter_ + iters;
   int average_loss = this->param_.average_loss();
@@ -235,8 +235,8 @@ template <typename Dtype> void Solver<Dtype>::Step(int iters) {
       float lapse = iteration_timer_.Seconds();
       float per_s = (iter_ - iterations_last_) / (lapse ? lapse : 1);
       LOG_IF(INFO, Caffe::root_solver())
-          << "Iteration " << iter_ << " (" << per_s << " iter/s, " << lapse
-          << "s/" << param_.display() << " iters), loss = " << smoothed_loss_;
+              << "Iteration " << iter_ << " (" << per_s << " iter/s, " << lapse
+              << "s/" << param_.display() << " iters), loss = " << smoothed_loss_;
       iteration_timer_.Start();
       iterations_last_ = iter_;
       const vector<Blob<Dtype> *> &result = net_->output_blobs();
@@ -254,8 +254,8 @@ template <typename Dtype> void Solver<Dtype>::Step(int iters) {
                             << loss_weight * result_vec[k] << " loss)";
           }
           LOG_IF(INFO, Caffe::root_solver())
-              << "    Train net output #" << score_index++ << ": "
-              << output_name << " = " << result_vec[k] << loss_msg_stream.str();
+                  << "    Train net output #" << score_index++ << ": "
+                  << output_name << " = " << result_vec[k] << loss_msg_stream.str();
         }
       }
     }
@@ -268,7 +268,7 @@ template <typename Dtype> void Solver<Dtype>::Step(int iters) {
 
     // Save a snapshot if needed.
     if ((param_.snapshot() && iter_ % param_.snapshot() == 0 &&
-         Caffe::root_solver()) ||
+        Caffe::root_solver()) ||
         (request == SolverAction::SNAPSHOT)) {
       Snapshot();
     }
@@ -280,7 +280,7 @@ template <typename Dtype> void Solver<Dtype>::Step(int iters) {
   }
 }
 
-template <typename Dtype> void Solver<Dtype>::Solve(const char *resume_file) {
+template<typename Dtype> void Solver<Dtype>::Solve(const char *resume_file) {
   CHECK(Caffe::root_solver());
   LOG(INFO) << "Solving " << net_->name();
   LOG(INFO) << "Learning Rate Policy: " << param_.lr_policy();
@@ -328,7 +328,7 @@ template <typename Dtype> void Solver<Dtype>::Solve(const char *resume_file) {
   LOG(INFO) << "Optimization Done.";
 }
 
-template <typename Dtype> void Solver<Dtype>::TestAll() {
+template<typename Dtype> void Solver<Dtype>::TestAll() {
   for (int test_net_id = 0;
        test_net_id < test_nets_.size() && !requested_early_exit_;
        ++test_net_id) {
@@ -336,7 +336,7 @@ template <typename Dtype> void Solver<Dtype>::TestAll() {
   }
 }
 
-template <typename Dtype> void Solver<Dtype>::Test(const int test_net_id) {
+template<typename Dtype> void Solver<Dtype>::Test(const int test_net_id) {
   CHECK(Caffe::root_solver());
   LOG(INFO) << "Iteration " << iter_ << ", Testing net (#" << test_net_id
             << ")";
@@ -409,7 +409,7 @@ template <typename Dtype> void Solver<Dtype>::Test(const int test_net_id) {
   }
 }
 
-template <typename Dtype> void Solver<Dtype>::Snapshot() {
+template<typename Dtype> void Solver<Dtype>::Snapshot() {
   CHECK(Caffe::root_solver());
   string model_filename;
   switch (param_.snapshot_format()) {
@@ -426,10 +426,10 @@ template <typename Dtype> void Solver<Dtype>::Snapshot() {
   SnapshotSolverState(model_filename);
 }
 
-template <typename Dtype> void Solver<Dtype>::CheckSnapshotWritePermissions() {
+template<typename Dtype> void Solver<Dtype>::CheckSnapshotWritePermissions() {
   if (Caffe::root_solver() && param_.snapshot()) {
     CHECK(param_.has_snapshot_prefix())
-        << "In solver params, snapshot is specified but snapshot_prefix is not";
+            << "In solver params, snapshot is specified but snapshot_prefix is not";
     string probe_filename = SnapshotFilename(".tempfile");
     std::ofstream probe_ofs(probe_filename.c_str());
     if (probe_ofs.good()) {
@@ -443,13 +443,13 @@ template <typename Dtype> void Solver<Dtype>::CheckSnapshotWritePermissions() {
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 string Solver<Dtype>::SnapshotFilename(const string &extension) {
   return param_.snapshot_prefix() + "_iter_" + caffe::format_int(iter_) +
-         extension;
+      extension;
 }
 
-template <typename Dtype> string Solver<Dtype>::SnapshotToBinaryProto() {
+template<typename Dtype> string Solver<Dtype>::SnapshotToBinaryProto() {
   string model_filename = SnapshotFilename(".caffemodel");
   LOG(INFO) << "Snapshotting to binary proto file " << model_filename;
   NetParameter net_param;
@@ -458,14 +458,14 @@ template <typename Dtype> string Solver<Dtype>::SnapshotToBinaryProto() {
   return model_filename;
 }
 
-template <typename Dtype> string Solver<Dtype>::SnapshotToHDF5() {
+template<typename Dtype> string Solver<Dtype>::SnapshotToHDF5() {
   string model_filename = SnapshotFilename(".caffemodel.h5");
   LOG(INFO) << "Snapshotting to HDF5 file " << model_filename;
   net_->ToHDF5(model_filename, param_.snapshot_diff());
   return model_filename;
 }
 
-template <typename Dtype> void Solver<Dtype>::Restore(const char *state_file) {
+template<typename Dtype> void Solver<Dtype>::Restore(const char *state_file) {
   string state_filename(state_file);
   if (state_filename.size() >= 3 &&
       state_filename.compare(state_filename.size() - 3, 3, ".h5") == 0) {
@@ -475,7 +475,7 @@ template <typename Dtype> void Solver<Dtype>::Restore(const char *state_file) {
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void Solver<Dtype>::UpdateSmoothedLoss(Dtype loss, int start_iter,
                                        int average_loss) {
   if (losses_.size() < average_loss) {

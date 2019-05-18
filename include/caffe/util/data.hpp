@@ -11,12 +11,14 @@
 #include <lz4.h>
 #include "caffe/proto/caffe.pb.h"
 
+#define SET_LABELS(labels, datumPlus) std::for_each(labels.cbegin(), labels.cend(), [datumPlus](const float l) { datumPlus->add_label(l); });
+
 namespace caffe {
-  void convert_datum(const DatumPlus &from, Datum &to);
+void convert_datum(const DatumPlus &from, Datum &to);
 
-  std::string compress(const std::string &data);
+std::string compress(const std::string &data);
 
-  std::string decompress(const std::string &data);
+std::string decompress(const std::string &data);
 
 }
 

@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
       CHECK_EQ(datum.float_data_size(), size_in_datum);
       for (int i = 0; i < size_in_datum; ++i) {
         sum_blob.set_data(i, sum_blob.data(i) +
-                             static_cast<float>(datum.float_data(i)));
+            static_cast<float>(datum.float_data(i)));
       }
     }
     ++count;

@@ -162,8 +162,8 @@ caffe::SolverAction::Enum GetRequestedAction(const std::string &flag_value) {
 int train() {
   CHECK_GT(FLAGS_solver.size(), 0) << "Need a solver definition to train.";
   CHECK(!FLAGS_snapshot.size() || !FLAGS_weights.size())
-      << "Give a snapshot to resume training or weights to finetune "
-         "but not both.";
+          << "Give a snapshot to resume training or weights to finetune "
+             "but not both.";
   vector<string> stages = get_stages_from_flags();
 
   caffe::SolverParameter solver_param;
@@ -302,10 +302,10 @@ int test() {
   for (int i = 0; i < test_score.size(); ++i) {
     const std::string &output_name =
         caffe_net.blob_names()
-            [caffe_net.output_blob_indices()[test_score_output_id[i]]];
+        [caffe_net.output_blob_indices()[test_score_output_id[i]]];
     const float loss_weight =
         caffe_net.blob_loss_weights()
-            [caffe_net.output_blob_indices()[test_score_output_id[i]]];
+        [caffe_net.output_blob_indices()[test_score_output_id[i]]];
     std::ostringstream loss_msg_stream;
     const float mean_score = test_score[i] / FLAGS_iterations;
     if (loss_weight) {
@@ -431,7 +431,7 @@ int main(int argc, char **argv) {
 #ifdef WITH_PYTHON_LAYER
     try {
 #endif
-      return GetBrewFunction(caffe::string(argv[1]))();
+    return GetBrewFunction(caffe::string(argv[1]))();
 #ifdef WITH_PYTHON_LAYER
     } catch (bp::error_already_set) {
       PyErr_Print();

@@ -2,6 +2,6 @@
 
 namespace caffe {
 
-  INSTANTIATE_CLASS(Layer);
+INSTANTIATE_CLASS(Layer);
 
 }  // namespace caffe

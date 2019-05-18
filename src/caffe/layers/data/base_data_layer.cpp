@@ -11,11 +11,11 @@
 
 namespace caffe {
 
-template <typename Dtype>
+template<typename Dtype>
 BaseDataLayer<Dtype>::BaseDataLayer(const LayerParameter &param)
     : Layer<Dtype>(param), transform_param_(param.transform_param()) {}
 
-template <typename Dtype>
+template<typename Dtype>
 void BaseDataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
                                       const vector<Blob<Dtype> *> &top) {
   if (top.size() == 1) {
@@ -30,7 +30,7 @@ void BaseDataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype> *> &bottom,
   DataLayerSetUp(bottom, top);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 BasePrefetchingDataLayer<Dtype>::BasePrefetchingDataLayer(
     const LayerParameter &param)
     : BaseDataLayer<Dtype>(param), prefetch_(param.data_param().prefetch()),
@@ -41,7 +41,7 @@ BasePrefetchingDataLayer<Dtype>::BasePrefetchingDataLayer(
   }
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void BasePrefetchingDataLayer<Dtype>::LayerSetUp(
     const vector<Blob<Dtype> *> &bottom, const vector<Blob<Dtype> *> &top) {
   BaseDataLayer<Dtype>::LayerSetUp(bottom, top);
@@ -72,7 +72,7 @@ void BasePrefetchingDataLayer<Dtype>::LayerSetUp(
   DLOG(INFO) << "Prefetch initialized.";
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void BasePrefetchingDataLayer<Dtype>::InternalThreadEntry() {
 #ifndef CPU_ONLY
   cudaStream_t stream;
@@ -106,7 +106,7 @@ void BasePrefetchingDataLayer<Dtype>::InternalThreadEntry() {
 #endif
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void BasePrefetchingDataLayer<Dtype>::Forward_cpu(
     const vector<Blob<Dtype> *> &bottom, const vector<Blob<Dtype> *> &top) {
   if (prefetch_current_) {

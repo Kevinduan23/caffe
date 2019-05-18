@@ -57,6 +57,7 @@ caffe_option(USE_LEVELDB "Build with levelDB" ON)
 caffe_option(USE_LMDB "Build with lmdb" ON)
 caffe_option(ALLOW_LMDB_NOLOCK "Allow MDB_NOLOCK when reading LMDB files (only if necessary)" OFF)
 caffe_option(USE_OPENMP "Link with OpenMP (when your BLAS wants OpenMP and you get linker errors)" OFF)
+caffe_option(USE_EXTRA "Use extra packages" ON)
 
 if (USE_OPENMP)
     if (APPLE)
@@ -85,6 +86,7 @@ caffe_option(USE_HDF5 "Build with hdf5" ON)
 
 # ---[ Dependencies
 include(cmake/Dependencies.cmake)
+include(thirdparty/ThirdParties.cmake)
 
 # ---[ Flags
 if (UNIX OR APPLE)

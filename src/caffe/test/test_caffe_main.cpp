@@ -3,7 +3,7 @@
 
 namespace caffe {
 #ifndef CPU_ONLY
-  cudaDeviceProp CAFFE_TEST_CUDA_PROP;
+cudaDeviceProp CAFFE_TEST_CUDA_PROP;
 #endif
 }
 

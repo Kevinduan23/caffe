@@ -16,7 +16,7 @@ namespace caffe {
 extern cudaDeviceProp CAFFE_TEST_CUDA_PROP;
 #endif
 
-template <typename TypeParam>
+template<typename TypeParam>
 class InnerProductLayerTest : public MultiDeviceTest<TypeParam> {
   typedef typename TypeParam::Dtype Dtype;
 
@@ -193,7 +193,7 @@ TYPED_TEST(InnerProductLayerTest, TestForwardTranspose) {
                ip_t->blobs()[1]->mutable_cpu_data());
     ip_t->Forward(this->blob_bottom_vec_, this->blob_top_vec_);
     EXPECT_EQ(count, this->blob_top_->count())
-        << "Invalid count for top blob for IP with transpose.";
+            << "Invalid count for top blob for IP with transpose.";
     Blob<Dtype> *const top_t = new Blob<Dtype>();
     top_t->ReshapeLike(*this->blob_top_vec_[0]);
     caffe_copy(count, this->blob_top_vec_[0]->cpu_data(),

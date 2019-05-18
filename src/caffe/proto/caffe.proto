@@ -1480,6 +1480,7 @@ message HDF5PrefetchDataParameter {
 message AccuracyGenericParameter {
     enum Type {
         PSNR = 1;
+        SSIM = 2;
     }
     required Type type = 1;
     // MAX in the PSNR

@@ -159,7 +159,7 @@ static mxArray *str_vec_to_mx_strcell(const vector<std::string> &str_vec) {
  **   (double) init_key : caffe initialization key
  **/
 // Convert a handle in matlab to a pointer in C++. Check if init_key matches
-template <typename T> static T *handle_to_ptr(const mxArray *mx_handle) {
+template<typename T> static T *handle_to_ptr(const mxArray *mx_handle) {
   mxArray *mx_ptr = mxGetField(mx_handle, 0, "ptr");
   mxArray *mx_init_key = mxGetField(mx_handle, 0, "init_key");
   mxCHECK(mxIsUint64(mx_ptr), "pointer type must be uint64");
@@ -171,14 +171,14 @@ template <typename T> static T *handle_to_ptr(const mxArray *mx_handle) {
 }
 
 // Create a handle struct vector, without setting up each handle in it
-template <typename T> static mxArray *create_handle_vec(int ptr_num) {
+template<typename T> static mxArray *create_handle_vec(int ptr_num) {
   const int handle_field_num = 2;
   const char *handle_fields[handle_field_num] = {"ptr", "init_key"};
   return mxCreateStructMatrix(ptr_num, 1, handle_field_num, handle_fields);
 }
 
 // Set up a handle in a handle struct vector by its index
-template <typename T>
+template<typename T>
 static void setup_handle(const T *ptr, int index, mxArray *mx_handle_vec) {
   mxArray *mx_ptr = mxCreateNumericMatrix(1, 1, mxUINT64_CLASS, mxREAL);
   *reinterpret_cast<uint64_t *>(mxGetData(mx_ptr)) =
@@ -188,14 +188,14 @@ static void setup_handle(const T *ptr, int index, mxArray *mx_handle_vec) {
 }
 
 // Convert a pointer in C++ to a handle in matlab
-template <typename T> static mxArray *ptr_to_handle(const T *ptr) {
+template<typename T> static mxArray *ptr_to_handle(const T *ptr) {
   mxArray *mx_handle = create_handle_vec<T>(1);
   setup_handle(ptr, 0, mx_handle);
   return mx_handle;
 }
 
 // Convert a vector of shared_ptr in C++ to handle struct vector
-template <typename T>
+template<typename T>
 static mxArray *ptr_vec_to_handle_vec(const vector<shared_ptr<T>> &ptr_vec) {
   mxArray *mx_handle_vec = create_handle_vec<T>(ptr_vec.size());
   for (int i = 0; i < ptr_vec.size(); i++) {
@@ -328,7 +328,7 @@ static void net_get_attr(MEX_ARGS) {
   Net<float> *net = handle_to_ptr<Net<float>>(prhs[0]);
   const int net_attr_num = 6;
   const char *net_attrs[net_attr_num] = {
-      "hLayer_layers",       "hBlob_blobs", "input_blob_indices",
+      "hLayer_layers", "hBlob_blobs", "input_blob_indices",
       "output_blob_indices", "layer_names", "blob_names"};
   mxArray *mx_net_attr = mxCreateStructMatrix(1, 1, net_attr_num, net_attrs);
   mxSetField(mx_net_attr, 0, "hLayer_layers",

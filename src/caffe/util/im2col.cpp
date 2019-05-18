@@ -15,7 +15,7 @@ inline bool is_a_ge_zero_and_a_lt_b(int a, int b) {
   return static_cast<unsigned>(a) < static_cast<unsigned>(b);
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void im2col_cpu(const Dtype *data_im, const int channels, const int height,
                 const int width, const int kernel_h, const int kernel_w,
                 const int pad_h, const int pad_w, const int stride_h,
@@ -70,7 +70,7 @@ template void im2col_cpu<double>(const double *data_im, const int channels,
                                  const int dilation_h, const int dilation_w,
                                  double *data_col);
 
-template <typename Dtype>
+template<typename Dtype>
 inline void im2col_nd_core_cpu(const Dtype *data_input, const bool im2col,
                                const int num_spatial_axes, const int *im_shape,
                                const int *col_shape, const int *kernel_shape,
@@ -142,7 +142,7 @@ inline void im2col_nd_core_cpu(const Dtype *data_input, const bool im2col,
   }   // for (int c = 0; c < channels_col; ++c) {
 }
 
-template <typename Dtype>
+template<typename Dtype>
 void im2col_nd_cpu(const Dtype *data_im, const int num_spatial_axes,
                    const int *im_shape, const int *col_shape,
                    const int *kernel_shape, const int *pad, const int *stride,
@@ -167,7 +167,7 @@ template void im2col_nd_cpu<double>(const double *data_im,
                                     const int *stride, const int *dilation,
                                     double *data_col);
 
-template <typename Dtype>
+template<typename Dtype>
 void col2im_cpu(const Dtype *data_col, const int channels, const int height,
                 const int width, const int kernel_h, const int kernel_w,
                 const int pad_h, const int pad_w, const int stride_h,
@@ -220,7 +220,7 @@ template void col2im_cpu<double>(const double *data_col, const int channels,
                                  const int dilation_h, const int dilation_w,
                                  double *data_im);
 
-template <typename Dtype>
+template<typename Dtype>
 void col2im_nd_cpu(const Dtype *data_col, const int num_spatial_axes,
                    const int *im_shape, const int *col_shape,
                    const int *kernel_shape, const int *pad, const int *stride,

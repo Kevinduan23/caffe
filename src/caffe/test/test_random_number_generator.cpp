@@ -10,7 +10,7 @@
 
 namespace caffe {
 
-template <typename Dtype>
+template<typename Dtype>
 class RandomNumberGeneratorTest : public ::testing::Test {
 protected:
   RandomNumberGeneratorTest()
