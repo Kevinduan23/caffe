@@ -25,21 +25,16 @@ protected:
   void Forward_gpu(const vector<Blob<Dtype> *> &bottom, const vector<Blob<Dtype> *> &top) override;
 
   /// @brief Not implemented -- AccuracyLayer cannot be used as a loss.
-  virtual void Backward_cpu(const vector<Blob<Dtype> *> &top,
-                            const vector<bool> &propagate_down, const vector<Blob<Dtype> *> &bottom) {
+  void Backward_cpu(const vector<Blob<Dtype> *> &top,
+                            const vector<bool> &propagate_down, const vector<Blob<Dtype> *> &bottom) override {
     for (const auto &i : propagate_down) {
       if (i)
         NOT_IMPLEMENTED;
     }
   }
 
-  virtual void Backward_gpu(const vector<Blob<Dtype> *> &top,
-                            const vector<bool> &propagate_down, const vector<Blob<Dtype> *> &bottom) {
-    for (const auto &i : propagate_down) {
-      if (i)
-        NOT_IMPLEMENTED;
-    }
-  }
+  void Backward_gpu(const vector<Blob<Dtype> *> &top,
+                            const vector<bool> &propagate_down, const vector<Blob<Dtype> *> &bottom) override;
 
   AccuracyGenericParameter_Type acc_type;
 };

@@ -32,20 +32,21 @@ void AccuracyGenericLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &botto
     CHECK_EQ(bottom[1]->num_axes(), 4);
     const Dtype *data = bottom[0]->cpu_data();
     const Dtype *label = bottom[1]->cpu_data();
-    Blob<Dtype> mse;
-    mse.CopyFrom(*bottom[1], false, true);
-    caffe_sub(mse.count(), data, label, mse.mutable_cpu_data());
-    caffe_powx(mse.count(), mse.cpu_data(), Dtype(2), mse.mutable_cpu_data());
-    Dtype sum_mse = caffe_cpu_asum(mse.count(), mse.cpu_data()) / (mse.width() * mse.height() * mse.num());
+    // use label's diff to avoid memory allocation
+    Dtype *mse = bottom[1]->mutable_cpu_diff();
+    caffe_sub(bottom[1]->count(), data, label, mse);
+    caffe_powx(bottom[1]->count(), mse, Dtype(2), mse);
+    Dtype sum_mse =
+        caffe_cpu_asum(bottom[1]->count(), mse) / (bottom[1]->width() * bottom[1]->height() * bottom[1]->num());
     Dtype max;
     if (!this->layer_param().accuracy_generic_param().has_max()) {
-      LOG(WARNING) << "max not specified, use 255 instead by default";
+      LOG(INFO) << "max not specified, use 255 instead by default";
       max = Dtype(255);
     } else {
       max = Dtype(this->layer_param().accuracy_generic_param().max());
     }
-    Dtype pnsr = 20 * log(10 * (max / (sqrt(sum_mse))));
-    top[0]->mutable_cpu_data()[0] = pnsr / mse.num();
+    Dtype pnsr = 20 * log10(max / (sqrt(sum_mse)));
+    top[0]->mutable_cpu_data()[0] = pnsr / bottom[1]->num();
     break;
   }
 }
