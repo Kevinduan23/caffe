@@ -150,6 +150,59 @@ cv::Mat DecodeDatumToCVMat(const Datum &datum, bool is_color);
 
 void CVMatToDatum(const cv::Mat &cv_img, Datum *datum);
 
+// DatumPlus helpers
+
+bool ReadFileToDatum(const string &filename, const vector<float> &labels, DatumPlus *datum, bool compress = false);
+
+inline bool ReadFileToDatum(const string &filename, DatumPlus *datum) {
+  return ReadFileToDatum(filename, {-1}, datum);
+}
+
+bool ReadImageToDatum(const string &filename, const vector<float> &labels,
+                      const int height, const int width, const bool is_color,
+                      const std::string &encoding, DatumPlus *datum, bool compress = false);
+
+inline bool ReadImageToDatum(const string &filename,
+                             const vector<float> &labels,
+                             const int height,
+                             const int width,
+                             const bool is_color,
+                             DatumPlus *datum,
+                             bool compress = false) {
+  return ReadImageToDatum(filename, labels, height, width, is_color,
+                          "", datum, compress);
+}
+
+inline bool ReadImageToDatum(const string &filename, const vector<float> &labels,
+                             const int height, const int width, DatumPlus *datum, bool compress = false) {
+  return ReadImageToDatum(filename, labels, height, width, true, datum, compress);
+}
+
+inline bool ReadImageToDatum(const string &filename, const vector<float> &labels,
+                             const bool is_color, DatumPlus *datum, bool compress = false) {
+  return ReadImageToDatum(filename, labels, 0, 0, is_color, datum, compress);
+}
+
+inline bool ReadImageToDatum(const string &filename, const vector<float> &labels,
+                             DatumPlus *datum, bool compress = false) {
+  return ReadImageToDatum(filename, labels, 0, 0, true, datum, compress);
+}
+
+inline bool ReadImageToDatum(const string &filename, const vector<float> &labels,
+                             const std::string &encoding, DatumPlus *datum, bool compress = false) {
+  return ReadImageToDatum(filename, labels, 0, 0, true, encoding, datum, compress);
+}
+
+bool DecodeDatumNative(DatumPlus *datum, bool compress = false);
+
+bool DecodeDatum(DatumPlus *datum, bool is_color, bool compress = false);
+
+cv::Mat DecodeDatumToCVMatNative(const DatumPlus &datum);
+
+cv::Mat DecodeDatumToCVMat(const DatumPlus &datum, bool is_color);
+
+void CVMatToDatum(const cv::Mat &cv_img, DatumPlus *datum, bool compress = false);
+
 #endif  // USE_OPENCV
 
 }  // namespace caffe
