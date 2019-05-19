@@ -86,7 +86,7 @@ caffe_option(USE_HDF5 "Build with hdf5" ON)
 
 # ---[ Dependencies
 include(cmake/Dependencies.cmake)
-include(thirdparty/ThirdParties.cmake)
+#include(thirdparty/ThirdParties.cmake)
 
 # ---[ Flags
 if (UNIX OR APPLE)
