@@ -33,7 +33,7 @@ TYPED_TEST(LayerFactoryTest, TestCreateLayer) {
     }
     LayerParameter layer_param;
     // Data layers expect a DB
-    if (iter->first == "Data") {
+    if (iter->first == "Data" || iter->first == "DataPlus") {
 #ifdef USE_LEVELDB
       string tmp;
       MakeTempDir(&tmp);
@@ -41,6 +41,7 @@ TYPED_TEST(LayerFactoryTest, TestCreateLayer) {
       db->Open(tmp, db::NEW);
       db->Close();
       layer_param.mutable_data_param()->set_source(tmp);
+      layer_param.mutable_data_param()->set_backend(DataParameter_DB_LEVELDB);
 #else
       continue;
 #endif  // USE_LEVELDB
