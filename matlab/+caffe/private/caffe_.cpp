@@ -603,3 +603,5 @@ void mexFunction(MEX_ARGS) {
   }
   mxFree(cmd);
 }
+
+int main(){return 0;}
