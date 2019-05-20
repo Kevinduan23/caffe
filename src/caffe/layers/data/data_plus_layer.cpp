@@ -67,11 +67,7 @@ void DataPlusLayer<Dtype>::load_batch(Batch<Dtype> *batch) {
       this->Next();
     }
     datum.ParseFromString(this->cursor_->value());
-    if (datum.compressed()) {
-      string decompressed_data = decompress(datum.data());
-      datum.clear_data();
-      datum.set_data(decompressed_data);
-    }
+    DECOMPRESS_AND_SET(&datum)
     convert_datum(datum, data);
     read_time += timer.MicroSeconds();
 
