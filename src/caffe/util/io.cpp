@@ -245,10 +245,10 @@ void CVMatToDatum(const cv::Mat &cv_img, Datum *datum) {
   datum->set_data(buffer);
 }
 
-bool caffe::ReadFileToDatum(const string &filename,
-                            const vector<float> &labels,
-                            DatumPlus *datum,
-                            bool compress) {
+bool ReadFileToDatum(const string &filename,
+                     const vector<float> &labels,
+                     DatumPlus *datum,
+                     bool compress) {
   std::streampos size;
 
   fstream file(filename.c_str(), ios::in | ios::binary | ios::ate);
@@ -267,8 +267,8 @@ bool caffe::ReadFileToDatum(const string &filename,
   }
 }
 
-bool caffe::ReadImageToDatum(const string &filename, const vector<float> &labels, const int height, const int width,
-                             const bool is_color, const std::string &encoding, DatumPlus *datum, bool compress) {
+bool ReadImageToDatum(const string &filename, const vector<float> &labels, const int height, const int width,
+                      const bool is_color, const std::string &encoding, DatumPlus *datum, bool compress) {
   cv::Mat cv_img = ReadImageToCVMat(filename, height, width, is_color);
   if (cv_img.data) {
     if (encoding.size()) {
@@ -291,7 +291,7 @@ bool caffe::ReadImageToDatum(const string &filename, const vector<float> &labels
   }
 }
 
-bool caffe::DecodeDatumNative(DatumPlus *datum, bool compress) {
+bool DecodeDatumNative(DatumPlus *datum, bool compress) {
   DECOMPRESS_AND_SET(datum)
   if (datum->encoded()) {
     cv::Mat cv_img = DecodeDatumToCVMatNative((*datum));
@@ -302,7 +302,7 @@ bool caffe::DecodeDatumNative(DatumPlus *datum, bool compress) {
   }
 }
 
-bool caffe::DecodeDatum(DatumPlus *datum, bool is_color, bool compress) {
+bool DecodeDatum(DatumPlus *datum, bool is_color, bool compress) {
   DECOMPRESS_AND_SET(datum)
   if (datum->encoded()) {
     cv::Mat cv_img = DecodeDatumToCVMat((*datum), is_color);
@@ -313,7 +313,7 @@ bool caffe::DecodeDatum(DatumPlus *datum, bool is_color, bool compress) {
   }
 }
 
-cv::Mat caffe::DecodeDatumToCVMatNative(const DatumPlus &datum) {
+cv::Mat DecodeDatumToCVMatNative(const DatumPlus &datum) {
   cv::Mat cv_img;
   CHECK(datum.encoded()) << "Datum not encoded";
   const string &data = datum.data();
@@ -325,7 +325,7 @@ cv::Mat caffe::DecodeDatumToCVMatNative(const DatumPlus &datum) {
   return cv_img;
 }
 
-cv::Mat caffe::DecodeDatumToCVMat(const DatumPlus &datum, bool is_color) {
+cv::Mat DecodeDatumToCVMat(const DatumPlus &datum, bool is_color) {
   cv::Mat cv_img;
   CHECK(datum.encoded()) << "Datum not encoded";
   const string &data = datum.data();
@@ -339,7 +339,7 @@ cv::Mat caffe::DecodeDatumToCVMat(const DatumPlus &datum, bool is_color) {
   return cv_img;
 }
 
-void caffe::CVMatToDatum(const cv::Mat &cv_img, DatumPlus *datum, bool compress) {
+void CVMatToDatum(const cv::Mat &cv_img, DatumPlus *datum, bool compress) {
   CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
   datum->set_channels(cv_img.channels());
   datum->set_height(cv_img.rows);
