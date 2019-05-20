@@ -49,6 +49,7 @@ void convert_dataset(const string &input_folder, const string &output_folder,
   datum.set_channels(3);
   datum.set_height(kCIFARSize);
   datum.set_width(kCIFARSize);
+  datum.set_encoded(false);
 
   LOG(INFO) << "Writing Training data";
   for (int fileid = 0; fileid < kCIFARTrainBatches; ++fileid) {
@@ -61,12 +62,8 @@ void convert_dataset(const string &input_folder, const string &output_folder,
     CHECK(data_file) << "Unable to open train file #" << fileid + 1;
     for (int itemid = 0; itemid < kCIFARBatchSize; ++itemid) {
       read_image(&data_file, &label, str_buffer);
-      datum.clear_label();
-      datum.clear_data();
-      datum.set_compressed(true);
-      string compressed = caffe::compress(string(str_buffer, kCIFARImageNBytes));
+      COMPRESS_AND_SET(&datum, str_buffer, true)
       datum.add_label(label);
-      datum.set_data(compressed);
       string out;
       CHECK(datum.SerializeToString(&out));
       txn->Put(caffe::format_int(fileid * kCIFARBatchSize + itemid, 5), out);

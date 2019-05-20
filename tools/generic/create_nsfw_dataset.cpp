@@ -31,7 +31,7 @@ namespace bfs = boost::filesystem;
 
 void create_dataset(const string &root_folder, const string &output_folder, const string &db_type) {
   scoped_ptr<db::DB> train_db(db::GetDB(db_type));
-  train_db->Open(output_folder + "/nsfw_train_" + db_type, db::NEW);
+  train_db->Open(output_folder + "/nsfw_test_" + db_type, db::NEW);
   scoped_ptr<db::Transaction> txn(train_db->NewTransaction());
   bfs::directory_iterator root(root_folder);
   float label = 0;
@@ -59,7 +59,17 @@ void create_dataset(const string &root_folder, const string &output_folder, cons
 //          ifs.read(bytes.data(), fileSize);
 //          string data(bytes.data(), fileSize);
 //
-//          cv::Mat pic = cv::imread(file.path().string());
+          cv::Mat pic = cv::imread(file.path().string());
+          if (pic.empty())
+            continue;
+          cv::Mat out;
+          if (pic.channels() == 1) {
+            cv::cvtColor(pic, out, cv::COLOR_GRAY2BGR);
+            cv::imwrite(file.path().string(), out);
+          } else if (pic.channels() == 4) {
+            cv::cvtColor(pic, out, cv::COLOR_BGRA2BGR);
+            cv::imwrite(file.path().string(), out);
+          }
 //          datum.set_height(pic.rows);
 //          datum.set_width(pic.cols);
 //          datum.set_channels(pic.channels());
