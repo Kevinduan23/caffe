@@ -46,23 +46,24 @@ void AccuracyGenericLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype> *> &botto
     Dtype *result = bottom[1]->mutable_cpu_diff();
     // compute MSE
     caffe_sub(bottom[1]->count(), data, label, result);
-    caffe_powx(bottom[1]->count(), result, Dtype(2), result);
-    const int bs_size = bottom[1]->channels() * bottom[1]->height() * bottom[1]->width();
-    const int bs_count = bottom[1]->num();
-    BATCH_SUM(result, bs_size, bs_count)
-    Dtype max;
-    if (!this->layer_param().accuracy_generic_param().has_max()) {
-      LOG(INFO) << "max not specified, use 255 instead by default";
-      max = Dtype(255);
-    } else {
-      max = Dtype(this->layer_param().accuracy_generic_param().max());
-    }
+    Dtype acc = caffe_cpu_dot(bottom[0]->count(), result, result) / bottom[1]->count();
+
+//    const int bs_size = bottom[1]->channels() * bottom[1]->height() * bottom[1]->width();
+//    const int bs_count = bottom[1]->num();
+//    BATCH_SUM(result, bs_size, bs_count)
+//    Dtype max;
+//    if (!this->layer_param().accuracy_generic_param().has_max()) {
+//      max = Dtype(255);
+//    } else {
+//      max = Dtype(this->layer_param().accuracy_generic_param().max());
+//    }
 
     // compute PNSR every item in one batch
-    for (int i = 0; i < bs_count; ++i) {
-      *result += 20 * log10(max / (sqrt(result[i * bs_size])));
-    }
-    top[0]->mutable_cpu_data()[0] = *result / bs_count;
+//    for (int i = 0; i < bs_count; ++i) {
+//      *result += 10 * log10(Dtype(1) / (result[i * bs_size]));
+//    }
+    acc = 10 * log10(Dtype(1) / acc);
+    top[0]->mutable_cpu_data()[0] = acc;
     break;
   }
   case AccuracyGenericParameter_Type_SSIM: {
