@@ -16,10 +16,10 @@ void AccuracyGenericLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype> *> &botto
   const Dtype *bottom_label = bottom[1]->gpu_data();
   switch (this->acc_type) {
   case AccuracyGenericParameter_Type_PSNR:
-    const Dtype *temp = bottom[1]->mutable_gpu_diff();
+    Dtype *temp = bottom[1]->mutable_gpu_diff();
     Dtype acc;
     caffe_gpu_sub(bottom[1]->count(), bottom_data, bottom_label, temp);
-    caffe_gpu_dot(bottom[1]->count(), temp, temp, &acc)
+    caffe_gpu_dot(bottom[1]->count(), temp, temp, &acc);
     acc /= bottom[1]->count();
 
 //    Dtype max;
@@ -38,7 +38,7 @@ void AccuracyGenericLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype> *> &botto
 template<typename Dtype>
 void AccuracyGenericLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype> *> &top,
                                                const vector<bool> &propagate_down,
-                                               const vector<Blob<Dtype> *> &bottom) override {
+                                               const vector<Blob<Dtype> *> &bottom) {
   for (const auto &i: propagate_down) {
     if (i)
       NOT_IMPLEMENTED;
