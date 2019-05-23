@@ -8,7 +8,6 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
-#include <lz4.h>
 #include "caffe/proto/caffe.pb.h"
 
 #define SET_LABELS(datumPlus, labels) std::for_each((labels).cbegin(), (labels).cend(), [datumPlus](const float l) { (datumPlus)->add_label(l); });
